@@ -1,15 +1,15 @@
 /**
- * @file impl.h
+ * @file bypass.h
  * @author Meng Demao (mengdemao19951021@163.com)
- * @brief 网卡实现接口
+ * @brief 网卡透传数据接口
  * @version 0.1
  * @date 2022-05-29
  * 
  * @copyright Copyright (c) 2022
  * 
  */
-#ifndef __IMPL_H__
-#define __IMPL_H__
+#ifndef __BYPASS_H__
+#define __BYPASS_H__
 #include <iostream>
 #include <string>
 #include <sys/types.h>
@@ -18,13 +18,13 @@
 
 using namespace std;
 
-class impl
+class bypass
 {
 private:
     string s_name;
 public:
-    impl();
-    ~impl();
+    bypass();
+    ~bypass();
 
     string name(void);
 
@@ -39,22 +39,22 @@ public:
 };
 
 /**
- * @brief Construct a new impl::impl object
+ * @brief Construct a new bypass::bypass object
  * 
  * @param name 
  */
-impl::impl()
+bypass::bypass()
 {
-    init();
+    this->init();
 }
 
 /**
- * @brief Destroy the impl::impl object
+ * @brief Destroy the bypass::bypass object
  * 
  */
-impl::~impl()
+bypass::~bypass()
 {
-    exit();
+    this->exit();
 }
 
 /**
@@ -62,9 +62,9 @@ impl::~impl()
  * 
  * @return string 
  */
-string impl::name(void)    
+string bypass::bypass(void)
 {
     this->s_name;
 }
 
-#endif /* __IMPL_H__ */
+#endif /* __BYPASS_H__ */
