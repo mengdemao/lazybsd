@@ -9,7 +9,7 @@
  * 
  */
 #include <iostream>
-#include <impl.h>
+#include <bypass.h>
 
 /**
  * @brief 
@@ -20,10 +20,10 @@
  */
 int main(int argc, char *argv[])
 {
-    impl g_impl;
+	bypass g_bypass;
     int fd = -1;
 
-    if ((fd = g_impl.open("test.cap", O_CREAT)) = -1)
+    if ((fd = g_bypass.open("test.cap", O_CREAT)) == -1)
     {
         std::cout << "Open file error" << std::endl;
         return EXIT_FAILURE;
