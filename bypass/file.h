@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2022
  * 
  */
-#ifndef __PCAP_H__
-#define __PCAP_H__
+#ifndef __FILE_H__
+#define __FILE_H__
 
-#endif /* __PCAP_H__ */
+#endif /* __FILE_H__ */

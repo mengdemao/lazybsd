@@ -36,3 +36,5 @@
 .project
 .settings/
 .vscode/
+.sconsign.dblite
+__pycache__/

@@ -18,7 +18,7 @@
  * @brief 网络实现初始化
  * 
  */
-void bypass::bypass(void)
+void bypass::init(void)
 {
     this->s_name = "pcap";
 }

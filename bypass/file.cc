@@ -1,7 +1,7 @@
 /**
- * @file pcap.cc
+ * @file file.cc
  * @author mengdemao (you@domain.com)
- * @brief 网卡实现(pcap)
+ * @brief 网卡实现(file)
  * @version 0.1
  * @date 2022-05-29
  * 
@@ -12,15 +12,15 @@
 #include <config.h>
 #include <bypass.h>
 
-#ifdef CONFIG_BYPASS_PCAP
+#ifdef CONFIG_BYPASS_FILE
 
 /**
  * @brief 网络实现初始化
  * 
  */
-void bypass::bypass(void)
+void bypass::init(void)
 {
-    this->s_name = "pcap";
+    this->s_name = "file";
 }
 
 /**
@@ -51,4 +51,4 @@ ssize_t bypass::write(int fd, const void *buf, size_t count)
     return 0;
 }
 
-#endif /* CONFIG_IMPL_PCAP */
+#endif /* CONFIG_IMPL_FILE */

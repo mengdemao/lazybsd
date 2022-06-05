@@ -29,5 +29,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    g_bypass.close(fd);
+
     return EXIT_SUCCESS;
 }
