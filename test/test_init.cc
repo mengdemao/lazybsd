@@ -1,5 +1,5 @@
 /**
- * @file init.cc
+ * @file test_init.cc
  * @author mengdemao (mengdemao19951021@163.com)
  * @brief 初始化测试
  * @version 0.1
@@ -20,16 +20,5 @@
  */
 int main(int argc, char *argv[])
 {
-	bypass g_bypass;
-    int fd = -1;
-
-    if ((fd = g_bypass.open("test.cap", O_CREAT)) == -1)
-    {
-        std::cout << "Open file error" << std::endl;
-        return EXIT_FAILURE;
-    }
-
-    g_bypass.close(fd);
-
     return EXIT_SUCCESS;
 }

@@ -1,0 +1,12 @@
+# 添加boost库
+if(Boost_FOUND)
+  set(Boost_USE_STATIC_LIBS        ON)
+  set(Boost_USE_MULTITHREADED      ON)
+  set(Boost_USE_STATIC_RUNTIME    OFF)
+  message(STATUS "boost include path is : ${Boost_INCLUDE_DIRS}")
+  message(STATUS "boost library path is : ${Boost_LIBRARY_DIRS}")
+  message(STATUS "boost libraries is : ${Boost_LIBRARIES}")
+  include_directories(${Boost_INCLUDE_DIRS})
+  link_directories(${Boost_LIBRARY_DIRS})
+  target_link_libraries(${PROJECT_NAME} PRIVATE ${Boost_LIBRARIES})
+endif(Boost_FOUND)

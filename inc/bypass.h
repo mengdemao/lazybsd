@@ -27,9 +27,6 @@ public:
     ~bypass();
 
     string name(void);
-
-    void init(void);
-    void exit(void);
     
     int open(const char *pathname, int flags);
     int close(int fd);
@@ -45,7 +42,6 @@ public:
  */
 bypass::bypass()
 {
-    this->init();
 }
 
 /**
@@ -54,17 +50,6 @@ bypass::bypass()
  */
 bypass::~bypass()
 {
-    this->exit();
-}
-
-/**
- * @brief 输出模块名
- * 
- * @return string 
- */
-string bypass::bypass(void)
-{
-    this->s_name;
 }
 
 #endif /* __BYPASS_H__ */

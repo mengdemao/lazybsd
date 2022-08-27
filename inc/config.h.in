@@ -1,0 +1,34 @@
+/**
+ * @file config.h
+ * @brief Auto generated config file
+ * @version @libuinet_VERSION_MAJOR@-@libuinet_VERSION_MINOR@
+ * @date @BUILD_TIME@
+ * @author @BUILD_HOST@
+ *
+ */
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
+
+#ifndef libuinet_VERSION_MAJOR
+#define libuinet_VERSION_MAJOR		"@libuinet_VERSION_MAJOR@"
+#endif
+
+#ifndef libuinet_VERSION_MINOR
+#define libuinet_VERSION_MINOR		"@libuinet_VERSION_MINOR@"
+#endif
+
+#ifndef libuinet_VERSION
+#define libuinet_VERSION			"@libuinet_VERSION_MAJOR@-@libuinet_VERSION_MINOR@"
+#endif
+
+#ifndef libuinet_BUILD
+#define libuinet_BUILD				"@BUILD_TIME@ @BUILD_HOST@"
+#endif
+
+#cmakedefine CONFIG_BYPASS_DPDK
+#cmakedefine CONFIG_BYPASS_PCAP
+#cmakedefine CONFIG_BYPASS_FILE
+#cmakedefine CONFIG_BYPASS_NETMAP
+#cmakedefine CONFIG_BYPASS_SOCKET
+
+#endif /* __CONFIG_H__ */

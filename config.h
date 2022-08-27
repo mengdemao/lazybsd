@@ -1,2 +1,0 @@
-#define CONFIG_BYPASS_PCAP 1
-#define CONFIG_BYPASS_FILE 1
