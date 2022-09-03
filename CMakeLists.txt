@@ -47,7 +47,6 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/bsd ${CMAKE_BINARY_DIR}/bsd)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib ${CMAKE_BINARY_DIR}/lib)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/test)
-add_subdirectory(${CMAKE_SOURCE_DIR}/tool ${CMAKE_BINARY_DIR}/tool)
 
 # 添加可执行文件
 add_executable(${PROJECT_NAME} main.cc)

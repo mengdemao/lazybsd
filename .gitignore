@@ -39,3 +39,4 @@
 .sconsign.dblite
 __pycache__/
 build
+install
