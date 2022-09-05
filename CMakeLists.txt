@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(libuinet C CXX ASM)
+project(fakenet C CXX ASM)
 
 set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}

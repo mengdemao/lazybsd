@@ -1,7 +1,7 @@
 /**
  * @file config.h
  * @brief Auto generated config file
- * @version @libuinet_VERSION_MAJOR@-@libuinet_VERSION_MINOR@
+ * @version @fakenet_VERSION_MAJOR@-@fakenet_VERSION_MINOR@
  * @date @BUILD_TIME@
  * @author @BUILD_HOST@
  *
@@ -9,20 +9,20 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#ifndef libuinet_VERSION_MAJOR
-#define libuinet_VERSION_MAJOR		"@libuinet_VERSION_MAJOR@"
+#ifndef fakenet_VERSION_MAJOR
+#define fakenet_VERSION_MAJOR		"@fakenet_VERSION_MAJOR@"
 #endif
 
-#ifndef libuinet_VERSION_MINOR
-#define libuinet_VERSION_MINOR		"@libuinet_VERSION_MINOR@"
+#ifndef fakenet_VERSION_MINOR
+#define fakenet_VERSION_MINOR		"@fakenet_VERSION_MINOR@"
 #endif
 
-#ifndef libuinet_VERSION
-#define libuinet_VERSION			"@libuinet_VERSION_MAJOR@-@libuinet_VERSION_MINOR@"
+#ifndef fakenet_VERSION
+#define fakenet_VERSION			"@fakenet_VERSION_MAJOR@-@fakenet_VERSION_MINOR@"
 #endif
 
-#ifndef libuinet_BUILD
-#define libuinet_BUILD				"@BUILD_TIME@ @BUILD_HOST@"
+#ifndef fakenet_BUILD
+#define fakenet_BUILD				"@BUILD_TIME@ @BUILD_HOST@"
 #endif
 
 #cmakedefine CONFIG_BYPASS_DPDK
