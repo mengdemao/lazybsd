@@ -18,7 +18,7 @@
 #endif
 
 #ifndef fakenet_VERSION
-#define fakenet_VERSION			"@fakenet_VERSION_MAJOR@-@fakenet_VERSION_MINOR@"
+#define fakenet_VERSION			    "@fakenet_VERSION_MAJOR@-@fakenet_VERSION_MINOR@"
 #endif
 
 #ifndef fakenet_BUILD
