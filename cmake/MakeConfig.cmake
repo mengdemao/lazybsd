@@ -1,5 +1,9 @@
 find_package(Git REQUIRED)
 
+option(USE_BYPASS_SOCK "use sock to bypass ethernet" ON)
+option(USE_BYPASS_FILE "use file to bypass ethernet" OFF)
+option(USE_BYPASS_DPDK "use dpdk to bypass ethernet" OFF)
+
 # 设置版本号
 if (GIT_FOUND)
   # 主版本号

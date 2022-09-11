@@ -15,41 +15,37 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <mutex>
 
 using namespace std;
 
 class bypass
 {
 private:
-    string s_name;
+    string device;      // device name
+    std::mutex mutex;   // device mutex 
 public:
-    bypass();
-    ~bypass();
+    bypass(string name)
+    {
+        device = name;
+    }
 
-    string name(void);
+    ~bypass()
+    {
+        /*  No Body */
+    }
+
+    virtual string devname(void)
+    {
+        return device;
+    }
     
-    int open(const char *pathname, int flags);
-    int close(int fd);
+    virtual int open(const char *pathname, int flags) = 0;
+    virtual int close(int fd) = 0;
 
-    ssize_t read(int fd, void *buf, size_t count);
-	ssize_t write(int fd, const void *buf, size_t count);
+    virtual ssize_t read(int fd, void *buf, size_t count) = 0;
+	virtual ssize_t write(int fd, const void *buf, size_t count) = 0;
 };
 
-/**
- * @brief Construct a new bypass::bypass object
- * 
- * @param name 
- */
-bypass::bypass()
-{
-}
-
-/**
- * @brief Destroy the bypass::bypass object
- * 
- */
-bypass::~bypass()
-{
-}
 
 #endif /* __BYPASS_H__ */

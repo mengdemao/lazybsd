@@ -25,10 +25,8 @@
 #define fakenet_BUILD				"@BUILD_TIME@ @BUILD_HOST@"
 #endif
 
-#cmakedefine CONFIG_BYPASS_DPDK
-#cmakedefine CONFIG_BYPASS_PCAP
-#cmakedefine CONFIG_BYPASS_FILE
-#cmakedefine CONFIG_BYPASS_NETMAP
-#cmakedefine CONFIG_BYPASS_SOCKET
+#cmakedefine USE_BYPASS_FILE
+#cmakedefine USE_BYPASS_SOCK
+#cmakedefine USE_BYPASS_DPDK
 
 #endif /* __CONFIG_H__ */

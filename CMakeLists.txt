@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH
   ${CMAKE_SOURCE_DIR}/cmake)
 
 include(CheckCompiler)
-include(MakeVersion)
+include(MakeConfig)
 include(ThirdParty)
 
 # 设置多线程编译
@@ -47,6 +47,3 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/bsd ${CMAKE_BINARY_DIR}/bsd)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib ${CMAKE_BINARY_DIR}/lib)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/test)
-
-# 添加可执行文件
-add_executable(${PROJECT_NAME} main.cc)

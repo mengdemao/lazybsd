@@ -12,24 +12,7 @@
 #include <config.h>
 #include <bypass.h>
 
-#ifdef CONFIG_BYPASS_FILE
-
-/**
- * @brief 网络实现初始化
- * 
- */
-void bypass::init(void)
-{
-    this->s_name = "file";
-}
-
-/**
- * @brief 网络实现退出
- * 
- */
-void bypass::exit(void)
-{
-}
+#ifdef USE_BYPASS_FILE
 
 int bypass::open(const char *pathname, int flags)
 {
@@ -51,4 +34,4 @@ ssize_t bypass::write(int fd, const void *buf, size_t count)
     return 0;
 }
 
-#endif /* CONFIG_IMPL_FILE */
+#endif /* USE_BYPASS_FILE */

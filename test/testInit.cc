@@ -1,5 +1,5 @@
 /**
- * @file test_init.cc
+ * @file testInit.cc
  * @author mengdemao (mengdemao19951021@163.com)
  * @brief 初始化测试
  * @version 0.1
@@ -10,15 +10,9 @@
  */
 #include <iostream>
 #include <bypass.h>
+#include <gtest/gtest.h>
 
-/**
- * @brief 
- * 
- * @param argc 
- * @param argv 
- * @return int 
- */
-int main(int argc, char *argv[])
+TEST(testInit, testInit)
 {
-    return EXIT_SUCCESS;
+    EXPECT_EQ(1, 1);
 }

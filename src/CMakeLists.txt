@@ -1,3 +1,5 @@
-cmake_minimum_required(VERSION 3.24)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/bypass src_bypass)
+add_library(bypass STATIC ${src_bypass})
 
-project(src C CXX ASM)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/wrapper src_wrapper)
+add_library(wrapper STATIC ${src_wrapper})
