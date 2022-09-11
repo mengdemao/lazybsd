@@ -1,7 +1,7 @@
 /*-
- * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
- *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2014 EMC Corp.
+ * Author: Conrad Meyer <conrad.meyer@isilon.com>
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,32 +27,61 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
+#ifndef _MACHINE_DUMP_H_
+#define	_MACHINE_DUMP_H_
+
+#ifdef __amd64__
+#define	KERNELDUMP_ARCH_VERSION	KERNELDUMP_AMD64_VERSION
+#define	EM_VALUE		EM_X86_64
+#else
+#define	KERNELDUMP_ARCH_VERSION	KERNELDUMP_I386_VERSION
+#define	EM_VALUE		EM_386
 #endif
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+/* 20 phys_avail entry pairs correspond to 10 pa's */
+#define	DUMPSYS_MD_PA_NPAIRS	10
+#define	DUMPSYS_NUM_AUX_HDRS	0
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
+static inline void
+dumpsys_pa_init(void)
 {
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
+	dumpsys_gen_pa_init();
 }
 
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
+static inline struct dump_pa *
+dumpsys_pa_next(struct dump_pa *p)
 {
 
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
+	return (dumpsys_gen_pa_next(p));
 }
-#endif
-#endif
+
+static inline void
+dumpsys_wbinv_all(void)
+{
+
+	dumpsys_gen_wbinv_all();
+}
+
+static inline void
+dumpsys_unmap_chunk(vm_paddr_t pa, size_t s, void *va)
+{
+
+	dumpsys_gen_unmap_chunk(pa, s, va);
+}
+
+static inline int
+dumpsys_write_aux_headers(struct dumperinfo *di)
+{
+
+	return (dumpsys_gen_write_aux_headers(di));
+}
+
+static inline int
+dumpsys(struct dumperinfo *di)
+{
+
+	return (dumpsys_generic(di));
+}
+
+#endif  /* !_MACHINE_DUMP_H_ */

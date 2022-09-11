@@ -1,7 +1,9 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2009 Hudson River Trading LLC
+ * Written by: John H. Baldwin <jhb@FreeBSD.org>
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,32 +29,19 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
-#endif
+#ifndef _MACHINE_VM_H_
+#define	_MACHINE_VM_H_
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+#include <machine/specialreg.h>
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
-{
+/* Memory attributes. */
+#define	VM_MEMATTR_UNCACHEABLE		((vm_memattr_t)PAT_UNCACHEABLE)
+#define	VM_MEMATTR_WRITE_COMBINING	((vm_memattr_t)PAT_WRITE_COMBINING)
+#define	VM_MEMATTR_WRITE_THROUGH	((vm_memattr_t)PAT_WRITE_THROUGH)
+#define	VM_MEMATTR_WRITE_PROTECTED	((vm_memattr_t)PAT_WRITE_PROTECTED)
+#define	VM_MEMATTR_WRITE_BACK		((vm_memattr_t)PAT_WRITE_BACK)
+#define	VM_MEMATTR_WEAK_UNCACHEABLE	((vm_memattr_t)PAT_UNCACHED)
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
-}
+#define	VM_MEMATTR_DEFAULT		VM_MEMATTR_WRITE_BACK
 
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
-{
-
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
-}
-#endif
-#endif
+#endif /* !_MACHINE_VM_H_ */

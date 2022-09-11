@@ -1,7 +1,8 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2012 Konstantin Belousov <kib@FreeBSD.org>
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,32 +28,65 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
-#endif
+#ifndef __MACHINE_COUNTER_H__
+#define __MACHINE_COUNTER_H__
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+#include <sys/pcpu.h>
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
+#define	EARLY_COUNTER	(void *)__offsetof(struct pcpu, pc_early_dummy_counter)
+
+#define	counter_enter()	do {} while (0)
+#define	counter_exit()	do {} while (0)
+
+#ifdef IN_SUBR_COUNTER_C
+static inline uint64_t
+counter_u64_read_one(counter_u64_t c, int cpu)
 {
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
+	MPASS(c != EARLY_COUNTER);
+	return (*zpcpu_get_cpu(c, cpu));
 }
 
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
+static inline uint64_t
+counter_u64_fetch_inline(uint64_t *c)
+{
+	uint64_t r;
+	int cpu;
+
+	r = 0;
+	CPU_FOREACH(cpu)
+		r += counter_u64_read_one(c, cpu);
+
+	return (r);
+}
+
+static void
+counter_u64_zero_one_cpu(void *arg)
+{
+	counter_u64_t c;
+
+	c = arg;
+	MPASS(c != EARLY_COUNTER);
+	*(zpcpu_get(c)) = 0;
+}
+
+static inline void
+counter_u64_zero_inline(counter_u64_t c)
 {
 
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
+	smp_rendezvous(smp_no_rendezvous_barrier, counter_u64_zero_one_cpu,
+	    smp_no_rendezvous_barrier, c);
 }
 #endif
-#endif
+
+#define	counter_u64_add_protected(c, i)	counter_u64_add(c, i)
+
+static inline void
+counter_u64_add(counter_u64_t c, int64_t inc)
+{
+
+	KASSERT(IS_BSP() || c != EARLY_COUNTER, ("EARLY_COUNTER used on AP"));
+	zpcpu_add(c, inc);
+}
+
+#endif	/* ! __MACHINE_COUNTER_H__ */

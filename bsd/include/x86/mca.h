@@ -1,7 +1,9 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2009 Hudson River Trading LLC
+ * Written by: John H. Baldwin <jhb@FreeBSD.org>
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,32 +29,30 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
+#ifndef __X86_MCA_H__
+#define	__X86_MCA_H__
+
+struct mca_record {
+	uint64_t	mr_status;
+	uint64_t	mr_addr;
+	uint64_t	mr_misc;
+	uint64_t	mr_tsc;
+	int		mr_apic_id;
+	int		mr_bank;
+	uint64_t	mr_mcg_cap;
+	uint64_t	mr_mcg_status;
+	int		mr_cpu_id;
+	int		mr_cpu_vendor_id;
+	int		mr_cpu;
+};
+
+#ifdef _KERNEL
+
+void	cmc_intr(void);
+void	mca_init(void);
+void	mca_intr(void);
+void	mca_resume(void);
+
 #endif
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
-
-static __inline void
-sched_pin_lite(struct thread_lite *td)
-{
-
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
-}
-
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
-{
-
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
-}
-#endif
-#endif
+#endif /* !__X86_MCA_H__ */

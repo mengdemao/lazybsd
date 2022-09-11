@@ -1,7 +1,10 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2019 The FreeBSD Foundation
+ *
+ * This software was developed by Konstantin Belousov <kib@FreeBSD.org>
+ * under sponsorship from the FreeBSD Foundation.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -15,7 +18,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
@@ -27,32 +30,38 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
+#ifndef _MACHINE_PCPU_AUX_H_
+#define	_MACHINE_PCPU_AUX_H_
+
+#ifndef _KERNEL
+#error "Not for userspace"
 #endif
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+#ifndef _SYS_PCPU_H_
+#error "Do not include machine/pcpu_aux.h directly"
+#endif
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
+/* Required for counters(9) to work on x86. */
+_Static_assert(sizeof(struct pcpu) == UMA_PCPU_ALLOC_SIZE, "fix pcpu size");
+
+extern struct pcpu *__pcpu;
+extern struct pcpu temp_bsp_pcpu;
+
+#ifndef __curthread
+static __inline __pure2 struct thread *
+__curthread(void)
 {
+	struct thread *td;
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
-}
-
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
-{
-
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
+	__asm("movq %%gs:%P1,%0" : "=r" (td) : "n" (offsetof(struct pcpu,
+	    pc_curthread)));
+	return (td);
 }
 #endif
+
+#ifndef FSTACK
+#define	curthread		(__curthread())
 #endif
+#define	curpcb			(&curthread->td_md.md_pcb)
+
+#endif	/* _MACHINE_PCPU_AUX_H_ */

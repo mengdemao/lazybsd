@@ -176,7 +176,10 @@ void	kassert_panic(const char *fmt, ...)  __printflike(1, 2);
 #ifdef _KERNEL
 #include <sys/param.h>		/* MAXCPU */
 #include <sys/pcpu.h>		/* curthread */
+
+#ifndef FAKE
 #include <sys/kpilite.h>
+#endif
 
 /*
  * Assert that a pointer can be loaded from memory atomically.

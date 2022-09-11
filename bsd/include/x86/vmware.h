@@ -1,7 +1,6 @@
 /*-
- * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
- *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2011-2014 Jung-uk Kim <jkim@FreeBSD.org>
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,32 +26,27 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
-#endif
+#ifndef _X86_VMWARE_H_
+#define	_X86_VMWARE_H_
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+#define	VMW_HVMAGIC		0x564d5868
+#define	VMW_HVPORT		0x5658
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
-{
+#define	VMW_HVCMD_GETVERSION	10
+#define	VMW_HVCMD_GETHZ		45
+#define	VMW_HVCMD_GETVCPU_INFO	68
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
-}
+#define	VMW_VCPUINFO_LEGACY_X2APIC	(1 << 3)
+#define	VMW_VCPUINFO_VCPU_RESERVED	(1 << 31)
 
 static __inline void
-sched_unpin_lite(struct thread_lite *td)
+vmware_hvcall(u_int cmd, u_int *p)
 {
 
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
+	__asm __volatile("inl %w3, %0"
+	: "=a" (p[0]), "=b" (p[1]), "=c" (p[2]), "=d" (p[3])
+	: "0" (VMW_HVMAGIC), "1" (UINT_MAX), "2" (cmd), "3" (VMW_HVPORT)
+	: "memory");
 }
-#endif
-#endif
+
+#endif /* !_X86_VMWARE_H_ */

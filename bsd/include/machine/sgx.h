@@ -1,7 +1,11 @@
 /*-
- * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
+ * Copyright (c) 2017 Ruslan Bukin <br@bsdpad.com>
+ * All rights reserved.
  *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * This software was developed by BAE Systems, the University of Cambridge
+ * Computer Laboratory, and Memorial University under DARPA/AFRL contract
+ * FA8650-15-C-7558 ("CADETS"), as part of the DARPA Transparent Computing
+ * (TC) research program.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,32 +31,34 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
-#endif
+/* User-visible header. */
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+#ifndef _MACHINE_SGX_H_
+#define _MACHINE_SGX_H_
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
-{
+#define	SGX_MAGIC	0xA4
+#define	SGX_IOC_ENCLAVE_CREATE \
+	_IOW(SGX_MAGIC, 0x00, struct sgx_enclave_create)
+#define	SGX_IOC_ENCLAVE_ADD_PAGE \
+	_IOW(SGX_MAGIC, 0x01, struct sgx_enclave_add_page)
+#define	SGX_IOC_ENCLAVE_INIT \
+	_IOW(SGX_MAGIC, 0x02, struct sgx_enclave_init)
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
-}
+struct sgx_enclave_create {
+	uint64_t	src;
+} __packed;
 
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
-{
+struct sgx_enclave_add_page {
+	uint64_t	addr;
+	uint64_t	src;
+	uint64_t	secinfo;
+	uint16_t	mrmask;
+} __packed;
 
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
-}
-#endif
-#endif
+struct sgx_enclave_init {
+	uint64_t	addr;
+	uint64_t	sigstruct;
+	uint64_t	einittoken;
+} __packed;
+
+#endif /* !_MACHINE_SGX_H_ */

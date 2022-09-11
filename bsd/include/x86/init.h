@@ -1,7 +1,8 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2013 Roger Pau Monné <roger.pau@citrix.com>
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -12,7 +13,7 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
  * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
@@ -27,32 +28,33 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
-#endif
+#ifndef __X86_INIT_H__
+#define __X86_INIT_H__
+/*
+ * Struct containing pointers to init functions whose
+ * implementation is run time selectable.  Selection can be made,
+ * for example, based on detection of a BIOS variant or
+ * hypervisor environment.
+ */
+struct init_ops {
+	caddr_t	(*parse_preload_data)(u_int64_t);
+	void	(*early_clock_source_init)(void);
+	void	(*early_delay)(int);
+	void	(*parse_memmap)(caddr_t, vm_paddr_t *, int *);
+	void	(*mp_bootaddress)(vm_paddr_t *, unsigned int *);
+	int	(*start_all_aps)(void);
+	void	(*msi_init)(void);
+};
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+extern struct init_ops init_ops;
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
-{
+/* Knob to disable acpi_cpu devices */
+extern bool acpi_cpu_disabled;
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
-}
+/* Knob to disable acpi_hpet device */
+extern bool acpi_hpet_disabled;
 
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
-{
+/* Knob to disable acpi_timer device */
+extern bool acpi_timer_disabled;
 
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
-}
-#endif
-#endif
+#endif /* __X86_INIT_H__ */

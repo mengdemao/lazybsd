@@ -1,7 +1,8 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2001 Jake Burkholder <jake@FreeBSD.org>
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,32 +28,21 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
-#endif
+#ifndef	_MACHINE_RUNQ_H_
+#define	_MACHINE_RUNQ_H_
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+#define	RQB_LEN		(1)		/* Number of priority status words. */
+#define	RQB_L2BPW	(6)		/* Log2(sizeof(rqb_word_t) * NBBY)). */
+#define	RQB_BPW		(1<<RQB_L2BPW)	/* Bits in an rqb_word_t. */
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
-{
+#define	RQB_BIT(pri)	(1ul << ((pri) & (RQB_BPW - 1)))
+#define	RQB_WORD(pri)	((pri) >> RQB_L2BPW)
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
-}
+#define	RQB_FFS(word)	(bsfq(word))
 
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
-{
+/*
+ * Type of run queue status word.
+ */
+typedef	u_int64_t	rqb_word_t;
 
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
-}
-#endif
 #endif

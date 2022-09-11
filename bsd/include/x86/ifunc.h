@@ -1,7 +1,9 @@
 /*-
- * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
+ * Copyright (c) 2015-2018 The FreeBSD Foundation
+ * All rights reserved.
  *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * This software was developed by Konstantin Belousov <kib@FreeBSD.org>
+ * under sponsorship from the FreeBSD Foundation.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -15,7 +17,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
@@ -27,32 +29,22 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
-#endif
+#ifndef __X86_IFUNC_H
+#define	__X86_IFUNC_H
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+#define	DEFINE_IFUNC(qual, ret_type, name, args)			\
+    static ret_type (*name##_resolver(void))args __used;		\
+    qual ret_type name args __attribute__((ifunc(#name "_resolver")));	\
+    static ret_type (*name##_resolver(void))args
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
-{
+#define	DEFINE_UIFUNC(qual, ret_type, name, args)			\
+    static ret_type (*name##_resolver(uint32_t, uint32_t, uint32_t,	\
+	uint32_t))args __used;						\
+    qual ret_type name args __attribute__((ifunc(#name "_resolver")));	\
+    static ret_type (*name##_resolver(				\
+	uint32_t cpu_feature __unused,					\
+	uint32_t cpu_feature2 __unused,					\
+	uint32_t cpu_stdext_feature __unused,				\
+	uint32_t cpu_stdext_feature2 __unused))args
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
-}
-
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
-{
-
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
-}
-#endif
 #endif

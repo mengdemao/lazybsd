@@ -1,7 +1,10 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2018 The FreeBSD Foundation
+ *
+ * This software was developed by Mark Johnston under sponsorship from
+ * the FreeBSD Foundation.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,32 +30,39 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
-#endif
+#ifndef _MACHINE_UCODE_H_
+#define	_MACHINE_UCODE_H_
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+struct ucode_intel_header {
+	uint32_t	header_version;
+	int32_t		update_revision;
+	uint32_t	dat;
+	uint32_t	processor_signature;
+	uint32_t	checksum;
+	uint32_t	loader_revision;
+	uint32_t	processor_flags;
+#define	UCODE_INTEL_DEFAULT_DATA_SIZE		2000
+	uint32_t	data_size;
+	uint32_t	total_size;
+	uint32_t	reserved[3];
+};
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
-{
+struct ucode_intel_extsig_table {
+	uint32_t	signature_count;
+	uint32_t	signature_table_checksum;
+	uint32_t	reserved[3];
+	struct ucode_intel_extsig {
+		uint32_t	processor_signature;
+		uint32_t	processor_flags;
+		uint32_t	checksum;
+	} entries[0];
+};
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
-}
+int	ucode_intel_load(void *data, bool unsafe,
+	    uint64_t *nrevp, uint64_t *orevp);
+size_t	ucode_load_bsp(uintptr_t free);
+void	ucode_load_ap(int cpu);
+void	ucode_reload(void);
+void *	ucode_update(void *data);
 
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
-{
-
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
-}
-#endif
-#endif
+#endif /* _MACHINE_UCODE_H_ */

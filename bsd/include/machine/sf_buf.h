@@ -1,7 +1,8 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2003, 2005 Alan L. Cox <alc@cs.rice.edu>
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,32 +28,26 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
-#endif
+#ifndef _MACHINE_SF_BUF_H_
+#define _MACHINE_SF_BUF_H_
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
-
-static __inline void
-sched_pin_lite(struct thread_lite *td)
+/*
+ * On this machine, the only purpose for which sf_buf is used is to implement
+ * an opaque pointer required by the machine-independent parts of the kernel.
+ * That pointer references the vm_page that is "mapped" by the sf_buf.  The
+ * actual mapping is provided by the direct virtual-to-physical mapping.  
+ */
+static inline vm_offset_t
+sf_buf_kva(struct sf_buf *sf)
 {
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
+	return (PHYS_TO_DMAP(VM_PAGE_TO_PHYS((vm_page_t)sf)));
 }
 
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
+static inline vm_page_t
+sf_buf_page(struct sf_buf *sf)
 {
 
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
+	return ((vm_page_t)sf);
 }
-#endif
-#endif
+#endif /* !_MACHINE_SF_BUF_H_ */

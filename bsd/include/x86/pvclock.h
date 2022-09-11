@@ -1,7 +1,6 @@
 /*-
- * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
- *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2014, Bryan Venteicher <bryanv@FreeBSD.org>
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,32 +26,34 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
-#endif
+#ifndef X86_PVCLOCK
+#define X86_PVCLOCK
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+struct pvclock_vcpu_time_info {
+	uint32_t	version;
+	uint32_t	pad0;
+	uint64_t	tsc_timestamp;
+	uint64_t	system_time;
+	uint32_t	tsc_to_system_mul;
+	int8_t		tsc_shift;
+	uint8_t		flags;
+	uint8_t		pad[2];
+};
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
-{
+#define PVCLOCK_FLAG_TSC_STABLE		0x01
+#define PVCLOCK_FLAG_GUEST_PASUED	0x02
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
-}
+struct pvclock_wall_clock {
+	uint32_t	version;
+	uint32_t	sec;
+	uint32_t	nsec;
+};
 
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
-{
+void		pvclock_resume(void);
+uint64_t	pvclock_get_last_cycles(void);
+uint64_t	pvclock_tsc_freq(struct pvclock_vcpu_time_info *ti);
+uint64_t	pvclock_get_timecount(struct pvclock_vcpu_time_info *ti);
+void		pvclock_get_wallclock(struct pvclock_wall_clock *wc,
+		    struct timespec *ts);
 
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
-}
-#endif
 #endif

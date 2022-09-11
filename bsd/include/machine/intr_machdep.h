@@ -1,7 +1,7 @@
 /*-
  * SPDX-License-Identifier: BSD-2-Clause-FreeBSD
  *
- * Copyright (c) 2018, Matthew Macy <mmacy@freebsd.org>
+ * Copyright (c) 2003 John Baldwin <jhb@FreeBSD.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,32 +27,23 @@
  * $FreeBSD$
  */
 
-#ifndef _SYS_KPILITE_H_
-#define _SYS_KPILITE_H_
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED))
-1
-#endif
+#ifndef __MACHINE_INTR_MACHDEP_H__
+#define	__MACHINE_INTR_MACHDEP_H__
 
-#if !defined(GENOFFSET) && (!defined(KLD_MODULE) || defined(KLD_TIED)) && defined(_KERNEL)
-#include "offset.inc"
+#include <x86/intr_machdep.h>
 
-static __inline void
-sched_pin_lite(struct thread_lite *td)
-{
+/*
+ * The following data structure holds per-cpu data, and is placed just
+ * above the top of the space used for the NMI and MC# stacks.
+ */
+struct nmi_pcpu {
+	register_t	np_pcpu;
+	register_t	__padding;	/* pad to 16 bytes */
+};
 
-	KASSERT((struct thread *)td == curthread, ("sched_pin called on non curthread"));
-	td->td_pinned++;
-	atomic_interrupt_fence();
-}
+#define	DBLFAULT_STACK_SIZE	PAGE_SIZE
+#define	NMI_STACK_SIZE		PAGE_SIZE
+#define	MCE_STACK_SIZE		PAGE_SIZE
+#define	DBG_STACK_SIZE		PAGE_SIZE
 
-static __inline void
-sched_unpin_lite(struct thread_lite *td)
-{
-
-	KASSERT((struct thread *)td == curthread, ("sched_unpin called on non curthread"));
-	KASSERT(td->td_pinned > 0, ("sched_unpin called on non pinned thread"));
-	atomic_interrupt_fence();
-	td->td_pinned--;
-}
-#endif
-#endif
+#endif	/* !__MACHINE_INTR_MACHDEP_H__ */
