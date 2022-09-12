@@ -206,8 +206,8 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     -Wmissing-include-dirs 
     -Wno-unused-but-set-variable 
     -Wno-address-of-packed-member 
-    --param inline-unit-growth=100 
-    --param large-function-growth=1000
+    # --param inline-unit-growth=100 
+    # --param large-function-growth=1000
     -fno-common
     -nostdinc
     -finline-limit=8000 
@@ -217,7 +217,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-    -DFAKE
+    -DFAKE=1
     -DINET 
     -DINET6 
     -DTCPHPTS 

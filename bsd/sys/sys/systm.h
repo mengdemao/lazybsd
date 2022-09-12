@@ -283,16 +283,19 @@ int linux_alloc_current_noop(struct thread *, int);
 static __inline void
 critical_enter(void)
 {
+#ifndef FAKE
 	struct thread_lite *td;
 
 	td = (struct thread_lite *)curthread;
 	td->td_critnest++;
 	atomic_interrupt_fence();
+#endif /* FAKE */
 }
 
 static __inline void
 critical_exit(void)
 {
+#ifndef FAKE
 	struct thread_lite *td;
 
 	td = (struct thread_lite *)curthread;
@@ -303,7 +306,7 @@ critical_exit(void)
 	atomic_interrupt_fence();
 	if (__predict_false(td->td_owepreempt))
 		critical_exit_preempt();
-
+#endif /* FAKE */
 }
 #endif
 
