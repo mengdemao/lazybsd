@@ -11,12 +11,33 @@
 #ifndef __BYPASS_SOCK_H__
 #define __BYPASS_SOCK_H__
 
-class bypass_sock:public bypass {
-    int open(const char *pathname, int flags);
-    int close(int fd);
+#include <sys/socket.h>
 
-    ssize_t read(int fd, void *buf, size_t count);
-	ssize_t write(int fd, const void *buf, size_t count);
+class bypass_sock:public bypass {
+private:
+    int fd;
+    int domain;
+    int type;
+    int protocol;
+
+public:
+    bypass_sock(string device, int domain, int type, int protocol);
+    ~bypass_sock();
+
+    int bind(struct sockaddr *addr, socklen_t addrlen);
+    int listen(int backlog);
+
+    int connect(const struct sockaddr *addr, socklen_t addrlen);
+    int accept(struct sockaddr *addr, socklen_t *addrlen);
+
+    ssize_t read(void *buf, size_t count);
+	ssize_t write(const void *buf, size_t count);
+
+    ssize_t sendto(const void *message, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t dest_len);
+    ssize_t recvfrom(void *buffer, size_t length, int flags, struct sockaddr *address, socklen_t *address_len);
+
+    ssize_t sendmsg(struct mmsghdr *msgvec, unsigned int vlen, int flags);
+    ssize_t recvmsg(struct msghdr *message, int flags);
 };
 
 #endif /* __BYPASS_SOCK_H__ */
