@@ -38,6 +38,7 @@ jobs:
 
     - name: conan install
       run: |
+        [ -d ${{github.workspace}}/build ] || mkdir -p ${{github.workspace}}/build
         cd ${{github.workspace}}/build
         conan install ..
 
