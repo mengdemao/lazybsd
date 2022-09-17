@@ -1,0 +1,10 @@
+[requires]
+gtest/1.12.1
+openssl/3.0.5
+boost/1.80.0
+nlohmann_json/3.11.2
+fmt/9.1.0
+zlib/1.2.12
+
+[generators]
+cmake

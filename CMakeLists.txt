@@ -8,7 +8,6 @@ set(CMAKE_MODULE_PATH
 
 include(CheckCompiler)
 include(MakeConfig)
-include(ThirdParty)
 
 # 设置多线程编译
 include(ProcessorCount)
@@ -33,8 +32,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # 添加外部软件
-find_package(Boost REQUIRED system filesystem regex date_time)
-find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Doxygen REQUIRED)
 
@@ -44,6 +41,9 @@ include_directories(${CMAKE_SOURCE_DIR}/inc)
 
 # 添加子文件夹 
 add_subdirectory(${CMAKE_SOURCE_DIR}/bsd ${CMAKE_BINARY_DIR}/bsd)
-add_subdirectory(${CMAKE_SOURCE_DIR}/lib ${CMAKE_BINARY_DIR}/lib)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/test)
+
+# 三方库
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
