@@ -25,7 +25,7 @@ jobs:
 
     - uses: mstksg/get-package@v1
       with:
-        apt-get: doxygen graphviz python3 python3-pip
+        apt-get: doxygen graphviz python3 python3-pip libgtest-dev
 
     - name: conan install
       run: |

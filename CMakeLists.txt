@@ -31,9 +31,14 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif()
 
+# 三方库
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 # 添加外部软件
 find_package(Threads REQUIRED)
 find_package(Doxygen REQUIRED)
+find_package(GTest REQUIRED)
 
 # 添加头文件路径
 include_directories(${CMAKE_SOURCE_DIR}/inc/generated)
@@ -43,7 +48,3 @@ include_directories(${CMAKE_SOURCE_DIR}/inc)
 add_subdirectory(${CMAKE_SOURCE_DIR}/bsd ${CMAKE_BINARY_DIR}/bsd)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/test)
-
-# 三方库
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
