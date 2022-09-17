@@ -25,22 +25,14 @@ jobs:
 
     - uses: mstksg/get-package@v1
       with:
-        apt-get: doxygen graphviz
-    
-    - name: Install Conan
-      id: conan
-      uses: turtlebrowser/get-conan@main
-      with:
-        version: 1.50.0
-
-    - name: Conan version
-      run: echo "${{ steps.conan.outputs.version }}"
+        apt-get: doxygen graphviz python3 python3-pip
 
     - name: conan install
       run: |
+        pip3 install conan
         [ -d ${{github.workspace}}/build ] || mkdir -p ${{github.workspace}}/build
         cd ${{github.workspace}}/build
-        conan install ..
+        conan install .. --build=missing
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
