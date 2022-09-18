@@ -14,5 +14,5 @@
 
 TEST(testBypassSock, testBypassSock)
 {
-    EXPECT_EQ(1, 1);
+    
 }

@@ -31,6 +31,9 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif()
 
+# 添加公共的编译指令
+add_compile_options(-Wall -Werror -Wno-unused -gdwarf-2 -g3 -fno-common -fstack-protector)
+
 # 三方库
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -41,8 +44,8 @@ find_package(Doxygen REQUIRED)
 find_package(GTest REQUIRED)
 
 # 添加头文件路径
-include_directories(${CMAKE_SOURCE_DIR}/inc/generated)
-include_directories(${CMAKE_SOURCE_DIR}/inc)
+include_directories(${CMAKE_SOURCE_DIR}/include/generated)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # 添加子文件夹 
 add_subdirectory(${CMAKE_SOURCE_DIR}/bsd ${CMAKE_BINARY_DIR}/bsd)

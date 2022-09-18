@@ -13,7 +13,7 @@
 
 #include <sys/socket.h>
 
-class bypass_sock:public bypass {
+class bypass_sock : public bypass {
 private:
     int fd;
     int domain;

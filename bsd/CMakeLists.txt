@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.24)
 
 project(bsd C CXX ASM)
 
-unset(CMAKE_C_STANDARD)
-unset(CMAKE_CXX_STANDARD)
-
 set(src_crypto 
     ${CMAKE_CURRENT_SOURCE_DIR}/sys/crypto/sha1.c
     ${CMAKE_CURRENT_SOURCE_DIR}/sys/crypto/siphash/siphash.c
@@ -192,28 +189,29 @@ add_library(${PROJECT_NAME} STATIC
     ${src_libkern}  ${src_netinet}  ${src_netinet6}
 )
 
-target_compile_options(${PROJECT_NAME} PRIVATE 
-    -std=c99 -O0 -Wall -Wno-unused
-    -gdwarf-2 -g3
+target_compile_options(${PROJECT_NAME} PRIVATE
     -Wno-format-truncation
     -Wnested-externs 
     -Wstrict-prototypes 
     -Wmissing-prototypes 
     -Wpointer-arith 
-    -Wno-inline 
-    -Wcast-qual 
+    -Wno-inline
     -Wno-pointer-sign 
     -Wmissing-include-dirs 
     -Wno-unused-but-set-variable 
-    -Wno-address-of-packed-member 
-    # --param inline-unit-growth=100 
-    # --param large-function-growth=1000
-    -fno-common
+    -Wno-address-of-packed-member
     -nostdinc
     -finline-limit=8000 
-    -fdiagnostics-show-option 
-    -fstack-protector
+    -fdiagnostics-show-option
     -fno-builtin
+)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+    -Wno-cast-qual
+    -Wno-stringop-overread
+    -Wno-stringop-overflow
+    -Wno-format
+    -Wno-dangling-pointer
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -241,7 +239,7 @@ add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/opencrypto/cryptodev_if.m -h
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/linker_if.m -c
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/opencrypto/cryptodev_if.m -c
-    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -p
-    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -q
-    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -h               
+    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -p
+    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -q
+    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -h               
 )

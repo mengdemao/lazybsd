@@ -94,5 +94,4 @@ ssize_t bypass_sock::recvmsg(struct msghdr *message, int flags)
     return ::recvmsg(this->fd, message, flags);
 }
 
-
 #endif /* USE_BYPASS_SOCK */
