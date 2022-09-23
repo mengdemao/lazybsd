@@ -32,7 +32,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # 添加公共的编译指令
-add_compile_options(-Wall -Werror -Wno-unused -gdwarf-2 -g3 -fno-common -fstack-protector)
+add_compile_options(-Wall -Wno-unused -gdwarf-2 -g3 -fno-common -fstack-protector)
 
 # 三方库
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)

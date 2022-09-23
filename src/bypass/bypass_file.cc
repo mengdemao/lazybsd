@@ -11,25 +11,16 @@
 #include <iostream>
 #include <config.h>
 #include <bypass.h>
+#include "bypass_file.h"
 
 #ifdef USE_BYPASS_FILE
 
-int bypass::open(const char *pathname, int flags)
-{
-    return EXIT_SUCCESS;
-}
-
-int bypass::close(int fd)
-{
-    return EXIT_SUCCESS;
-}
-
-ssize_t bypass::read(int fd, void *buf, size_t count)
+ssize_t bypass_file::read(void *buf, size_t count)
 {
     return 0;
 }
 
-ssize_t bypass::write(int fd, const void *buf, size_t count)
+ssize_t bypass_file::write(const void *buf, size_t count)
 {
     return 0;
 }

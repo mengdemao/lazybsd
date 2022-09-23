@@ -4,6 +4,7 @@ boost/1.80.0
 nlohmann_json/3.11.2
 fmt/9.1.0
 zlib/1.2.12
+abseil/20220623.0
 
 [generators]
 cmake

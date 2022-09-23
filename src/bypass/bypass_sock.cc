@@ -19,7 +19,6 @@
 #include <sys/socket.h>
 #include <cstring>
 #include <unistd.h>
-
 #include "bypass_sock.h"
 
 #ifdef USE_BYPASS_SOCK
