@@ -177,7 +177,7 @@ void	kassert_panic(const char *fmt, ...)  __printflike(1, 2);
 #include <sys/param.h>		/* MAXCPU */
 #include <sys/pcpu.h>		/* curthread */
 
-#ifndef FAKE
+#ifndef LAZYBSD
 #include <sys/kpilite.h>
 #endif
 
@@ -283,19 +283,19 @@ int linux_alloc_current_noop(struct thread *, int);
 static __inline void
 critical_enter(void)
 {
-#ifndef FAKE
+#ifndef LAZYBSD
 	struct thread_lite *td;
 
 	td = (struct thread_lite *)curthread;
 	td->td_critnest++;
 	atomic_interrupt_fence();
-#endif /* FAKE */
+#endif /* LAZYBSD */
 }
 
 static __inline void
 critical_exit(void)
 {
-#ifndef FAKE
+#ifndef LAZYBSD
 	struct thread_lite *td;
 
 	td = (struct thread_lite *)curthread;
@@ -306,7 +306,7 @@ critical_exit(void)
 	atomic_interrupt_fence();
 	if (__predict_false(td->td_owepreempt))
 		critical_exit_preempt();
-#endif /* FAKE */
+#endif /* LAZYBSD */
 }
 #endif
 

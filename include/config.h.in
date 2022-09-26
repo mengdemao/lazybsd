@@ -1,7 +1,7 @@
 /**
  * @file config.h
  * @brief Auto generated config file
- * @version @fakenet_VERSION_MAJOR@-@fakenet_VERSION_MINOR@
+ * @version @lazybsd_VERSION_MAJOR@-@lazybsd_VERSION_MINOR@
  * @date @BUILD_TIME@
  * @author @BUILD_HOST@
  *
@@ -9,20 +9,20 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#ifndef fakenet_VERSION_MAJOR
-#define fakenet_VERSION_MAJOR		"@fakenet_VERSION_MAJOR@"
+#ifndef lazybsd_VERSION_MAJOR
+#define lazybsd_VERSION_MAJOR		"@lazybsd_VERSION_MAJOR@"
 #endif
 
-#ifndef fakenet_VERSION_MINOR
-#define fakenet_VERSION_MINOR		"@fakenet_VERSION_MINOR@"
+#ifndef lazybsd_VERSION_MINOR
+#define lazybsd_VERSION_MINOR		"@lazybsd_VERSION_MINOR@"
 #endif
 
-#ifndef fakenet_VERSION
-#define fakenet_VERSION			    "@fakenet_VERSION_MAJOR@-@fakenet_VERSION_MINOR@"
+#ifndef lazybsd_VERSION
+#define lazybsd_VERSION			    "@lazybsd_VERSION_MAJOR@-@lazybsd_VERSION_MINOR@"
 #endif
 
-#ifndef fakenet_BUILD
-#define fakenet_BUILD				"@BUILD_TIME@ @BUILD_HOST@"
+#ifndef lazybsd_BUILD
+#define lazybsd_BUILD				"@BUILD_TIME@ @BUILD_HOST@"
 #endif
 
 #cmakedefine USE_BYPASS_FILE

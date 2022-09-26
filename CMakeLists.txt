@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(fakenet C CXX ASM)
+project(lazybsd C CXX ASM)
 
 set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}

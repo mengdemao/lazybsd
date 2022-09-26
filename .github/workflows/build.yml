@@ -1,4 +1,4 @@
-name: build fakenet
+name: build lazybsd
 
 on:
   push:

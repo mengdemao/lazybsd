@@ -215,7 +215,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-    -DFAKE=1
+    -DLAZYBSD=1
     -DINET 
     -DINET6 
     -DTCPHPTS 

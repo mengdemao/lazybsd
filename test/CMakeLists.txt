@@ -6,7 +6,7 @@ find_package(GTest)
 enable_testing()
 
 add_executable(testInit testInit.cc)
-target_link_libraries(testInit gtest gtest_main Threads::Threads bsd bypass wrapper)
+target_link_libraries(testInit gtest gtest_main Threads::Threads bsd bypass wrapper lazybsd fmt)
 gtest_add_tests(TARGET      testInit
                 TEST_SUFFIX .noArgs
                 TEST_LIST   testInit

@@ -165,7 +165,7 @@ union sctpChunkOfInt {
  */
 struct sctp_nat_msg {
 	uint16_t msg;			/**< one of the key messages defined above */
-#if defined(INET6) && !defined(FAKE)
+#if defined(INET6) && !defined(LAZYBSD)
 	//  struct ip6_hdr *ip_hdr;	/**< pointer to ip packet header */ /*no inet6 support yet*/
 #else
 	struct ip *ip_hdr;		/**< pointer to ip packet header */
