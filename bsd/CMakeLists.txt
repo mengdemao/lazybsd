@@ -226,10 +226,13 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/opt
     ${CMAKE_CURRENT_SOURCE_DIR}/sys/
     ${CMAKE_CURRENT_SOURCE_DIR}/sys/amd64/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/sys/contrib/ck/include
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/generated/opt
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD 
