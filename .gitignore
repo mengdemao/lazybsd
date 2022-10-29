@@ -41,3 +41,4 @@ __pycache__/
 build
 install
 compile_commands.json
+*.user

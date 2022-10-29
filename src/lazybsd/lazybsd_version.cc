@@ -12,9 +12,11 @@
 #include <config.h>
 #include <lazybsd.h>
 
-void lazybsd_version_get(struct lazybsd_version &version)
+struct lazybsd_version lazybsd_version_get(void)
 {
+    struct lazybsd_version version;
     version.version_major = lazybsd_VERSION_MAJOR;
     version.version_minor = lazybsd_VERSION_MINOR;
     version.version_build = lazybsd_BUILD;
+    return version;
 }

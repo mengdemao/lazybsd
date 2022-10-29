@@ -17,6 +17,6 @@ struct lazybsd_version {
     std::string version_build;
 };
 
-void lazybsd_version_get(struct lazybsd_version &version);
+struct lazybsd_version lazybsd_version_get(void);
 
 #endif /* __LAZYBSD_H__ */

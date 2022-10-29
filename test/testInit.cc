@@ -16,8 +16,7 @@
 
 TEST(testInit, testInit)
 {
-    struct lazybsd_version lazybsd_version;
-    lazybsd_version_get(lazybsd_version);
+    struct lazybsd_version lazybsd_version = lazybsd_version_get();
     fmt::print("version_major {} \nversion_minor {} \nversion_build {} \n", 
                 lazybsd_version.version_major, 
                 lazybsd_version.version_minor, 
