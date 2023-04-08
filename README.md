@@ -28,8 +28,12 @@ freebsd网络协议栈Linux用户层移植
 # 安装软件
 sudo apt install doxygen graphviz python3 python3-pip libgtest-dev
 
+# 安装conan
 pip3 install conan
-cd build && conan install .. --build=missing
+export PATH=~/.local/bin/:$PATH
+
+conan profile detect --force
+conan install . --output-folder=build --build=missing
 
 # 配置编译
 cmake -B build -DCMAKE_BUILD_TYPE=Release/Debug/RelWithDebInfo
