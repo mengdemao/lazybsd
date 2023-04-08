@@ -3,6 +3,7 @@ openssl/3.1.0
 boost/1.81.0
 nlohmann_json/3.11.2
 fmt/9.1.0
+gtest/cci.20210126
 
 [generators]
 CMakeDeps

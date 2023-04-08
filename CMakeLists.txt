@@ -34,14 +34,34 @@ endif()
 # 添加公共的编译指令
 add_compile_options(-Wall -Wno-unused -gdwarf-2 -g3 -fno-common -fstack-protector)
 
-# 三方库
-set(CMAKE_TOOLCHAIN_FILE ${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
-
 # 添加外部软件
 find_package(Threads REQUIRED)
 find_package(Doxygen REQUIRED)
+
+# 添加所有的conan包
 find_package(GTest REQUIRED)
 find_package(fmt REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(Boost REQUIRED program_options system filesystem regex date_time)
+
+if(OpenSSL_FOUND)
+  message(STATUS "OpenSSL include path is : ${OPENSSL_INCLUDE_DIR}")
+  message(STATUS "OpenSSL libraries is    : ${OPENSSL_LIBRARIES}")
+  include_directories(${OPENSSL_INCLUDE_DIR})
+  link_libraries(${OPENSSL_LIBRARIES})
+endif(OpenSSL_FOUND)
+
+if(Boost_FOUND)
+  set(Boost_USE_STATIC_LIBS        ON)
+  set(Boost_USE_MULTITHREADED      ON)
+  set(Boost_USE_STATIC_RUNTIME    OFF)
+  message(STATUS "Boost include path is   : ${Boost_INCLUDE_DIRS}")
+  message(STATUS "Boost library path is   : ${Boost_LIBRARY_DIRS}")
+  message(STATUS "Boost libraries is      : ${Boost_LIBRARIES}")
+  include_directories(${Boost_INCLUDE_DIRS})
+  link_directories(${Boost_LIBRARY_DIRS})
+  link_libraries(${Boost_LIBRARIES})
+endif(Boost_FOUND)
 
 # 添加头文件路径
 include_directories(${CMAKE_SOURCE_DIR}/include/generated)

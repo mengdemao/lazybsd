@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 
 project(test C CXX ASM)
 
-find_package(GTest)
+include(GoogleTest)
 enable_testing()
 
 add_executable(testInit testInit.cc)

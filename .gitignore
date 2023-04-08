@@ -42,3 +42,6 @@ build
 install
 compile_commands.json
 *.user
+CMakeUserPresets.json
+.cache
+

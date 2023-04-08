@@ -36,7 +36,7 @@ conan profile detect --force
 conan install . --output-folder=build --build=missing
 
 # 配置编译
-cmake -B build -DCMAKE_BUILD_TYPE=Release/Debug/RelWithDebInfo
+cmake -B build -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
 # 执行编译
 cmake --build build --config  Release/Debug/RelWithDebInfo
