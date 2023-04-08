@@ -35,8 +35,7 @@ endif()
 add_compile_options(-Wall -Wno-unused -gdwarf-2 -g3 -fno-common -fstack-protector)
 
 # 三方库
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
 # 添加外部软件
 find_package(Threads REQUIRED)
@@ -47,7 +46,7 @@ find_package(GTest REQUIRED)
 include_directories(${CMAKE_SOURCE_DIR}/include/generated)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-# 添加子文件夹 
+# 添加子文件夹
 add_subdirectory(${CMAKE_SOURCE_DIR}/bsd ${CMAKE_BINARY_DIR}/bsd)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/test)
