@@ -31,7 +31,7 @@ jobs:
       run: |
         pip3 install conan
         [ -d ${{github.workspace}}/build ] || mkdir -p ${{github.workspace}}/build
-        conan profile detect --force || conan install . --output-folder=build --build=missing
+        conan profile detect --force && conan install . --output-folder=build --build=missing
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.

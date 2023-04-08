@@ -41,6 +41,7 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 find_package(Threads REQUIRED)
 find_package(Doxygen REQUIRED)
 find_package(GTest REQUIRED)
+find_package(fmt REQUIRED)
 
 # 添加头文件路径
 include_directories(${CMAKE_SOURCE_DIR}/include/generated)
