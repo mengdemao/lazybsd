@@ -24,8 +24,6 @@ check_dst() {
     return 0
 }
 
-
-
 ###################################################################
 #                                                                 #
 #                           脚本运行起点                           #                                                
@@ -35,20 +33,15 @@ check_dst() {
 echo "拷贝文件开始"
 
 # 创建目录
-# [ -d ${PATH_DST} ] && rm -rf ${PATH_DST}
-# mkdir -p ${PATH_DST}
+[ -d ${PATH_DST} ] && rm -rf ${PATH_DST}
+mkdir -p ${PATH_DST}
+mkdir -p ${PATH_DST}/src
+mkdir -p ${PATH_DST}/include
 
 # 检查freebsd文件夹是否有效
 check_dst || exit 1
 
 # 拷贝sys文件
-# cp -rfv ${PATH_SRC}/sys ${PATH_DST}
-
-# 拷贝头文件
-mkdir -p ${PATH_DST}/include
-
-# 拷贝machine文件夹
-
-# 拷贝x86文件
+cp -rfv ${PATH_SRC}/sys ${PATH_DST}/src
 
 echo "拷贝文件结束"
