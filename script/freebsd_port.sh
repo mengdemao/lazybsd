@@ -47,4 +47,8 @@ check_dst || exit 1
 # 拷贝头文件
 mkdir -p ${PATH_DST}/include
 
+# 拷贝machine文件夹
+
+# 拷贝x86文件
+
 echo "拷贝文件结束"

@@ -236,10 +236,16 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/include
 )
 
-add_custom_target(${PROJECT_NAME}_DEPEND
+# 创造生成文件夹
+add_custom_target(${PROJECT_NAME}_DEPEND_0
+    COMMAND mkdir -p include
+)
+
+# awk生成文件
+add_custom_target(${PROJECT_NAME}_DEPEND_1
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/bus_if.m -h
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/device_if.m -h
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/opencrypto/cryptodev_if.m -h
@@ -248,7 +254,19 @@ add_custom_target(${PROJECT_NAME}_DEPEND
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/linker_if.m -c
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -p
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -q
-    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -h               
+    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -h
+    WORKING_DIRECTORY include              
 )
-add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_DEPEND)
+
+add_custom_target(${PROJECT_NAME}_DEPEND_2
+    COMMAND mkdir -p machine
+    COMMAND cp -rfv ${CMAKE_CURRENT_SOURCE_DIR}/sys/amd64/include/* machine 
+    WORKING_DIRECTORY include
+)
+
+# 拷贝文件为nachine
+add_dependencies(${PROJECT_NAME} 
+                    ${PROJECT_NAME}_DEPEND_0 
+                    ${PROJECT_NAME}_DEPEND_1
+                    ${PROJECT_NAME}_DEPEND_2)
 
