@@ -235,13 +235,17 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/generated/opt
 )
 
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD 
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/bus_if.m -h
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/device_if.m -h
-    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/linker_if.m -h
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/opencrypto/cryptodev_if.m -h
-    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/linker_if.m -c
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/opencrypto/cryptodev_if.m -c
+    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/linker_if.m -h
+    COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/makeobjops.awk ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/linker_if.m -c
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -p
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -q
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/sys/kern/vnode_if.src -h               
