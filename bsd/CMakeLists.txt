@@ -251,25 +251,29 @@ add_custom_target(${PROJECT_NAME}_DEPEND_1
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/kern/vnode_if.src -p
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/kern/vnode_if.src -q
     COMMAND awk -f ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/tools/vnode_if.awk   ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/kern/vnode_if.src -h
-    WORKING_DIRECTORY include              
+    WORKING_DIRECTORY include
+    DEPENDS ${PROJECT_NAME}_DEPEND_0
 )
 
 add_custom_target(${PROJECT_NAME}_DEPEND_2
     COMMAND mkdir -p machine
     COMMAND cp -rfv ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/amd64/include/* machine 
     WORKING_DIRECTORY include
+    DEPENDS ${PROJECT_NAME}_DEPEND_0
 )
 
 add_custom_target(${PROJECT_NAME}_DEPEND_3
     COMMAND mkdir -p x86
     COMMAND cp -rfv ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/x86/include/* x86 
     WORKING_DIRECTORY include
+    DEPENDS ${PROJECT_NAME}_DEPEND_0
 )
 
-# 拷贝文件为nachine
-add_dependencies(${PROJECT_NAME} 
-                    ${PROJECT_NAME}_DEPEND_0 
-                    ${PROJECT_NAME}_DEPEND_1
-                    ${PROJECT_NAME}_DEPEND_2
-                    ${PROJECT_NAME}_DEPEND_3)
+add_custom_target(${PROJECT_NAME}_DEPEND
+    COMMAND echo "配置依赖"
+    WORKING_DIRECTORY include
+    DEPENDS ${PROJECT_NAME}_DEPEND_0 ${PROJECT_NAME}_DEPEND_1 ${PROJECT_NAME}_DEPEND_2 ${PROJECT_NAME}_DEPEND_3
+)
 
+# 设定最终依赖文件
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_DEPEND)
