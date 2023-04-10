@@ -41,7 +41,7 @@ $ ./tools/build/make.py --debug --cross-bindir=/usr/lib/llvm-15/bin TARGET=arm64
 
 ```shell
 # 安装软件
-sudo apt install doxygen graphviz python3 python3-pip libgtest-dev
+sudo apt install doxygen graphviz python3 python3-pip libgtest-dev ninja-build
 
 # 安装conan
 pip3 install conan
