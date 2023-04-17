@@ -198,6 +198,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     -Wno-inline
     -Wno-pointer-sign
     -Wno-strict-aliasing
+    -Wno-maybe-uninitialized
     -Wmissing-include-dirs 
     -Wno-unused-but-set-variable 
     -Wno-address-of-packed-member
