@@ -1,8 +1,8 @@
 [requires]
-openssl/3.1.0
-boost/1.81.0
+openssl/3.1.1
+boost/1.82.0
 nlohmann_json/3.11.2
-fmt/9.1.0
+fmt/10.0.0
 gtest/cci.20210126
 
 [generators]
