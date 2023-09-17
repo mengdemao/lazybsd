@@ -1,9 +1,9 @@
 [requires]
-openssl/3.1.1
-boost/1.82.0
+openssl/3.1.2
+boost/1.83.0
 nlohmann_json/3.11.2
-fmt/10.0.0
-gtest/cci.20210126
+fmt/10.1.1
+gtest/1.14.0
 
 [generators]
 CMakeDeps

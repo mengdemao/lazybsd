@@ -4,9 +4,9 @@
  * @brief 网卡实现(file)
  * @version 0.1
  * @date 2022-05-29
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 #include <iostream>
 #include <config.h>
@@ -27,7 +27,7 @@ bypass_sock::bypass_sock(string device, int domain, int type, int protocol)
 : bypass(device)
 {
     this->domain = domain;
-    this->type = type; 
+    this->type = type;
     this->protocol = protocol;
 
     if (0 > (fd = socket(this->domain, this->type, this->protocol))) {
@@ -59,7 +59,7 @@ int bypass_sock::connect(const struct sockaddr *addr, socklen_t addrlen)
 }
 
 int bypass_sock::accept(struct sockaddr *addr, socklen_t *addrlen)
-{   
+{
     return ::accept(this->fd, addr, addrlen);
 }
 
