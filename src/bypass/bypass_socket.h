@@ -1,19 +1,20 @@
 /**
  * @file bypass_sock.h
  * @author mengdemao (mengdemao19951021@163.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2022-06-02
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 #ifndef __BYPASS_SOCK_H__
 #define __BYPASS_SOCK_H__
 
+#include <bypass.h>
 #include <sys/socket.h>
 
-class bypass_sock : public bypass {
+class bypass_socket : public bypass {
 private:
     int fd;
     int domain;
@@ -21,8 +22,8 @@ private:
     int protocol;
 
 public:
-    bypass_sock(string device, int domain, int type, int protocol);
-    ~bypass_sock();
+    bypass_socket(std::string device, int domain, int type, int protocol);
+    ~bypass_socket();
 
     int bind(struct sockaddr *addr, socklen_t addrlen);
     int listen(int backlog);

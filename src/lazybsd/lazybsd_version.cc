@@ -4,12 +4,12 @@
  * @brief 版本信息获取
  * @version 0.1
  * @date 2022-09-26
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 #include <iostream>
-#include <config.h>
+#include <version.h>
 #include <lazybsd.h>
 
 struct lazybsd_version lazybsd_version_get(void)
