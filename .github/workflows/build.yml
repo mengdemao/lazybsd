@@ -2,9 +2,14 @@ name: build lazybsd
 
 on:
   push:
-    branches: [ "master" ]
+    branches: 
+      - master
+      - develop
+      - feature/*
+
   pull_request:
-    branches: [ "master" ]
+    branches: 
+      - master
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
