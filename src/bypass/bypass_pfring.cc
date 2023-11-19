@@ -20,17 +20,17 @@ int bypass_pfring::open(const char *pathname, int flags)
     return EXIT_SUCCESS;
 }
 
-int bypass_pfring::close(int fd)
+int bypass_pfring::close(void)
 {
     return EXIT_SUCCESS;
 }
 
-ssize_t bypass_pfring::read(int fd, void *buf, size_t count)
+ssize_t bypass_pfring::read(void *buf, size_t count)
 {
     return 0;
 }
 
-ssize_t bypass_pfring::write(int fd, const void *buf, size_t count)
+ssize_t bypass_pfring::write(const void *buf, size_t count)
 {
     return 0;
 }

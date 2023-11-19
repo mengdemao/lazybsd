@@ -1,9 +1,23 @@
 #!/usr/bin/env python3
 
-import os
 import argparse
+import glob
+import lzma
+import multiprocessing
+import os
+import os.path as op
+import platform
+import shutil
+import stat
 import subprocess
+import sys
+import tarfile
+import textwrap
+import urllib.request
+from zipfile import ZipFile
 from rich.console import Console
+
+sys.path.append("python")
 
 def pwd():
     '''
@@ -62,16 +76,6 @@ def log_help():
     打印帮助文档
     '''
     log_print("LazyBsd helper")
-
-def build(Debug=True):
-    '''
-    执行构建
-    '''
-    if Debug == True:
-        shell("./build.sh --config=Debug")
-    else:
-        shell("./build.sh --config=Debug")
-
 
 def run():
     '''

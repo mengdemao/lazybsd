@@ -1,10 +1,11 @@
 [requires]
-openssl/3.1.2
+openssl/3.1.4
 boost/1.83.0
-nlohmann_json/3.11.2
 fmt/10.1.1
 gtest/1.14.0
 pybind11/2.11.1
+gperftools/2.13.0
+rapidjson/cci.20220822
 
 [generators]
 CMakeDeps
