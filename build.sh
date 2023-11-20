@@ -43,16 +43,24 @@ conan_config() {
 	conan install conanfile.txt --build=missing -s build_type=${BUILD_TYPE} || exit 1
 }
 
-cmake_config() {
+cmake_preset() 
+{
 	local BUILD_TYPE=$1
 	check_config ${BUILD_TYPE} || exit 1
-
-	log_info "cmake配置"
+	
 	if [ ${BUILD_TYPE} == "Debug" ]; then
 		cmake --preset conan-debug || exit 1
 	elif [ ${BUILD_TYPE} == "Release" ]; then
 		cmake --preset conan-release || exit 1
 	fi
+}
+
+cmake_config() 
+{
+	local BUILD_TYPE=$1
+	check_config ${BUILD_TYPE} || exit 1
+
+	log_info "cmake配置"
 
 	cmake -DCMAKE_POLICY_DEFAULT_CMP0091=NEW \
 		-DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
@@ -60,17 +68,35 @@ cmake_config() {
 		-S "${ROOT_PATH}" \
 		-B "${ROOT_PATH}"/build \
 		-G Ninja || exit 1
+}
+
+cmake_build()
+{
+	local BUILD_TYPE=$1
+	check_config ${BUILD_TYPE} || exit 1
+
 	cmake --build build --config "${BUILD_TYPE}" -j"$(nproc)" || exit 1
-	ctest -C "${BUILD_TYPE}" || exit 1
+}
+
+cmake_ctest()
+{
+	local BUILD_TYPE=$1
+	check_config ${BUILD_TYPE} || exit 1
+
+	ctest -C "${BUILD_TYPE}" --test-dir ${BUILD_PATH}/test || exit 1
 }
 
 build() {
 	local BUILD_TYPE=$1
+	check_config ${BUILD_TYPE} || exit 1
 
 	log_info "开始构建"
 	check_config ${BUILD_TYPE} || exit 1
 	conan_config ${BUILD_TYPE} || exit 1
+	cmake_preset ${BUILD_TYPE} || exit 1
 	cmake_config ${BUILD_TYPE} || exit 1
+	cmake_build  ${BUILD_TYPE} || exit 1
+	cmake_ctest  ${BUILD_TYPE} || exit 1
 	log_info "构建结束"
 }
 
@@ -85,7 +111,7 @@ usage() {
 BUILD_TYPE="Debug"
 
 # 判断输入参数个数
-if [ $# == 0 ] ; then
+if [ $# == 0 ]; then
 	usage
 	exit 1
 fi
