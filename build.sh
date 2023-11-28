@@ -5,23 +5,24 @@
 # shellcheck disable=SC2199
 # shellcheck disable=SC2181
 # shellcheck disable=SC2155
+# shellcheck disable=SC2059
 
 ROOT_PATH=$(pwd)
 BUILD_PATH=${ROOT_PATH}/build
 
 log_err() {
 	local logTime="$(date -d today +'%Y-%m-%d %H:%M:%S')"
-	printf "[ERROR][${logTime}][${FUNCNAME[1]}] $*\r\n"
+	printf "\033[0;31m[ERROR][${logTime}][${FUNCNAME[1]}] $*\r\n\033[0m"
 }
 
 log_warn() {
 	local logTime="$(date -d today +'%Y-%m-%d %H:%M:%S')"
-	printf "[WARN][${logTime}][${FUNCNAME[1]}] $*\r\n"
+	printf "\033[0;33m[WARN][${logTime}][${FUNCNAME[1]}] $*\r\n\033[0m"
 }
 
 log_info() {
 	local logTime="$(date -d today +'%Y-%m-%d %H:%M:%S')"
-	printf "[INFO][${logTime}][${FUNCNAME[1]}] $*\r\n"
+	printf "\033[0;32m[INFO][${logTime}][${FUNCNAME[1]}] $*\r\n\033[0m"
 }
 
 check_config() {
@@ -43,11 +44,11 @@ conan_config() {
 	conan install conanfile.txt --build=missing -s build_type=${BUILD_TYPE} || exit 1
 }
 
-cmake_preset() 
+cmake_preset()
 {
 	local BUILD_TYPE=$1
 	check_config ${BUILD_TYPE} || exit 1
-	
+
 	if [ ${BUILD_TYPE} == "Debug" ]; then
 		cmake --preset conan-debug || exit 1
 	elif [ ${BUILD_TYPE} == "Release" ]; then
@@ -55,7 +56,7 @@ cmake_preset()
 	fi
 }
 
-cmake_config() 
+cmake_config()
 {
 	local BUILD_TYPE=$1
 	check_config ${BUILD_TYPE} || exit 1
