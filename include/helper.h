@@ -23,7 +23,7 @@
 #define __TO_CHR(x) @x
 #define __TO_STR(x) #x
 
-#define TEST_HEAD TEST(TEST_NAME, UNIQUE_ID)
+#define TEST_HEAD(TEST_NAME) TEST(TEST_NAME, UNIQUE_ID)
 
 #define UNIQUE_ID __COUNTER__
 

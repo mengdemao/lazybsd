@@ -1,8 +1,8 @@
 find_package(Git REQUIRED)
 
-option(USE_BYPASS_SOCK "use sock to bypass ethernet" ON)
-option(USE_BYPASS_FILE "use file to bypass ethernet" ON)
-option(USE_BYPASS_DPDK "use dpdk to bypass ethernet" ON)
+option(USE_BYPASS_SOCKET  "use sock to bypass ethernet" ON)
+option(USE_BYPASS_PFRING  "use file to bypass ethernet" ON)
+option(USE_BYPASS_DPDK    "use dpdk to bypass ethernet" ON)
 
 # 设置版本号
 if (GIT_FOUND)
@@ -34,3 +34,4 @@ cmake_host_system_information(RESULT BUILD_HOST QUERY HOSTNAME)
 
 # 生成配置文件
 configure_file(${CMAKE_SOURCE_DIR}/include/config.h.in	${CMAKE_SOURCE_DIR}/include/generated/config.h)
+configure_file(${CMAKE_SOURCE_DIR}/include/version.h.in	${CMAKE_SOURCE_DIR}/include/generated/version.h)
