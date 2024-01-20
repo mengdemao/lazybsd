@@ -32,7 +32,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # 添加公共的编译指令
-add_compile_options(-Wall -Wno-unused -gdwarf-2 -g3 -fno-common -fstack-protector)
+add_compile_options(-Wall -Wno-unused -gdwarf-5 -fno-common -fstack-protector)
 
 # 添加外部软件
 find_package(Threads REQUIRED)
@@ -43,6 +43,20 @@ find_package(GTest REQUIRED)
 find_package(fmt REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED program_options system filesystem regex date_time)
+
+if(GTest_FOUND)
+  message(STATUS "GTest include path is : ${GTest_INCLUDE_DIR}")
+  message(STATUS "GTest libraries is    : ${GTest_LIBRARIES}")
+  include_directories(${GTest_INCLUDE_DIR})
+  link_libraries(${GTest_LIBRARIES})
+endif(GTest_FOUND)
+
+if(fmt_FOUND)
+  message(STATUS "fmt include path is : ${fmt_INCLUDE_DIR}")
+  message(STATUS "fmt libraries is    : ${fmt_LIBRARIES}")
+  include_directories(${fmt_INCLUDE_DIR})
+  link_libraries(${fmt_LIBRARIES})
+endif(fmt_FOUND)
 
 if(OpenSSL_FOUND)
   message(STATUS "OpenSSL include path is : ${OPENSSL_INCLUDE_DIR}")
