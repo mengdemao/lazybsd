@@ -2,21 +2,22 @@ name: build lazybsd
 
 on:
   push:
-    branches: 
+    branches:
       - master
       - develop
       - feature/*
 
   pull_request:
-    branches: 
+    branches:
       - master
-
-env:
-  BUILD_TYPE: Release
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug, Release]
 
     steps:
     - uses: actions/checkout@v3
@@ -26,8 +27,8 @@ jobs:
 
     - uses: mstksg/get-package@v1
       with:
-        apt-get: doxygen graphviz python3 python3-pip libgtest-dev libfmt-dev ninja-build
-    
+        apt-get: doxygen graphviz python3 python3-pip ninja-build
+
     - name: conan install
       run: |
         pip3 install conan
@@ -36,5 +37,5 @@ jobs:
     - name: 编译lazybsd
       run: |
         chmod +x ./build.sh
-        ./build.sh -c ${BUILD_TYPE}
+        ./build.sh -c ${{ matrix.build_type }}
 
