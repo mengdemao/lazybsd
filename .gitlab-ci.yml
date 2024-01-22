@@ -1,0 +1,43 @@
+image: python:latest
+
+# Change pip's cache directory to be inside the project directory since we can
+# only cache local items.
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+# https://pip.pypa.io/en/stable/topics/caching/
+cache:
+  paths:
+    - .cache/pip
+
+before_script:
+  - apt update ; apt upgrade -y;
+  - apt install -y cmake doxygen graphviz python3 python3-pip ninja-build
+  - python --version ; pip --version  # For debugging
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install conan
+  - conan profile detect --force
+
+stages:
+  - build
+  - deploy
+
+build:Debug:
+  stage: build
+  script:
+    - chmod +x ./build.sh
+    - ./build.sh -c Debug
+
+build:Release:
+  stage: build
+  script:
+    - chmod +x ./build.sh
+    - ./build.sh -c Release
+
+deploy:
+  stage: deploy
+  script: echo "deploy success"
+  environment: production
+
