@@ -1,4 +1,21 @@
 #!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+
+# pylint: disable=E0401
+# pylint: disable=W0611
+# pylint: disable=W0311
+# pylint: disable=C0304
+# pylint: disable=C0114
+# pylint: disable=C0413
+# pylint: disable=W0401
+# pylint: disable=C0116
+# pylint: disable=E1101
+# pylint: disable=C0103
+# pylint: disable=C0116
+# pylint: disable=R1711
+# pylint: disable=W0612
+# pylint: disable=W0614
+# pylint: disable=W1510
 
 import argparse
 import glob
