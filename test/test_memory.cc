@@ -9,17 +9,8 @@
  * @copyright Copyright (c) 2024  mengdemao
  *
  */
-#define JEMALLOC_NO_DEMANGLE
 #include <gtest/gtest.h>
-#include <jemalloc/jemalloc.h>
 #include <lazybsd.h>
-
-TEST(TEST_MEMORY, TEST_JEMALLOC)
-{
-	auto a = je_malloc(1024 * 10);
-	EXPECT_NE(a, nullptr);
-	je_free(a);
-}
 
 TEST(TEST_MEMORY, TEST_JEMALLOC_CXX)
 {
