@@ -1,4 +1,3 @@
-
 set(SRC_FREEBSD
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/crypto/sha1.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/crypto/siphash/siphash.c
@@ -221,7 +220,7 @@ target_include_directories(freebsd PRIVATE
 
 # 生成文件
 add_custom_target(freebsd_generate
-    COMMAND ${CMAKE_SOURCE_DIR}/script/freebsd_generate.sh ${CMAKE_CURRENT_SOURCE_DIR} >> /dev/null
+    COMMAND bash ${CMAKE_SOURCE_DIR}/script/freebsd_generate.sh ${CMAKE_CURRENT_SOURCE_DIR} >> /dev/null
     VERBATIM
 )
 
