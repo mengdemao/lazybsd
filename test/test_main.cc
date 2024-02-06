@@ -8,11 +8,10 @@
  * @copyright Copyright (c) 2023
  *
  */
-#include <iostream>
-#include <gtest/gtest.h>
 #include <lazybsd.h>
-#include <fmt/core.h>
-#include <helper.h>
+#include <lazybsd_version.h>
+
+using namespace lazybsd::version;
 
 /**
  * @brief  函数起点

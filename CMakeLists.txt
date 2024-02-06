@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.24)
-
 project(lazybsd C CXX ASM)
 
 set(CMAKE_MODULE_PATH
@@ -75,13 +74,19 @@ if(Boost_FOUND)
   link_libraries(${Boost_LIBRARIES})
 endif(Boost_FOUND)
 
+# 添加源文件
+aux_source_directory(${CMAKE_SOURCE_DIR}/src SRC_LAZYBSD)
+
+# 生成目标
+add_library(${PROJECT_NAME} STATIC ${SRC_LAZYBSD})
+target_link_libraries(${PROJECT_NAME} freebsd)
+
 # 添加头文件路径
 include_directories(${CMAKE_SOURCE_DIR}/include/generated)
 include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
 # 添加子文件夹
 add_subdirectory(${CMAKE_SOURCE_DIR}/bsd ${CMAKE_BINARY_DIR}/bsd)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
-add_subdirectory(${CMAKE_SOURCE_DIR}/lib ${CMAKE_BINARY_DIR}/lib)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/test)
 add_subdirectory(${CMAKE_SOURCE_DIR}/python ${CMAKE_BINARY_DIR}/python)
