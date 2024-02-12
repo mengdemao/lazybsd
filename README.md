@@ -15,7 +15,7 @@ freebsd网络协议栈Linux用户层移植
 	- [目录](#目录)
 	- [背景](#背景)
 		- [编译freebsd](#编译freebsd)
-		- [编译PF_RING](#编译PF_RING)
+		- [编译DPDK](#编译DPDK)
 	- [安装](#安装)
 	- [使用](#使用)
 	- [API](#api)
@@ -38,10 +38,16 @@ $ ./tools/build/make.py --debug --cross-bindir=/usr/lib/llvm-15/bin TARGET=arm64
 $ ./tools/build/make.py --debug --cross-bindir=/usr/lib/llvm-15/bin TARGET=arm64 TARGET_ARCH=aarch64 KERNCONF=GENERIC NO_MODULES=yes buildkernel -s -j4
 ```
 
-### 编译PF_RING
+### 编译DPDK
 
 ```shell
+$ sudo apt-get install build-essential
+$ sudo apt install meson ninja-build
+$ sudo apt install libnuma-dev
 
+$ mkdir build
+$ meson build
+$ ninja -C build
 ```
 
 ## 安装
