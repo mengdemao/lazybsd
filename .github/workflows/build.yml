@@ -24,20 +24,32 @@ jobs:
       with:
         fetch-depth: 0
         lfs: false
-    
+
     - name: 安装软件
       run: |
         sudo apt -y update
         sudo apt -y upgrade
         sudo apt install -y doxygen graphviz python3 python3-pip ninja-build
 
-    - name: conan install
+    - name: python package install
       run: |
+        pip install gcovr
         pip3 install conan
         conan profile detect --force
 
     - name: 编译lazybsd
       run: |
         chmod +x ./build.sh
-        ./build.sh -c ${{ matrix.build_type }}
+        ./build.sh -c ${{ matrix.build_type }} -l
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+          files: ${{github.workspace}}/build/test/TestXml.xml
+          flags: unittests #
+          name: codecov-umbrella
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
+
 
