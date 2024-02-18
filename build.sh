@@ -59,12 +59,15 @@ cmake_preset()
 cmake_config()
 {
 	local BUILD_TYPE=$1
+	local BUILD_COV=$2
+
 	check_config ${BUILD_TYPE} || exit 1
 
-	log_info "cmake配置"
+	log_info "cmake配置 build:${BUILD_TYPE} coverage:${BUILD_COV}"
 
 	cmake -DCMAKE_POLICY_DEFAULT_CMP0091=NEW \
 		-DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+		-DBUILD_COVERAGE=ON \
 		-DCMAKE_TOOLCHAIN_FILE="${ROOT_PATH}"/build/"${BUILD_TYPE}"/generators/conan_toolchain.cmake \
 		-S "${ROOT_PATH}" \
 		-B "${ROOT_PATH}"/build \
@@ -76,7 +79,7 @@ cmake_build()
 	local BUILD_TYPE=$1
 	check_config ${BUILD_TYPE} || exit 1
 
-	cmake --build build --config "${BUILD_TYPE}" -j"$(nproc)" || exit 1
+	cmake --build ${BUILD_PATH} --config "${BUILD_TYPE}" -j"$(nproc)" || exit 1
 }
 
 cmake_ctest()
@@ -87,17 +90,31 @@ cmake_ctest()
 	ctest -C "${BUILD_TYPE}" --test-dir ${BUILD_PATH}/test || exit 1
 }
 
+cmake_cov()
+{
+	local BUILD_COV=$1
+
+	cmake --build ${BUILD_PATH} --config "${BUILD_TYPE}" --target TestXml  || exit 1
+	cmake --build ${BUILD_PATH} --config "${BUILD_TYPE}" --target TestHtml || exit 1
+}
+
 build() {
 	local BUILD_TYPE=$1
+	local BUILD_COV=$2
+
 	check_config ${BUILD_TYPE} || exit 1
 
 	log_info "开始构建"
+
 	check_config ${BUILD_TYPE} || exit 1
 	conan_config ${BUILD_TYPE} || exit 1
 	cmake_preset ${BUILD_TYPE} || exit 1
-	cmake_config ${BUILD_TYPE} || exit 1
+	cmake_config ${BUILD_TYPE} ${BUILD_COV} || exit 1
 	cmake_build  ${BUILD_TYPE} || exit 1
 	cmake_ctest  ${BUILD_TYPE} || exit 1
+
+	[ ${BUILD_COV} = true ] && cmake_cov ${BUILD_COV}  || exit 1
+
 	log_info "构建结束"
 }
 
@@ -110,6 +127,7 @@ usage() {
 #               构建脚本起点                 #
 #############################################
 BUILD_TYPE="Debug"
+BUILD_COV=false
 
 # 判断输入参数个数
 if [ $# == 0 ]; then
@@ -118,7 +136,7 @@ if [ $# == 0 ]; then
 fi
 
 # 解析输入参数
-ARGS=$(getopt -o c: -l config: -- "$@")
+ARGS=$(getopt -o c:l -l config:coverage -- "$@")
 if [ $? != 0 ]; then
 	log_err "args parse error" >&2
 	exit 1
@@ -131,6 +149,11 @@ while true; do
 	-c | --config)
 		BUILD_TYPE=${2}
 		shift 2
+		;;
+
+	-l | --coverage)
+		BUILD_COV=true
+		shift 1
 		;;
 
 	--)
@@ -153,4 +176,4 @@ log_info "删除临时文件夹"
 [ -d "${BUILD_PATH}" ] && rm -rf "${BUILD_PATH}"
 mkdir -p ${BUILD_PATH}
 
-build ${BUILD_TYPE}
+build ${BUILD_TYPE} ${BUILD_COV}

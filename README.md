@@ -6,6 +6,8 @@
 ![GitHub](https://img.shields.io/github/license/mengdemao/lazybsd)
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/mengdemao/lazybsd)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/mengdemao/lazybsd)
+[![CodeFactor](https://www.codefactor.io/repository/github/mengdemao/lazybsd/badge)](https://www.codefactor.io/repository/github/mengdemao/lazybsd)
+[![codecov](https://codecov.io/gh/mengdemao/lazybsd/graph/badge.svg?token=GKH2X5GZJ8)](https://codecov.io/gh/mengdemao/lazybsd)
 
 freebsd网络协议栈Linux用户层移植
 
@@ -15,7 +17,7 @@ freebsd网络协议栈Linux用户层移植
 	- [目录](#目录)
 	- [背景](#背景)
 		- [编译freebsd](#编译freebsd)
-		- [编译DPDK](#编译DPDK)
+		- [编译DPDK](#编译dpdk)
 	- [安装](#安装)
 	- [使用](#使用)
 	- [API](#api)
