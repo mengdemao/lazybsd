@@ -13,7 +13,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <fmt/core.h>
-#include "fmt/color.h"
+#include <fmt/color.h>
 #include <fmt/chrono.h>
 #include <gtest/gtest.h>
 

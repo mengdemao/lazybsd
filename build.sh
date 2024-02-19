@@ -98,6 +98,16 @@ cmake_cov()
 	cmake --build ${BUILD_PATH} --config "${BUILD_TYPE}" --target TestHtml || exit 1
 }
 
+setup_pkg()
+{
+	local 
+	pushd dpdk >> /dev/null || exit 1
+	[ ! -d build ] && mkdir build
+	meson build
+	ninja -C build
+	popd >> /dev/null || exit 1
+}
+
 build() {
 	local BUILD_TYPE=$1
 	local BUILD_COV=$2
@@ -128,6 +138,7 @@ usage() {
 #############################################
 BUILD_TYPE="Debug"
 BUILD_COV=false
+SETUP_PKG=false
 
 # 判断输入参数个数
 if [ $# == 0 ]; then
@@ -156,6 +167,11 @@ while true; do
 		shift 1
 		;;
 
+	-s | --setup)
+		SETUP_PKG=true
+		shift 1
+		;;
+
 	--)
 		shift
 		break
@@ -171,6 +187,13 @@ done
 log_info "检查输入参数"
 check_config ${BUILD_TYPE} || exit 1
 log_info "参数输入正确"
+
+if [ ${SETUP_PKG} = true ]; 
+then
+	log_info "编译DPDK开始"
+	setup_pkg || exit 1
+	log_info "编译DPDK完成"
+fi
 
 log_info "删除临时文件夹"
 [ -d "${BUILD_PATH}" ] && rm -rf "${BUILD_PATH}"
