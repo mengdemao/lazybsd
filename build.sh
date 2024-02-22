@@ -104,7 +104,7 @@ setup_pkg()
 	pushd dpdk >> /dev/null || exit 1
 	if [ ! -d build ]; then
 		mkdir build
-		meson build --prefix=${INSTALL_PATH}
+		meson setup build --prefix=${INSTALL_PATH}
 		ninja -C build
 		ninja -C build install
 	fi
