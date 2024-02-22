@@ -42,6 +42,7 @@ jobs:
       run: |
         pip install gcovr
         pip3 install conan
+        pip3 install meson
         conan profile detect --force
 
     - name: chmod +x build.sh
