@@ -38,6 +38,13 @@ jobs:
         path: ~/.conan2
         key: ${{ matrix.build_type }}-conan2
 
+    - name: Cache DPDK
+      id: Cache_DPDK
+      uses: actions/cache@v4
+      with:
+        path: ./dpdk/build
+        key: cache-dpdk-build
+
     - name: python package install
       run: |
         pip install gcovr
