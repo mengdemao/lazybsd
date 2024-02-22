@@ -24,12 +24,19 @@ jobs:
       with:
         fetch-depth: 0
         lfs: false
+        submodules: 'recursive'
 
     - name: 安装软件
       run: |
         sudo apt -y update
-        sudo apt -y upgrade
         sudo apt install -y doxygen graphviz python3 python3-pip ninja-build
+
+    - name: Cache Conan2
+      id: Cache_Conan2
+      uses: actions/cache@v4
+      with:
+        path: ~/.conan2
+        key: ${{ matrix.build_type }}-conan2
 
     - name: python package install
       run: |
@@ -37,10 +44,17 @@ jobs:
         pip3 install conan
         conan profile detect --force
 
+    - name: chmod +x build.sh
+      run: |
+        chmod +x build.sh
+
+    - name: 编译DPDK
+      run: |
+        ./build.sh -s
+
     - name: 编译lazybsd
       run: |
-        chmod +x ./build.sh
-        ./build.sh -c ${{ matrix.build_type }} -l
+        ./build.sh -c ${{ matrix.build_type }} -l -b
 
     - uses: codecov/codecov-action@v4
       if: matrix.build_type == 'Debug'

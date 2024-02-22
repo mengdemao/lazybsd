@@ -84,6 +84,9 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/src SRC_LAZYBSD)
 add_library(${PROJECT_NAME} STATIC ${SRC_LAZYBSD})
 target_link_libraries(${PROJECT_NAME} freebsd)
 
+target_include_directories(${PROJECT_NAME} PRIVATE
+                           ${CMAKE_CURRENT_SOURCE_DIR}/install/include)
+
 # 添加头文件路径
 include_directories(${CMAKE_SOURCE_DIR}/include/generated)
 include_directories(${CMAKE_SOURCE_DIR}/include)
