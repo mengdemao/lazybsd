@@ -7,6 +7,8 @@
 # shellcheck disable=SC2155
 # shellcheck disable=SC2059
 
+set -exuo pipefail
+
 ROOT_PATH=$(pwd)
 BUILD_PATH=${ROOT_PATH}/build
 INSTALL_PATH=${ROOT_PATH}/install
@@ -106,8 +108,12 @@ setup_pkg()
 		mkdir build
 		meson setup build --prefix=${INSTALL_PATH}
 		ninja -C build
+	fi
+
+	if [ ! -d ${INSTALL_PATH} ]; then
 		ninja -C build install
 	fi
+
 	popd >> /dev/null || exit 1
 }
 
@@ -129,7 +135,10 @@ build() {
 	cmake_config 	${BUILD_CFG} ${BUILD_COV} || exit 1
 	cmake_build  	${BUILD_CFG} || exit 1
 	cmake_ctest  	${BUILD_CFG} || exit 1
-	[ ${BUILD_COV} = true ] && cmake_cov ${BUILD_COV}  || exit 1
+
+	if [ ${BUILD_COV} = true ]; then
+		cmake_cov ${BUILD_COV} || exit 1
+	fi
 
 	log_info "构建结束"
 }

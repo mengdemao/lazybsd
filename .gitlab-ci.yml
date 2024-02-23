@@ -1,18 +1,17 @@
 image: python:latest
 
-# Change pip's cache directory to be inside the project directory since we can
-# only cache local items.
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_SUBMODULE_DEPTH: 1
 
-# https://pip.pypa.io/en/stable/topics/caching/
 cache:
   paths:
     - .cache/pip
 
 before_script:
   - apt update ; apt upgrade -y;
-  - apt install -y cmake doxygen graphviz python3 python3-pip ninja-build libnuma-dev
+  - apt install -y cmake doxygen graphviz python3 python3-pip ninja-build libnuma-dev ccache
   - python --version ; pip --version
   - pip install virtualenv
   - virtualenv venv
