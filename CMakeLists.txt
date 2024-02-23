@@ -36,6 +36,12 @@ add_compile_options(-Wall -Wno-unused -gdwarf-5 -fno-common -fstack-protector)
 # 设置coverage编译指令
 option(BUILD_COVERAGE "build programe in coverage mode" OFF)
 
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif(CCACHE_FOUND)
+
 # 添加外部软件
 find_package(Threads REQUIRED)
 find_package(Doxygen REQUIRED)

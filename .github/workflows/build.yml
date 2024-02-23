@@ -29,7 +29,7 @@ jobs:
     - name: 安装软件
       run: |
         sudo apt -y update
-        sudo apt install -y doxygen graphviz python3 python3-pip ninja-build libnuma-dev
+        sudo apt install -y doxygen graphviz python3 python3-pip ninja-build libnuma-dev ccache
 
     - name: Cache Conan2
       id: Cache_Conan2
@@ -52,6 +52,12 @@ jobs:
         pip3 install meson
         pip3 install pyelftools
         conan profile detect --force
+
+    - name: Setup ccache
+      uses: Chocobo1/setup-ccache-action@v1
+      with:
+        install_ccache: false
+        update_packager_index: false
 
     - name: chmod +x build.sh
       run: |
