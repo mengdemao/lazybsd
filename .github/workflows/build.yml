@@ -38,12 +38,11 @@ jobs:
         path: ~/.conan2
         key: ${{ matrix.build_type }}-conan2
 
-    - name: Cache DPDK
-      id: Cache_DPDK
-      uses: actions/cache@v4
+    - name: Setup ccache
+      uses: Chocobo1/setup-ccache-action@v1
       with:
-        path: ./dpdk/build
-        key: cache-dpdk-build
+        install_ccache: false
+        update_packager_index: false
 
     - name: python package install
       run: |
@@ -53,13 +52,7 @@ jobs:
         pip3 install pyelftools
         conan profile detect --force
 
-    - name: Setup ccache
-      uses: Chocobo1/setup-ccache-action@v1
-      with:
-        install_ccache: false
-        update_packager_index: false
-
-    - name: chmod +x build.sh
+    - name: 设置编译脚本权限
       run: |
         chmod +x build.sh
 
