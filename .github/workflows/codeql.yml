@@ -1,0 +1,88 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  analyze:
+    name: Analyze
+    # Runner size impacts CodeQL analysis time. To learn more, please see:
+    #   - https://gh.io/recommended-hardware-resources-for-running-codeql
+    #   - https://gh.io/supported-runners-and-hardware-resources
+    #   - https://gh.io/using-larger-runners
+    # Consider using larger runners for possible analysis time improvements.
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
+    permissions:
+      # required for all workflows
+      security-events: write
+
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'c-cpp' ]
+        build_type: [Debug]
+        # CodeQL supports [ 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift' ]
+        # Use only 'java-kotlin' to analyze code written in Java, Kotlin or both
+        # Use only 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
+        # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 安装软件
+      run: |
+        sudo apt -y update
+        sudo apt install -y doxygen graphviz python3 python3-pip ninja-build libnuma-dev ccache
+
+    - name: Cache Conan2
+      id: Cache_Conan2
+      uses: actions/cache@v4
+      with:
+        path: ~/.conan2
+        key: ${{ matrix.build_type }}-conan2
+
+    - name: Setup ccache
+      uses: Chocobo1/setup-ccache-action@v1
+      with:
+        install_ccache: false
+        update_packager_index: false
+
+    - name: python package install
+      run: |
+        pip install gcovr
+        pip3 install conan
+        pip3 install meson
+        pip3 install pyelftools
+        conan profile detect --force
+
+    - name: 设置编译脚本权限
+      run: |
+        chmod +x build.sh
+
+    - name: 编译DPDK
+      run: |
+        ./build.sh -s
+  
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: 编译lazybsd
+      run: |
+        ./build.sh -c ${{ matrix.build_type }} -l -b
+        
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
