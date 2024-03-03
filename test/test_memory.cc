@@ -12,7 +12,7 @@
 #include <gtest/gtest.h>
 #include <lazybsd.h>
 
-TEST(TEST_MEMORY, TEST_JEMALLOC_CXX)
+TEST(TEST_MEMORY, TEST_MALLOC)
 {
 	auto a = new int[1024];
 	EXPECT_NE(a, nullptr);

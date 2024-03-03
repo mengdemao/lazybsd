@@ -7,11 +7,12 @@
 # shellcheck disable=SC2155
 # shellcheck disable=SC2059
 
-set -exuo pipefail
+set -euo pipefail
 
 ROOT_PATH=$(pwd)
 BUILD_PATH=${ROOT_PATH}/build
 INSTALL_PATH=${ROOT_PATH}/install
+PYTHON_PATH=${ROOT_PATH}/python
 
 log_err() {
 	local logTime="$(date -d today +'%Y-%m-%d %H:%M:%S')"
@@ -44,7 +45,9 @@ conan_config() {
 	check_config ${BUILD_CFG} || exit 1
 
 	log_info "配置conan"
-	conan install conanfile.txt --build=missing -s build_type=${BUILD_CFG} || exit 1
+	conan install conanfile.txt --build=missing \
+			-s build_type=${BUILD_CFG} \
+			-s compiler.cppstd=gnu23 || exit 1
 }
 
 cmake_preset()
@@ -79,10 +82,7 @@ cmake_config()
 
 cmake_build()
 {
-	local BUILD_CFG=$1
-	check_config ${BUILD_CFG} || exit 1
-
-	cmake --build ${BUILD_PATH} --config "${BUILD_CFG}" -j"$(nproc)" || exit 1
+	cmake --build ${BUILD_PATH} -j"$(nproc)" || exit 1
 }
 
 cmake_ctest()
@@ -103,6 +103,7 @@ cmake_cov()
 
 setup_pkg()
 {
+	log_info "编译DPDK开始"
 	pushd dpdk >> /dev/null || exit 1
 	if [ ! -d build ]; then
 		mkdir build
@@ -113,11 +114,18 @@ setup_pkg()
 	if [ ! -d ${INSTALL_PATH} ]; then
 		ninja -C build install
 	fi
+	popd >> /dev/null || exit 1
+	log_info "编译DPDK完成"
+}
 
+pytest_run()
+{
+	pushd ${PYTHON_PATH} >> /dev/null || exit 1
+	pytest test.py
 	popd >> /dev/null || exit 1
 }
 
-build() {
+build_all() {
 	local BUILD_CFG=$1
 	local BUILD_COV=$2
 
@@ -133,12 +141,14 @@ build() {
 	conan_config 	${BUILD_CFG} || exit 1
 	cmake_preset 	${BUILD_CFG} || exit 1
 	cmake_config 	${BUILD_CFG} ${BUILD_COV} || exit 1
-	cmake_build  	${BUILD_CFG} || exit 1
+	cmake_build  				 || exit 1
 	cmake_ctest  	${BUILD_CFG} || exit 1
 
 	if [ ${BUILD_COV} = true ]; then
 		cmake_cov ${BUILD_COV} || exit 1
 	fi
+
+	pytest_run					 || exit 1
 
 	log_info "构建结束"
 }
@@ -154,7 +164,6 @@ usage() {
 BUILD_CFG="Debug"
 BUILD_ALL=false
 BUILD_COV=false
-SETUP_PKG=false
 
 # 判断输入参数个数
 if [ $# == 0 ]; then
@@ -163,7 +172,7 @@ if [ $# == 0 ]; then
 fi
 
 # 解析输入参数
-ARGS=$(getopt -o bc:ls -l build,config:,coverage,setup -- "$@")
+ARGS=$(getopt -o abc:ls -l all,build,config:,coverage,setup -- "$@")
 if [ $? != 0 ]; then
 	log_err "args parse error" >&2
 	exit 1
@@ -178,8 +187,13 @@ while true; do
 		shift 2
 		;;
 
-	-b | --build)
+	-a | --all)
 		BUILD_ALL=true
+		shift 1
+		;;
+
+	-b | --build)
+		cmake_build || exit 1
 		shift 1
 		;;
 
@@ -189,7 +203,7 @@ while true; do
 		;;
 
 	-s | --setup)
-		SETUP_PKG=true
+		setup_pkg || exit 1
 		shift 1
 		;;
 
@@ -209,14 +223,9 @@ log_info "检查输入参数"
 check_config ${BUILD_CFG} || exit 1
 log_info "参数输入正确"
 
-if [ ${SETUP_PKG} = true ];
-then
-	log_info "编译DPDK开始"
-	setup_pkg || exit 1
-	log_info "编译DPDK完成"
-fi
-
+# 执行全部编译的指令
 if [ ${BUILD_ALL} = true ];
 then
-	build ${BUILD_CFG} ${BUILD_COV}
+	build_all ${BUILD_CFG} ${BUILD_COV}
+	exit 0
 fi

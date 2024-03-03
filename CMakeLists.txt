@@ -18,7 +18,7 @@ if(NOT N EQUAL 0)
 endif()
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -32,6 +32,9 @@ endif()
 
 # 添加公共的编译指令
 add_compile_options(-Wall -Wno-unused -gdwarf-5 -fno-common -fstack-protector)
+
+# 强制编译器输出颜色
+add_compile_options(-fdiagnostics-color=always)
 
 # 设置coverage编译指令
 option(BUILD_COVERAGE "build programe in coverage mode" OFF)

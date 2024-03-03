@@ -14,7 +14,7 @@
 
 namespace lazybsd {
 
-auto init()
+int init(int argc, char* argv[])
 {
 	return EXIT_SUCCESS;
 }
