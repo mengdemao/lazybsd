@@ -8,9 +8,13 @@ include(GoogleTest)
 find_package(GTest)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SRC_TEST)
-add_executable(test ${SRC_TEST})
+add_executable(${PROJECT_NAME} ${SRC_TEST})
 
-target_link_libraries(test gtest::gtest fmt::fmt Threads::Threads lazybsd)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+                      gtest::gtest fmt::fmt Threads::Threads lazybsd)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+                      -Wno-write-strings)
 
 gtest_discover_tests(test)
 

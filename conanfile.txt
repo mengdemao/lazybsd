@@ -4,7 +4,6 @@ boost/1.84.0
 fmt/10.2.1
 gtest/1.14.0
 pybind11/2.11.1
-rapidjson/cci.20230929
 
 [generators]
 CMakeDeps

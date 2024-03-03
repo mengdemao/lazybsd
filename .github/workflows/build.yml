@@ -46,10 +46,11 @@ jobs:
 
     - name: python package install
       run: |
-        pip install gcovr
+        pip3 install gcovr
         pip3 install conan
         pip3 install meson
         pip3 install pyelftools
+        pip3 install pytest
         conan profile detect --force
 
     - name: 设置编译脚本权限
@@ -62,7 +63,7 @@ jobs:
 
     - name: 编译lazybsd
       run: |
-        ./build.sh -c ${{ matrix.build_type }} -l -b
+        ./build.sh -c ${{ matrix.build_type }} -l -a
 
     - uses: codecov/codecov-action@v4
       if: matrix.build_type == 'Debug'
