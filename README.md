@@ -8,6 +8,7 @@
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/mengdemao/lazybsd)
 [![CodeFactor](https://www.codefactor.io/repository/github/mengdemao/lazybsd/badge)](https://www.codefactor.io/repository/github/mengdemao/lazybsd)
 [![codecov](https://codecov.io/gh/mengdemao/lazybsd/graph/badge.svg?token=GKH2X5GZJ8)](https://codecov.io/gh/mengdemao/lazybsd)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/29112/badge.svg)](https://scan.coverity.com/projects/mengdemao-lazybsd)
 
 freebsd网络协议栈Linux用户层移植
 
