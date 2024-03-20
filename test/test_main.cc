@@ -10,6 +10,7 @@
  */
 #include <lazybsd.h>
 #include <lazybsd_version.h>
+#include "test_main.hh"
 
 using namespace lazybsd::version;
 

@@ -12,7 +12,7 @@
 
 #include <cstdlib>
 #include <lazybsd.h>
-
+#include "test_main.hh"
 TEST(TEST_DEMO, TEST_TEMPLATE)
 {
 	EXPECT_NE(EXIT_FAILURE, EXIT_SUCCESS);

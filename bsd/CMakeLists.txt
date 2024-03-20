@@ -166,18 +166,22 @@ set(SRC_FREEBSD
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/netinet6/in6_gif.c
 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/vm/uma_core.c
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_veth.c
 )
 
 add_library(freebsd STATIC ${SRC_FREEBSD})
 
 target_compile_options(freebsd PRIVATE
+    -Wno-missing-prototypes
     -Wno-format-truncation
-    -Wnested-externs
-    -Wstrict-prototypes
-    -Wmissing-prototypes
+    $<$<COMPILE_LANGUAGE:C>:-Wnested-externs>
+    $<$<COMPILE_LANGUAGE:C>:-Wstrict-prototypes>
+    $<$<COMPILE_LANGUAGE:C>:-Wmissing-prototypes>
+    $<$<COMPILE_LANGUAGE:C>:-Wno-pointer-sign>
+    $<$<COMPILE_LANGUAGE:CXX>:-fno-permissive>
     -Wpointer-arith
     -Wno-inline
-    -Wno-pointer-sign
     -Wno-strict-aliasing
     -Wno-maybe-uninitialized
     -Wmissing-include-dirs
@@ -187,17 +191,11 @@ target_compile_options(freebsd PRIVATE
     -finline-limit=8000
     -fdiagnostics-show-option
     -fno-builtin
-)
-
-target_compile_options(freebsd PRIVATE
     -Wno-cast-qual
     -Wno-stringop-overread
     -Wno-stringop-overflow
     -Wno-format
     -Wno-dangling-pointer
-)
-
-target_compile_definitions(freebsd PRIVATE
     -DLAZYBSD=1
     -DINET
     -DINET6
@@ -211,9 +209,6 @@ target_include_directories(freebsd PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/amd64/include/
     ${CMAKE_CURRENT_SOURCE_DIR}/src/sys/contrib/ck/include
-)
-
-target_include_directories(freebsd PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/opt
 )

@@ -10,6 +10,9 @@
  *
  */
 #include <lazybsd.h>
+#include <string>
+#include <fmt/core.h>
+
 #ifndef __LAZYBSD_VERSION__
 #define __LAZYBSD_VERSION__
 

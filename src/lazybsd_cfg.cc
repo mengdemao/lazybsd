@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fmt/color.h>
-#include <lazybsd_cfg.h>
+#include <lazybsd_cfg.hh>
 
 #include <boost/foreach.hpp>
 #include <string>

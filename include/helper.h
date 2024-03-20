@@ -11,6 +11,10 @@
 #ifndef __HELPER_H__
 #define __HELPER_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define CONS_STR(x, y) __CONS_STR(x, y)
 #define CNRV_STR(x, y) __CNRV_STR(x, y)
 
@@ -26,5 +30,9 @@
 #define TEST_HEAD(TEST_NAME) TEST(TEST_NAME, UNIQUE_ID)
 
 #define UNIQUE_ID __COUNTER__
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __HELPER_H__ */

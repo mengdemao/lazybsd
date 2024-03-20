@@ -14,8 +14,9 @@
 #include <cstdlib>
 #include <gtest/gtest.h>
 #include <lazybsd.h>
-#include <lazybsd_cfg.h>
+#include <lazybsd_cfg.hh>
 #include <string>
+#include "test_main.hh"
 
 using namespace lazybsd;
 
