@@ -100,14 +100,14 @@ public:
 
         int nb_ports;
         uint16_t max_portid;
-        uint16_t portid_list;
+        uint16_t portid_list[64];
 
         // load dpdk log level
         uint16_t log_level;
         // MAP(portid => struct lazybsd_port_cfg*)
-        struct lazybsd_port_cfg port_cfgs;
-        struct lazybsd_vdev_cfg vdev_cfgs;
-        struct lazybsd_bond_cfg bond_cfgs;
+        struct lazybsd_port_cfg port_cfgs[16];
+        struct lazybsd_vdev_cfg vdev_cfgs[16];
+        struct lazybsd_bond_cfg bond_cfgs[16];
     } dpdk;
 
     struct {
@@ -148,8 +148,12 @@ public:
     } port;
 };
 
-};
+extern lazybsd_cfg lazybsd_global_cfg;
+
+}; // namespace lazybsd
 
 lazybsd::lazybsd_cfg& lazybsd_cfg_runtime(void);
+
+
 
 #endif // LAZYBSD_CFG_HH

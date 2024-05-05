@@ -8,8 +8,8 @@
  * @copyright Copyright (c) 2024
  *
  */
-#ifndef __LAZYBSD_DPDK__
-#define __LAZYBSD_DPDK__
+#ifndef LAZYBSD_DPDK_H
+#define LAZYBSD_DPDK_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,6 +32,18 @@ struct loop_routine {
     void *arg;
 };
 
+extern int enable_kni;
+extern int nb_dev_ports;
+
+enum FilterReturn {
+    FILTER_UNKNOWN = -1,
+    FILTER_ARP = 1,
+    FILTER_KNI = 2,
+#ifdef INET6
+    FILTER_NDP = 3,  // Neighbor Solicitation/Advertisement, Router Solicitation/Advertisement/Redirect
+#endif
+};
+
 int lazybsd_dpdk_init(int argc, char **argv);
 int lazybsd_dpdk_if_up(void);
 void lazybsd_dpdk_run(loop_func_t loop, void *arg);
@@ -49,8 +61,21 @@ int lazybsd_dpdk_if_send(struct lazybsd_dpdk_if_context* ctx, void *buf, int tot
 
 void lazybsd_dpdk_pktmbuf_free(void *m);
 
+void lazybsd_kni_init(uint16_t nb_ports, int type, const char *tcp_ports,
+    const char *udp_ports);
+
+void lazybsd_kni_alloc(uint16_t port_id, unsigned socket_id, int type, int port_idx,
+    struct rte_mempool *mbuf_pool, unsigned ring_queue_size);
+
+void lazybsd_kni_process(uint16_t port_id, uint16_t queue_id,
+    struct rte_mbuf **pkts_burst, unsigned count);
+
+enum FilterReturn lazybsd_kni_proto_filter(const void *data, uint16_t len, uint16_t eth_frame_type);
+
+int lazybsd_kni_enqueue(uint16_t port_id, struct rte_mbuf *pkt);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __LAZYBSD_DPDK__ */
+#endif /* LAZYBSD_DPDK_H */

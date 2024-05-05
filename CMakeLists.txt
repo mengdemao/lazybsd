@@ -31,10 +31,10 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # 添加公共的编译指令
-add_compile_options(-Wall -Wno-unused -gdwarf-5 -fno-common -fstack-protector)
+add_compile_options(-w -Wno-unused -gdwarf-5 -fno-common -fstack-protector -mssse3)
 
 # 强制编译器输出颜色
-add_compile_options(-fdiagnostics-color=always)
+add_compile_options(-fdiagnostics-color=auto)
 
 # 设置coverage编译指令
 option(BUILD_COVERAGE "build programe in coverage mode" OFF)
@@ -91,6 +91,8 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/src SRC_LAZYBSD)
 
 # 生成目标
 add_library(${PROJECT_NAME} STATIC ${SRC_LAZYBSD})
+target_compile_definitions(${PROJECT_NAME} PUBLIC 
+                            LAZYBSD_USE_PAGE_ARRAY)
 target_link_libraries(${PROJECT_NAME} freebsd)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -104,4 +106,3 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 # 添加子文件夹
 add_subdirectory(${CMAKE_SOURCE_DIR}/bsd ${CMAKE_BINARY_DIR}/bsd)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/test)
-add_subdirectory(${CMAKE_SOURCE_DIR}/python ${CMAKE_BINARY_DIR}/python)

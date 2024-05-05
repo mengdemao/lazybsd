@@ -35,7 +35,7 @@ int lazybsd_cfg::ptree2struct(const ptree& cfg)
 	dpdk.nb_vdev = cfg.get<int>("lazybsd.dpdk.nb_vdev");
 	dpdk.numa_on = cfg.get<int>("lazybsd.dpdk.numa_on");
 	dpdk.pkt_tx_delay = cfg.get<int>("lazybsd.dpdk.pkt_tx_delay");
-	dpdk.portid_list = cfg.get<int>("lazybsd.dpdk.port_list");
+	dpdk.portid_list[0] = cfg.get<int>("lazybsd.dpdk.port_list");
 	dpdk.promiscuous = cfg.get<int>("lazybsd.dpdk.promiscuous");
 	dpdk.symmetric_rss = cfg.get<int>("lazybsd.dpdk.symmetric_rss");
 	dpdk.tso = cfg.get<int>("lazybsd.dpdk.tso");
