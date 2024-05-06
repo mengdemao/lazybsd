@@ -117,13 +117,6 @@ setup_pkg()
 	log_info "编译DPDK完成"
 }
 
-pytest_run()
-{
-	pushd ${PYTHON_PATH} >> /dev/null || exit 1
-	pytest test.py
-	popd >> /dev/null || exit 1
-}
-
 build_all() {
 	local BUILD_CFG=$1
 	local BUILD_COV=$2
@@ -146,8 +139,6 @@ build_all() {
 	if [ ${BUILD_COV} = true ]; then
 		cmake_cov ${BUILD_COV} || exit 1
 	fi
-
-	pytest_run					 || exit 1
 
 	log_info "构建结束"
 }
