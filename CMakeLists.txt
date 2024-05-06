@@ -31,10 +31,13 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # 添加公共的编译指令
-add_compile_options(-w -Wno-unused -gdwarf-5 -fno-common -fstack-protector -mssse3)
+add_compile_options(-Wall -Wno-unused -gdwarf-5 -fno-common -fstack-protector)
 
 # 强制编译器输出颜色
 add_compile_options(-fdiagnostics-color=auto)
+
+# 设置CPU Flags
+add_compile_options(-march=native)
 
 # 设置coverage编译指令
 option(BUILD_COVERAGE "build programe in coverage mode" OFF)
