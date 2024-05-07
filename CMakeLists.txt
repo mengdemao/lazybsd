@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 project(lazybsd C CXX ASM)
 
-set(CMAKE_MODULE_PATH
-  ${CMAKE_MODULE_PATH}
-  ${CMAKE_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 
 include(CheckCompiler)
 include(MakeConfig)
@@ -23,7 +21,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # 显示详细信息
-set (CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # 设置默认编译类型
 if(NOT CMAKE_BUILD_TYPE)
@@ -44,8 +42,8 @@ option(BUILD_COVERAGE "build programe in coverage mode" OFF)
 
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
 # 添加外部软件
@@ -56,7 +54,14 @@ find_package(Doxygen REQUIRED)
 find_package(GTest REQUIRED)
 find_package(fmt REQUIRED)
 find_package(OpenSSL REQUIRED)
-find_package(Boost REQUIRED program_options system filesystem regex date_time)
+find_package(
+  Boost
+  REQUIRED
+  program_options
+  system
+  filesystem
+  regex
+  date_time)
 
 if(GTest_FOUND)
   message(STATUS "GTest include path is : ${GTest_INCLUDE_DIR}")
@@ -80,9 +85,9 @@ if(OpenSSL_FOUND)
 endif(OpenSSL_FOUND)
 
 if(Boost_FOUND)
-  set(Boost_USE_STATIC_LIBS        ON)
-  set(Boost_USE_MULTITHREADED      ON)
-  set(Boost_USE_STATIC_RUNTIME    OFF)
+  set(Boost_USE_STATIC_LIBS ON)
+  set(Boost_USE_MULTITHREADED ON)
+  set(Boost_USE_STATIC_RUNTIME OFF)
   message(STATUS "Boost include path is   : ${Boost_INCLUDE_DIRS}")
   message(STATUS "Boost libraries is      : ${Boost_LIBRARIES}")
   include_directories(${Boost_INCLUDE_DIRS})
@@ -94,12 +99,11 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/src SRC_LAZYBSD)
 
 # 生成目标
 add_library(${PROJECT_NAME} STATIC ${SRC_LAZYBSD})
-target_compile_definitions(${PROJECT_NAME} PUBLIC 
-                            LAZYBSD_USE_PAGE_ARRAY)
+target_compile_definitions(${PROJECT_NAME} PUBLIC LAZYBSD_USE_PAGE_ARRAY)
 target_link_libraries(${PROJECT_NAME} freebsd)
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-                           ${CMAKE_CURRENT_SOURCE_DIR}/install/include)
+target_include_directories(${PROJECT_NAME}
+                           PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/install/include)
 
 # 添加头文件路径
 include_directories(${CMAKE_SOURCE_DIR}/include/generated)
