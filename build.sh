@@ -12,7 +12,6 @@ set -euo pipefail
 ROOT_PATH=$(pwd)
 BUILD_PATH=${ROOT_PATH}/build
 INSTALL_PATH=${ROOT_PATH}/install
-PYTHON_PATH=${ROOT_PATH}/python
 
 log_err() {
 	local logTime="$(date -d today +'%Y-%m-%d %H:%M:%S')"
