@@ -79,6 +79,63 @@ lazybsd_veth_init(void *arg)
     ifp->if_drv_flags &= ~IFF_DRV_OACTIVE;
 }
 
+static int
+lazybsd_veth_config(struct lazybsd_veth_softc *sc, struct lazybsd_port_cfg *cfg)
+{
+    int i, j;
+
+    memcpy(sc->mac, cfg->mac, ETHER_ADDR_LEN);
+    inet_pton(AF_INET, cfg->addr, &sc->ip);
+    inet_pton(AF_INET, cfg->netmask, &sc->netmask);
+    inet_pton(AF_INET, cfg->broadcast, &sc->broadcast);
+    inet_pton(AF_INET, cfg->gateway, &sc->gateway);
+
+    if (cfg->nb_vip) {
+        for (i = 0, j = 0; i < cfg->nb_vip; ++i) {
+            if (inet_pton(AF_INET, cfg->vip_addr_array[i], &sc->vip[j])) {
+                j++;
+            } else {
+                printf("lazybsd_veth_config inet_pton vip %s failed.\n", cfg->vip_addr_array[i]);
+            }
+        }
+
+        sc->nb_vip = j;
+    }
+
+#ifdef INET6
+    if (cfg->addr6_str) {
+        inet_pton(AF_INET6_LINUX, cfg->addr6_str, &sc->ip6);
+        printf("%s: Addr6: %s\n", sc->host_ifname, cfg->addr6_str);
+
+        if (cfg->gateway6_str) {
+            inet_pton(AF_INET6_LINUX, cfg->gateway6_str, &sc->gateway6);
+            printf("%s: Gateway6: %s\n", sc->host_ifname, cfg->gateway6_str);
+        } else {
+            printf("%s: No gateway6 config found.\n", sc->host_ifname);
+        }
+
+        sc->prefix_length = cfg->prefix_len == 0 ? 64 : cfg->prefix_len;
+    } else {
+        printf("%s: No addr6 config found.\n", sc->host_ifname);
+    }
+
+    if (cfg->nb_vip6) {
+        for (i = 0, j = 0; i < cfg->nb_vip6; ++i) {
+            if (inet_pton(AF_INET6_LINUX, cfg->vip_addr6_array[i], &sc->vip6[j])) {
+                j++;
+            } else {
+                printf("lazybsd_veth_config inet_pton vip6 %s failed.\n", cfg->vip_addr6_array[i]);
+            }
+        }
+
+        sc->nb_vip6 = j;
+        sc->vip_prefix_length = cfg->vip_prefix_len == 0 ? 64 : cfg->vip_prefix_len;
+    }
+#endif /* INET6 */
+
+    return 0;
+}
+
 static void
 lazybsd_veth_start(struct ifnet *ifp)
 {

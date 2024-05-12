@@ -1,3 +1,6 @@
 [submodule "dpdk"]
 	path = dpdk
 	url = https://github.com/DPDK/dpdk.git
+[submodule "bsd/src/freebsd"]
+	path = bsd/src/freebsd
+	url = https://github.com/freebsd/freebsd-src.git
