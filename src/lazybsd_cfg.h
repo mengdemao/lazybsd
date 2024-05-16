@@ -1,3 +1,4 @@
+
 /**
  * @file lazybsd_cfg.h
  * @author mengdemao (mengdemao19951021@163.com)
@@ -16,6 +17,8 @@
 extern "C" {
 #endif
 
+#include <net/if.h>
+
 #define MAC_SIZE (6)
 
 struct lazybsd_hw_features {
@@ -32,23 +35,23 @@ struct lazybsd_port_cfg {
     uint8_t port_id;
     uint8_t mac[MAC_SIZE];
     struct lazybsd_hw_features hw_features;
-    char addr;
-    char netmask;
-    char broadcast;
-    char gateway;
+    char addr[4];
+    char netmask[4];
+    char broadcast[4];
+    char gateway[6];
 
-    char vip_ifname;
+    char vip_ifname[IFNAMSIZ];
     char vip_addr_str;
-    char *vip_addr_array;
+    char *vip_addr_array[12];
     uint32_t nb_vip;
 
 #ifdef INET6
-    char addr6_str;
-    char gateway6_str;
+    char addr6_str[512];
+    char gateway6_str[512];
     uint8_t prefix_len;
 
     char vip_addr6_str;
-    char *vip_addr6_array;
+    char *vip_addr6_array[64];
     uint32_t nb_vip6;
     uint8_t vip_prefix_len;
 #endif
