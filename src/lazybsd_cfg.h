@@ -1,3 +1,4 @@
+
 /**
  * @file lazybsd_cfg.h
  * @author mengdemao (mengdemao19951021@163.com)
@@ -45,12 +46,12 @@ struct lazybsd_port_cfg {
     uint32_t nb_vip;
 
 #ifdef INET6
-    char addr6_str[16];
-    char gateway6_str[16];
+    char addr6_str[512];
+    char gateway6_str[512];
     uint8_t prefix_len;
 
     char vip_addr6_str;
-    char *vip_addr6_array[16];
+    char *vip_addr6_array[64];
     uint32_t nb_vip6;
     uint8_t vip_prefix_len;
 #endif
