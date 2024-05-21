@@ -75,7 +75,7 @@ cmake_config()
 		-DBUILD_COVERAGE=ON \
 		-DCMAKE_TOOLCHAIN_FILE="${ROOT_PATH}"/build/"${BUILD_CFG}"/generators/conan_toolchain.cmake \
 		-S "${ROOT_PATH}" \
-		-B "${ROOT_PATH}"/build || exit 1
+		-B "${ROOT_PATH}"/build -G Ninja || exit 1
 }
 
 cmake_build()
