@@ -29,7 +29,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # 添加公共的编译指令
-add_compile_options(-w -Wno-unused -gdwarf-5 -fno-common -fstack-protector)
+add_compile_options(-Wall -Wno-unused -gdwarf-5 -fno-common -fstack-protector)
 
 # 强制编译器输出颜色
 add_compile_options(-fdiagnostics-color=auto)

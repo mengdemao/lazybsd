@@ -197,13 +197,12 @@ target_compile_options(freebsd PRIVATE
     -Wno-stringop-overflow
     -Wno-format
     -Wno-dangling-pointer
-    -DLAZYBSD=1
+    -DCONFIG_LAZYBSD=1
     -DINET
-    # -DINET6
+    -DINET6
     -DTCPHPTS
     -D__FreeBSD__
     -D_KERNEL
-    -DKLD_MODULE
     -DHAVE_KERNEL_OPTION_HEADERS
 )
 

@@ -45,12 +45,12 @@ struct lazybsd_port_cfg {
     uint32_t nb_vip;
 
 #ifdef INET6
-    char addr6_str;
-    char gateway6_str;
+    char addr6_str[16];
+    char gateway6_str[16];
     uint8_t prefix_len;
 
     char vip_addr6_str;
-    char *vip_addr6_array;
+    char *vip_addr6_array[16];
     uint32_t nb_vip6;
     uint8_t vip_prefix_len;
 #endif
