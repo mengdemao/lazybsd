@@ -10,7 +10,15 @@
  *
  */
 #include <lazybsd.h>
+#ifndef __LAZYBSD_SOCKET_H__
+#define __LAZYBSD_SOCKET_H__
 
-namespace lazybsd {
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+#ifdef __cplusplus
 }
+#endif
+
+#endif // __LAZYBSD_SOCKET_H__

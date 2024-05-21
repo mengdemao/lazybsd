@@ -9,8 +9,8 @@
  * @copyright Copyright (c) 2024  mengdemao
  *
  */
-#include <lazybsd.h>
-#include <lazybsd_socket.h>
+#include "lazybsd.h"
+#include <lazybsd_socket.hh>
 
 namespace lazybsd {
 

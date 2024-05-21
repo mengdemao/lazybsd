@@ -41,6 +41,7 @@
 #include <lazybsd_host.hh>
 #include <lazybsd_dpdk.hh>
 #include <lazybsd_veth.hh>
+#include <lazybsd_socket.hh>
 
 #include <iostream>
 #include <string>

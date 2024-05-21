@@ -177,6 +177,7 @@ WarningsAsErrors:     '' # Treat all Checks from above as errors
 HeaderFilterRegex:    ''
 FormatStyle:          file
 InheritParentConfig:  false
+AllowedIdentifiers: true
 
 # The options below are just uncommented temporarily so that we do not change
 # the public API during the hack a thon
