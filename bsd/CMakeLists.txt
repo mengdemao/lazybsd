@@ -42,7 +42,7 @@ set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/kern/uipc_syscalls.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_filter.c
 
-    # ${BSD_SOURCE_DIR}/sys/amd64/amd64/in_cksum.c
+    ${BSD_SOURCE_DIR}/sys/amd64/amd64/in_cksum.c
     ${BSD_SOURCE_DIR}/sys/libkern/bcd.c
     ${BSD_SOURCE_DIR}/sys/libkern/gsb_crc32.c
     ${BSD_SOURCE_DIR}/sys/libkern/inet_ntoa.c
@@ -197,13 +197,16 @@ target_compile_options(freebsd PRIVATE
     -Wno-stringop-overflow
     -Wno-format
     -Wno-dangling-pointer
-    -DCONFIG_LAZYBSD=1
-    -DINET
-    -DINET6
-    -DTCPHPTS
-    -D__FreeBSD__
-    -D_KERNEL
-    -DHAVE_KERNEL_OPTION_HEADERS
+)
+
+target_compile_definitions(freebsd PRIVATE
+        CONFIG_LAZYBSD=1
+        INET
+        INET6
+        TCPHPTS
+        __FreeBSD__
+        _KERNEL
+        HAVE_KERNEL_OPTION_HEADERS
 )
 
 target_include_directories(freebsd PRIVATE
