@@ -9,14 +9,16 @@
  * @copyright Copyright (c) 2024  mengdemao
  *
  */
-#include <boost/program_options.hpp>
-#include <config.h>
+#include <cstdio>
+#include <cstddef>
 #include <cstdint>
+#include <config.h>
 #include <fmt/core.h>
 #include <gtest/gtest.h>
-#include <iostream>
 #include <lazybsd_args.h>
 #include <lazybsd_version.h>
+
+#include <boost/program_options.hpp>
 
 using namespace boost;
 using namespace std;

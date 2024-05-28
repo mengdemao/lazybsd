@@ -4,20 +4,13 @@
  * @version 1.0
  * @date 2024-02-03
  *
- * @brief lazybsd根头文件
+ * @brief lazybsd根头文件,此文件C/CXX都是一样的
  *
  * @copyright Copyright (c) 2024  mengdemao
  *
  */
-#include <generated/config.h>
-#include <generated/version.h>
-
 #ifndef __LAZYBSD_H__
 #define __LAZYBSD_H__
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 // dpdk argc, argv, max argc: 16, member of dpdk_config
 #define DPDK_CONFIG_NUM 			16
@@ -35,8 +28,7 @@ extern "C" {
 #define KNI_TYPE_KNI        		0
 #define KNI_TYPE_VIRTIO     		1
 
-#ifdef __cplusplus
-}
-#endif
+#define LAZYBSD_EXIT_SUCCESS        0
+#define LAZYBSD_EXIT_FAILURE        1
 
 #endif /* __LAZYBSD_H__ */

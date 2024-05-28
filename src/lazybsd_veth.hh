@@ -13,6 +13,8 @@
 #ifndef LAZYBSD_VETH_HH
 #define LAZYBSD_VETH_HH
 
+#include <cstdint>
+
 struct lazybsd_port_cfg;
 void *lazybsd_veth_attach(struct lazybsd_port_cfg *cfg);
 int lazybsd_veth_detach(void *arg);

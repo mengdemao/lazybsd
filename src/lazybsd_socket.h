@@ -10,7 +10,20 @@
  *
  */
 #include <lazybsd.h>
+#ifndef __LAZYBSD_SOCKET_H__
+#define __LAZYBSD_SOCKET_H__
 
-namespace lazybsd {
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+#define AF_INET6_LINUX      10
+#define PF_INET6_LINUX      AF_INET6_LINUX
+#define AF_INET6_FREEBSD    28
+#define PF_INET6_FREEBSD    AF_INET6_FREEBSD
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif // __LAZYBSD_SOCKET_H__
