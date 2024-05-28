@@ -13,4 +13,6 @@
 
 #include "lazybsd_errno.h"
 
+void lazybsd_os_errno(int error);
+
 #endif // LAZYBSD_ERRNO_HH

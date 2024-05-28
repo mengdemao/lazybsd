@@ -10,13 +10,12 @@
  *
  */
 #include "lazybsd_init.h"
-#include <cstdlib>
 
 namespace lazybsd {
 
 int init(int argc, char* argv[])
 {
-	return EXIT_SUCCESS;
+	return 0;
 }
 
 }

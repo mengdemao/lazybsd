@@ -17,6 +17,11 @@
 extern "C" {
 #endif
 
+#define AF_INET6_LINUX      10
+#define PF_INET6_LINUX      AF_INET6_LINUX
+#define AF_INET6_FREEBSD    28
+#define PF_INET6_FREEBSD    AF_INET6_FREEBSD
+
 #ifdef __cplusplus
 }
 #endif

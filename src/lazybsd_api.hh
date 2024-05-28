@@ -39,4 +39,11 @@ int lazybsd_route_ctl(enum LAZYBSD_ROUTE_CTL req, enum LAZYBSD_ROUTE_FLAG flag,
 /* regist a packet dispath function */
 void lazybsd_regist_packet_dispatcher(dispatch_func_t func);
 
+int lazybsd_fcntl(int fd, int cmd, ...);
+
+int lazybsd_sysctl(const int *name, u_int namelen, void *oldp, size_t *oldlenp,
+    const void *newp, size_t newlen);
+
+int lazybsd_ioctl(int fd, unsigned long request, ...);
+
 #endif // __LAZYBSD_API_HXX__

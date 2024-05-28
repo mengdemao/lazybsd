@@ -28,4 +28,7 @@
 #define KNI_TYPE_KNI        		0
 #define KNI_TYPE_VIRTIO     		1
 
+#define LAZYBSD_EXIT_SUCCESS        0
+#define LAZYBSD_EXIT_FAILURE        1
+
 #endif /* __LAZYBSD_H__ */
