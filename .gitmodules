@@ -4,3 +4,4 @@
 [submodule "bsd/src/freebsd"]
 	path = bsd/src/freebsd
 	url = https://github.com/mengdemao/freebsd.git
+	branch = releng/13.0
