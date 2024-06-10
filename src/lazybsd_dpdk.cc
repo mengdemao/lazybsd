@@ -1645,7 +1645,7 @@ handle_ioctl_msg(struct lazybsd_msg *msg)
         fd = lazybsd_socket(AF_INET6, SOCK_DGRAM, 0);
     } else
 #endif
-        fd = lazybsd::net::lazybsd_socket(AF_INET, SOCK_DGRAM, 0);
+        fd = lazybsd_socket(AF_INET, SOCK_DGRAM, 0);
 
     if (fd < 0) {
         ret = -1;
@@ -1654,7 +1654,7 @@ handle_ioctl_msg(struct lazybsd_msg *msg)
 
     ret = lazybsd_ioctl_freebsd(fd, msg->ioctl.cmd, msg->ioctl.data);
 
-    lazybsd::net::lazybsd_close(fd);
+    lazybsd_close(fd);
 
 done:
     if (ret < 0) {

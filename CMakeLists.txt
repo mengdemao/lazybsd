@@ -109,6 +109,7 @@ target_include_directories(${PROJECT_NAME}
 include_directories(${CMAKE_SOURCE_DIR}/include/generated)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/bsd/lib)
 
 # 添加子文件夹
 add_subdirectory(${CMAKE_SOURCE_DIR}/bsd ${CMAKE_BINARY_DIR}/bsd)

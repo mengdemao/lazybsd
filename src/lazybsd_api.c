@@ -1,5 +1,5 @@
 /**
- * @file lazybsd_api.cc
+ * @file lazybsd_api.c
  * @author mengdemao (mengdemao19951021@gmail.com)
  * @brief 
  * @version 0.1
