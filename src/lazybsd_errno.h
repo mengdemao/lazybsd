@@ -135,6 +135,8 @@ extern "C" {
 
 extern __thread int lazybsd_errno;
 
+extern void lazybsd_os_errno(int error);
+
 #ifdef __cplusplus
 }
 #endif

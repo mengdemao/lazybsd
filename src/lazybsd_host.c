@@ -1,5 +1,5 @@
 /**
- * @file lazybsd_host.cc
+ * @file lazybsd_host.c
  * @author mengdemao (mengdemao19951021@gmail.com)
  * @brief 
  * @version 0.1
@@ -8,13 +8,6 @@
  * @copyright Copyright (c) 2024
  * 
  */
-#include <assert.h>
-#include <errno.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <pthread.h>
@@ -24,8 +17,8 @@
 #include <openssl/rand.h>
 #include <rte_malloc.h>
 
-#include "lazybsd_host.hh"
-#include "lazybsd_errno.hh"
+#include "lazybsd_host.h"
+#include "lazybsd_errno.h"
 
 static struct timespec current_ts;
 extern void* lazybsd_mem_get_page();

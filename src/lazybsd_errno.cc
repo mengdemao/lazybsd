@@ -10,7 +10,11 @@
  */
 
 #include "lazybsd_errno.hh"
-#include <cerrno>
+#include <errno.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void lazybsd_os_errno(int error)
 {
@@ -105,10 +109,6 @@ void lazybsd_os_errno(int error)
         default:              lazybsd_errno = error; break;
     }
 }
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 __thread int lazybsd_errno;
 

@@ -8,12 +8,12 @@
  * @copyright Copyright (c) 2024
  *
  */
-#include <_stdint.h>
+#include <stdint.h>
 #include "lazybsd.h"
 #include "lazybsd_cfg.h"
 
-#ifndef __LAZYBSD_VETH__
-#define __LAZYBSD_VETH__
+#ifndef __LAZYBSD_VETH_H__
+#define __LAZYBSD_VETH_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,4 +46,4 @@ void lazybsd_mbuf_set_vlan_info(void *hdr, uint16_t vlan_tci);
 }
 #endif
 
-#endif /* __LAZYBSD_VETH__ */
+#endif /* __LAZYBSD_VETH_H__ */

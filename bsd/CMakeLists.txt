@@ -169,6 +169,8 @@ set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/vm/uma_core.c
 
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_veth.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_socket.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kevent.c
 )
 
 add_library(freebsd STATIC ${BSD_SOURCE})
@@ -181,6 +183,7 @@ target_compile_options(freebsd PRIVATE
     $<$<COMPILE_LANGUAGE:C>:-Wmissing-prototypes>
     $<$<COMPILE_LANGUAGE:C>:-Wno-pointer-sign>
     $<$<COMPILE_LANGUAGE:CXX>:-fno-permissive>
+    $<$<COMPILE_LANGUAGE:C>:-nostdinc>
     -Wpointer-arith
     -Wno-inline
     -Wno-strict-aliasing
@@ -188,7 +191,6 @@ target_compile_options(freebsd PRIVATE
     -Wmissing-include-dirs
     -Wno-unused-but-set-variable
     -Wno-address-of-packed-member
-    -nostdinc
     -finline-limit=8000
     -fdiagnostics-show-option
     -fno-builtin
@@ -213,9 +215,13 @@ target_include_directories(freebsd PRIVATE
     ${BSD_SOURCE_DIR}/sys/
     ${BSD_SOURCE_DIR}/sys/amd64/include/
     ${BSD_SOURCE_DIR}/sys/contrib/ck/include
-    ${CMAKE_CURRENT_BINARY_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/opt
 )
+
+include_directories(${CMAKE_SOURCE_DIR}/bsd/src/freebsd/sys)
+include_directories(${CMAKE_SOURCE_DIR}/bsd/src/freebsd/sys/sys)
+include_directories(${CMAKE_BINARY_DIR}/bsd/include)
+include_directories(${CMAKE_SOURCE_DIR}/bsd/lib)
 
 # 生成文件
 add_custom_target(freebsd_generate
