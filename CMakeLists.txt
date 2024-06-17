@@ -29,7 +29,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # 添加公共的编译指令
-add_compile_options(-Wall -Wno-unused -gdwarf-5 -fno-common -fstack-protector)
+add_compile_options(-w -Wno-unused -gdwarf-5 -fno-common -fstack-protector)
 
 # 强制编译器输出颜色
 add_compile_options(-fdiagnostics-color=auto)
@@ -104,6 +104,11 @@ target_link_libraries(${PROJECT_NAME} freebsd)
 
 target_include_directories(${PROJECT_NAME}
                            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/install/include)
+
+# 添加可执行文件
+add_executable(${PROJECT_NAME}_runner main.cc)
+target_link_libraries(${PROJECT_NAME}_runner PRIVATE
+                      "$<LINK_GROUP:RESCAN,${PROJECT_NAME},freebsd>")
 
 # 添加头文件路径
 include_directories(${CMAKE_SOURCE_DIR}/include/generated)

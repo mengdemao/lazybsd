@@ -1,7 +1,7 @@
 set(BSD_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/freebsd)
 set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/crypto/sha1.c
-    ${BSD_SOURCE_DIR}/sys/crypto/siphash/siphash.c
+    #${BSD_SOURCE_DIR}/sys/crypto/siphash/siphash.c
     ${BSD_SOURCE_DIR}/sys/kern/kern_descrip.c
     ${BSD_SOURCE_DIR}/sys/kern/kern_event.c
     ${BSD_SOURCE_DIR}/sys/kern/kern_fail.c
