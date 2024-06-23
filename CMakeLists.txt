@@ -29,7 +29,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # 添加公共的编译指令
-add_compile_options(-w -Wno-unused -gdwarf-5 -fno-common -fstack-protector)
+add_compile_options(-Wall -Wno-unused -gdwarf-5 -fno-common -fstack-protector)
 
 # 强制编译器输出颜色
 add_compile_options(-fdiagnostics-color=auto)
@@ -100,7 +100,6 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/src SRC_LAZYBSD)
 # 生成目标
 add_library(${PROJECT_NAME} STATIC ${SRC_LAZYBSD})
 target_compile_definitions(${PROJECT_NAME} PUBLIC LAZYBSD_USE_PAGE_ARRAY)
-target_link_libraries(${PROJECT_NAME} freebsd)
 
 target_include_directories(${PROJECT_NAME}
                            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/install/include)
@@ -109,6 +108,8 @@ target_include_directories(${PROJECT_NAME}
 add_executable(${PROJECT_NAME}_runner main.cc)
 target_link_libraries(${PROJECT_NAME}_runner PRIVATE
                       "$<LINK_GROUP:RESCAN,${PROJECT_NAME},freebsd>")
+target_link_options(${PROJECT_NAME}_runner
+                    PRIVATE -Xlinker -Map=${PROJECT_NAME}_runner.map)
 
 # 添加头文件路径
 include_directories(${CMAKE_SOURCE_DIR}/include/generated)

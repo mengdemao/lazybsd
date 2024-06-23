@@ -42,6 +42,7 @@
 #include "lazybsd_socket.h"
 #include "lazybsd_errno.h"
 #include "lazybsd_host.h"
+#include "lazybsd_bsd.h"
 
 /* setsockopt/getsockopt define start */
 
@@ -944,7 +945,6 @@ lazybsd_send(int s, const void *buf, size_t len, int flags)
     return (lazybsd_sendto(s, buf, len, flags, NULL, 0));
 }
 
-extern int sendit(struct thread *td, int s, struct msghdr *mp, int flags);
 ssize_t lazybsd_sendto(int s, const void *buf, size_t len, int flags,
          const struct linux_sockaddr *to, socklen_t tolen)
 {
