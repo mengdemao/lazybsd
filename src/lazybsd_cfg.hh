@@ -152,8 +152,4 @@ extern lazybsd_cfg lazybsd_global_cfg;
 
 }; // namespace lazybsd
 
-lazybsd::lazybsd_cfg& lazybsd_cfg_runtime(void);
-
-
-
 #endif // LAZYBSD_CFG_HH

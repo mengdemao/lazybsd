@@ -145,14 +145,6 @@ int lazybsd_cfg::parserFile(const std::string &fileName, ptree& cfg)
 	return EXIT_SUCCESS;
 }
 
-/**
- * @brief lazybsd_cfg_runtime
- * @return lazybsd_cfg
- */
-lazybsd_cfg& lazybsd_cfg_runtime(void)
-{
-	static lazybsd_cfg lazybsd_cfg_var;
-	return lazybsd_cfg_var;
-}
+lazybsd_cfg lazybsd_global_cfg;
 
 }

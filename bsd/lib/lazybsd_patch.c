@@ -125,6 +125,8 @@ int mp_ncpus = 1;
 /* export this for libkvm consumers. */
 int mp_maxcpus = MAXCPU;
 
+struct pcpu *__pcpu;
+
 volatile int smp_started;
 u_int mp_maxid;
 
@@ -1440,3 +1442,8 @@ pfind_any(pid_t pid)
     return (curproc);
 }
 
+int	callout_reset_sbt_on(struct callout *out, sbintime_t sb1, sbintime_t sb2,
+	    void (*func)(void *p), void *a, int b, int c)
+{
+    return 0;
+}
