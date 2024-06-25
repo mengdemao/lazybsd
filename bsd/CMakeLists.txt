@@ -30,6 +30,7 @@ set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/kern/subr_taskqueue.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_unit.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_smr.c
+    ${BSD_SOURCE_DIR}/sys/kern/subr_epoch.c
     ${BSD_SOURCE_DIR}/sys/kern/sys_capability.c
     ${BSD_SOURCE_DIR}/sys/kern/sys_generic.c
     ${BSD_SOURCE_DIR}/sys/kern/sys_socket.c
@@ -168,9 +169,12 @@ set(BSD_SOURCE
 
     ${BSD_SOURCE_DIR}/sys/vm/uma_core.c
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_vfs.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_veth.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_lock.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_main.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_patch.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_compat.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_socket.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kevent.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_condvar.c

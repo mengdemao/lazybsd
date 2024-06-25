@@ -272,6 +272,18 @@ _rm_runlock(struct rmlock *rm,  struct rm_priotracker *tracker)
 
 }
 
+void
+__rw_wlock_hard(volatile uintptr_t *c, uintptr_t v LOCK_FILE_LINE_ARG_DEF)
+{
+
+}
+
+void
+__rw_wunlock_hard(volatile uintptr_t *c, uintptr_t v LOCK_FILE_LINE_ARG_DEF)
+{
+
+}
+
 int
 rm_wowned(const struct rmlock *rm)
 {
