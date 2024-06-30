@@ -30,7 +30,7 @@
 
 #include_next <sys/filedesc.h>
 
-void lazybsd_fdused_range(int max);
+void ff_fdused_range(int max);
 int lazybsd_fdisused(int fd);
 int lazybsd_getmaxfd(void);
 

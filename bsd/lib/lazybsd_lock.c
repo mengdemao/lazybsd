@@ -447,6 +447,18 @@ unlock_rm(struct lock_object *lock)
     return (1);
 }
 
+void
+spinlock_enter(void)
+{
+
+}
+
+void
+spinlock_exit(void)
+{
+
+}
+
 struct lock_class lock_class_rm_sleepable = {
     .lc_name = "sleepable rm",
     .lc_flags = LC_SLEEPLOCK | LC_SLEEPABLE | LC_RECURSABLE,

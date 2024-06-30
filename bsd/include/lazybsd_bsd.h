@@ -18,6 +18,8 @@ extern "C" {
 
 extern int sendit(struct thread *td, int s, struct msghdr *mp, int flags);
 
+extern void lazybsd_hardclock(void);
+
 #ifdef __cplusplus
 }
 #endif

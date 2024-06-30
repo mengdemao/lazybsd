@@ -1197,9 +1197,7 @@ SYSCTL_PROC(_kern, OID_AUTO, callout_stat,
     0, 0, sysctl_kern_callout_stat, "I",
     "Dump immediate statistic snapshot of the scheduled callouts");
 
-#ifdef FSTACK
-void lazybsd_hardclock(void);
-
+#ifdef CONFIG_LAZYBSD
 void
 lazybsd_hardclock(void)
 {

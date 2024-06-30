@@ -48,9 +48,6 @@
 #define    trunc_page(x)        ((x) & ~PAGE_MASK)
 #define    round_page(x)        (((x) + PAGE_MASK) & ~PAGE_MASK)
 
-extern struct rte_mempool *pktmbuf_pool[NB_SOCKETS];
-extern struct lcore_conf lcore_conf;
-
 //struct lazybsd_tx_offload;
 
 // lazybsd_ref_pool allocate rte_mbuf without data space, which data point to bsd mbuf's data address.
@@ -74,6 +71,9 @@ extern "C" {
 static struct mbuf_txring nic_tx_ring[RTE_MAX_ETHPORTS];
 static inline int lazybsd_txring_enqueue(struct mbuf_txring* q, void *p, int seg_num);
 static inline void lazybsd_txring_init(struct mbuf_txring* r, uint32_t len);
+
+struct lcore_conf lcore_conf;
+struct rte_mempool *pktmbuf_pool[NB_SOCKETS];
 
 typedef struct _list_manager_s
 {
@@ -216,7 +216,7 @@ int lazybsd_mmap_init()
     int i = 0;
     uint64_t    virt_addr = (uint64_t)NULL;
     phys_addr_t    phys_addr = 0;
-    uint64_t    bsd_memsz = (lazybsd::lazybsd_global_cfg.freebsd.mem_size << 20);
+    uint64_t    bsd_memsz = (lazybsd_global_cfg.freebsd.mem_size << 20);
     unsigned int bsd_pagesz = 0;
 
     lazybsd_page_start = (uint64_t)mmap( NULL, bsd_memsz, PROT_READ | PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
@@ -231,7 +231,7 @@ int lazybsd_mmap_init()
     }
     lazybsd_page_end = lazybsd_page_start + bsd_memsz;
     bsd_pagesz = (bsd_memsz>>12);
-    rte_log(RTE_LOG_INFO, RTE_LOGTYPE_USER1, "lazybsd_mmap_init mmap %d pages, %d MB.\n", bsd_pagesz, lazybsd::lazybsd_global_cfg.freebsd.mem_size);
+    rte_log(RTE_LOG_INFO, RTE_LOGTYPE_USER1, "lazybsd_mmap_init mmap %d pages, %d MB.\n", bsd_pagesz, lazybsd_global_cfg.freebsd.mem_size);
     printf("lazybsd_mmap_init mem[0x%lx:0x%lx]\n", lazybsd_page_start, lazybsd_page_end);
 
     if (posix_memalign((void**)&lazybsd_mpage_phy, sizeof(phys_addr_t), bsd_pagesz*sizeof(phys_addr_t))!=0){

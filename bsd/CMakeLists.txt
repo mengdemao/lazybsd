@@ -25,6 +25,7 @@ set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/kern/subr_lock.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_module.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_param.c
+    ${BSD_SOURCE_DIR}/sys/kern/subr_smp.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_pcpu.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_sbuf.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_taskqueue.c
@@ -173,10 +174,15 @@ set(BSD_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_veth.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_lock.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_route.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_patch.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_compat.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_socket.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_crypto.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kevent.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_freebsd.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_subr_prf.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_subr_epoch.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_condvar.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_timeout.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_intr.c

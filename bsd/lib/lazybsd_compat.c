@@ -77,7 +77,7 @@ int vttoif_tab[10] = {
     S_IFSOCK, S_IFIFO, S_IFMT, S_IFMT
 };
 
-void ff_init_thread0(void);
+void lazybsd_init_thread0(void);
 
 void
 resettodr(void)
@@ -86,7 +86,7 @@ resettodr(void)
 }
 
 void
-ff_init_thread0(void)
+lazybsd_init_thread0(void)
 {
     pcurthread = &thread0;
 }

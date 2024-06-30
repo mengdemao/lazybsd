@@ -60,6 +60,8 @@
 #include "lazybsd_host.h"
 #include "lazybsd_patch.h"
 
+u_long vm_kmem_size;
+
 int kstack_pages = KSTACK_PAGES;
 SYSCTL_INT(_kern, OID_AUTO, kstack_pages, CTLFLAG_RD, &kstack_pages, 0,
     "Kernel stack size in pages");
@@ -119,16 +121,16 @@ int cpu_disable_deep_sleep;
 static int sysctl_kern_smp_active(SYSCTL_HANDLER_ARGS);
 
 /* This is used in modules that need to work in both SMP and UP. */
-cpuset_t all_cpus;
+extern cpuset_t all_cpus;
 
-int mp_ncpus = 1;
+extern int mp_ncpus;
 /* export this for libkvm consumers. */
-int mp_maxcpus = MAXCPU;
+extern int mp_maxcpus;
 
 struct pcpu *__pcpu;
 
-volatile int smp_started;
-u_int mp_maxid;
+extern volatile int smp_started;
+extern u_int mp_maxid;
 
 static SYSCTL_NODE(_kern, OID_AUTO, smp, CTLFLAG_RD|CTLFLAG_CAPRD, NULL,
     "Kernel SMP");
@@ -142,17 +144,9 @@ SYSCTL_INT(_kern_smp, OID_AUTO, maxcpus, CTLFLAG_RD|CTLFLAG_CAPRD, &mp_maxcpus,
 SYSCTL_PROC(_kern_smp, OID_AUTO, active, CTLFLAG_RD | CTLTYPE_INT, NULL, 0,
     sysctl_kern_smp_active, "I", "Indicates system is running in SMP mode");
 
-int smp_disabled = 0;    /* has smp been disabled? */
-SYSCTL_INT(_kern_smp, OID_AUTO, disabled, CTLFLAG_RDTUN|CTLFLAG_CAPRD,
-    &smp_disabled, 0, "SMP has been disabled from the loader");
-
-int smp_cpus = 1;    /* how many cpu's running */
+extern int smp_cpus;    /* how many cpu's running */
 SYSCTL_INT(_kern_smp, OID_AUTO, cpus, CTLFLAG_RD|CTLFLAG_CAPRD, &smp_cpus, 0,
     "Number of CPUs online");
-
-int smp_topology = 0;    /* Which topology we're using. */
-SYSCTL_INT(_kern_smp, OID_AUTO, topology, CTLFLAG_RDTUN, &smp_topology, 0,
-    "Topology override setting; 0 is default provided by hardware.");
 
 u_int vn_lock_pair_pause_max = 1; // lazybsd_global_cfg.freebsd.hz / 100;
 SYSCTL_UINT(_debug, OID_AUTO, vn_lock_pair_pause_max, CTLFLAG_RW,
@@ -1446,4 +1440,10 @@ int	callout_reset_sbt_on(struct callout *out, sbintime_t sb1, sbintime_t sb2,
 	    void (*func)(void *p), void *a, int b, int c)
 {
     return 0;
+}
+
+void
+sowakeup_aio(struct socket *so, struct sockbuf *sb)
+{
+
 }

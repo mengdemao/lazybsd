@@ -42,9 +42,12 @@
 #include <lazybsd_dpdk.hh>
 #include <lazybsd_veth.hh>
 #include <lazybsd_socket.hh>
+#include "lazybsd_pcap.h"
 
 #include <iostream>
 #include <string>
+
+extern "C" void lazybsd_hardclock(void);
 
 namespace lazybsd {
 namespace dpdk {
@@ -100,10 +103,6 @@ static uint8_t symmetric_rsskey[52] = {
 static int rsskey_len = sizeof(default_rsskey_40bytes);
 static uint8_t *rsskey = default_rsskey_40bytes;
 
-struct lcore_conf lcore_conf;
-
-struct rte_mempool *pktmbuf_pool[NB_SOCKETS];
-
 static pcblddr_func_t pcblddr_fun;
 
 static struct rte_ring **dispatch_ring[RTE_MAX_ETHPORTS];
@@ -128,7 +127,6 @@ static struct lazybsd_dpdk_if_context *veth_ctx[RTE_MAX_ETHPORTS];
 
 static struct lazybsd_top_args lazybsd_top_status;
 static struct lazybsd_traffic_args lazybsd_traffic;
-extern void lazybsd_hardclock(void);
 
 /* Callback for request of changing MTU */
 /* Total octets in ethernet header */
@@ -1463,47 +1461,6 @@ lazybsd_add_vlan_tag(struct rte_mbuf * rtem)
     }
 }
 
-int
-lazybsd_dump_packets(const char* dump_path, struct rte_mbuf* pkt, uint16_t snap_len, uint32_t f_maxlen)
-{
-    unsigned int out_len = 0, wr_len = 0;
-    struct pcap_pkthdr pcap_hdr;
-    void* hdr = &pcap_hdr;
-    struct timeval ts;
-    char pcap_f_path[FILE_PATH_LEN] = {0};
-
-    if (g_pcap_fp == NULL) {
-        return -1;
-    }
-    snap_len = pkt->pkt_len < snap_len ? pkt->pkt_len : snap_len;
-    gettimeofday(&ts, NULL);
-    pcap_hdr.sec = ts.tv_sec;
-    pcap_hdr.usec = ts.tv_usec;
-    pcap_hdr.caplen = snap_len;
-    pcap_hdr.len = pkt->pkt_len;
-    fwrite(hdr, sizeof(struct pcap_pkthdr), 1, g_pcap_fp);
-    g_flen += sizeof(struct pcap_pkthdr);
-
-    while(pkt != NULL && out_len <= snap_len) {
-        wr_len = snap_len - out_len;
-        wr_len = wr_len > pkt->data_len ? pkt->data_len : wr_len ;
-        fwrite(rte_pktmbuf_mtod(pkt, char*), wr_len, 1, g_pcap_fp);
-        out_len += wr_len;
-        pkt = pkt->next;
-    }
-    g_flen += out_len;
-
-    if ( g_flen >= f_maxlen ){
-        fclose(g_pcap_fp);
-        if ( ++seq >= PCAP_FILE_NUM )
-            seq = 0;
-
-        lazybsd_enable_pcap(dump_path, snap_len);
-    }
-
-    return 0;
-}
-
 static inline void
 process_packets(uint16_t port_id, uint16_t queue_id, struct rte_mbuf **bufs,
     uint16_t count, const struct lazybsd_dpdk_if_context *ctx, int pkts_from_ring)
@@ -2112,83 +2069,16 @@ toeplitz_hash(unsigned keylen, const uint8_t *key,
     return (hash);
 }
 
-int
-lazybsd_in_pcbladdr(uint16_t family, void *faddr, uint16_t fport, void *laddr)
-{
-    int ret = 0;
-    uint16_t fa;
-
-    if (!pcblddr_fun)
-        return ret;
-
-    if (family == AF_INET)
-        fa = AF_INET;
-    else if (family == AF_INET6_FREEBSD)
-        fa = AF_INET6_LINUX;
-    else
-        return EADDRNOTAVAIL;
-
-    ret = (*pcblddr_fun)(fa, faddr, fport, laddr);
-
-    return ret;
-}
-
 void
 lazybsd_regist_pcblddr_fun(pcblddr_func_t func)
 {
     pcblddr_fun = func;
 }
 
-int
-lazybsd_rss_check(void *softc, uint32_t saddr, uint32_t daddr,
-    uint16_t sport, uint16_t dport)
-{
-    struct lcore_conf *qconf = &lcore_conf;
-    struct lazybsd_dpdk_if_context *ctx = (struct lazybsd_dpdk_if_context *)lazybsd_veth_softc_to_hostc(softc);
-    uint16_t nb_queues = qconf->nb_queue_list[ctx->port_id];
-
-    if (nb_queues <= 1) {
-        return 1;
-    }
-
-    uint16_t reta_size = rss_reta_size[ctx->port_id];
-    uint16_t queueid = qconf->tx_queue_id[ctx->port_id];
-
-    uint8_t data[sizeof(saddr) + sizeof(daddr) + sizeof(sport) +
-        sizeof(dport)];
-
-    unsigned datalen = 0;
-
-    bcopy(&saddr, &data[datalen], sizeof(saddr));
-    datalen += sizeof(saddr);
-
-    bcopy(&daddr, &data[datalen], sizeof(daddr));
-    datalen += sizeof(daddr);
-
-    bcopy(&sport, &data[datalen], sizeof(sport));
-    datalen += sizeof(sport);
-
-    bcopy(&dport, &data[datalen], sizeof(dport));
-    datalen += sizeof(dport);
-
-    uint32_t hash = 0;
-    hash = toeplitz_hash(rsskey_len, rsskey, datalen, data);
-
-    return ((hash & (reta_size - 1)) % nb_queues) == queueid;
-}
-
 void
 lazybsd_regist_packet_dispatcher(dispatch_func_t func)
 {
     packet_dispatcher = func;
-}
-
-uint64_t
-lazybsd_get_tsc_ns()
-{
-    uint64_t cur_tsc = rte_rdtsc();
-    uint64_t hz = rte_get_tsc_hz();
-    return ((double)cur_tsc/(double)hz) * NS_PER_S;
 }
 
 static void
@@ -2875,7 +2765,7 @@ lazybsd_dpdk_if_send(struct lazybsd_dpdk_if_context *ctx, void *m,
     int total)
 {
 #ifdef LAZYBSD_USE_PAGE_ARRAY
-    struct lcore_conf *qconf = &lazybsd::dpdk::lcore_conf;
+    struct lcore_conf *qconf = &lcore_conf;
     int    len = 0;
 
     len = lazybsd_if_send_onepkt(ctx, m,total);
@@ -2886,7 +2776,7 @@ lazybsd_dpdk_if_send(struct lazybsd_dpdk_if_context *ctx, void *m,
     qconf->tx_mbufs[ctx->port_id].len = len;
     return 0;
 #endif
-    struct rte_mempool *mbuf_pool = lazybsd::dpdk::pktmbuf_pool[lazybsd::dpdk::lcore_conf.socket_id];
+    struct rte_mempool *mbuf_pool = pktmbuf_pool[lcore_conf.socket_id];
     struct rte_mbuf *head = rte_pktmbuf_alloc(mbuf_pool);
     if (head == NULL) {
         lazybsd_mbuf_free(m);
@@ -3025,6 +2915,73 @@ void
 lazybsd_dpdk_pktmbuf_free(void *m)
 {
     rte_pktmbuf_free_seg((struct rte_mbuf *)m);
+}
+
+int
+lazybsd_in_pcbladdr(uint16_t family, void *faddr, uint16_t fport, void *laddr)
+{
+    int ret = 0;
+    uint16_t fa;
+
+    if (!lazybsd::dpdk::pcblddr_fun)
+        return ret;
+
+    if (family == AF_INET)
+        fa = AF_INET;
+    else if (family == AF_INET6_FREEBSD)
+        fa = AF_INET6_LINUX;
+    else
+        return EADDRNOTAVAIL;
+
+    ret = (*lazybsd::dpdk::pcblddr_fun)(fa, faddr, fport, laddr);
+
+    return ret;
+}
+
+int
+lazybsd_rss_check(void *softc, uint32_t saddr, uint32_t daddr,
+    uint16_t sport, uint16_t dport)
+{
+    struct lcore_conf *qconf = &lcore_conf;
+    struct lazybsd_dpdk_if_context *ctx = (struct lazybsd_dpdk_if_context *)lazybsd_veth_softc_to_hostc(softc);
+    uint16_t nb_queues = qconf->nb_queue_list[ctx->port_id];
+
+    if (nb_queues <= 1) {
+        return 1;
+    }
+
+    uint16_t reta_size = lazybsd::dpdk::rss_reta_size[ctx->port_id];
+    uint16_t queueid = qconf->tx_queue_id[ctx->port_id];
+
+    uint8_t data[sizeof(saddr) + sizeof(daddr) + sizeof(sport) +
+        sizeof(dport)];
+
+    unsigned datalen = 0;
+
+    bcopy(&saddr, &data[datalen], sizeof(saddr));
+    datalen += sizeof(saddr);
+
+    bcopy(&daddr, &data[datalen], sizeof(daddr));
+    datalen += sizeof(daddr);
+
+    bcopy(&sport, &data[datalen], sizeof(sport));
+    datalen += sizeof(sport);
+
+    bcopy(&dport, &data[datalen], sizeof(dport));
+    datalen += sizeof(dport);
+
+    uint32_t hash = 0;
+    hash = lazybsd::dpdk::toeplitz_hash(lazybsd::dpdk::rsskey_len, lazybsd::dpdk::rsskey, datalen, data);
+
+    return ((hash & (reta_size - 1)) % nb_queues) == queueid;
+}
+
+uint64_t
+lazybsd_get_tsc_ns()
+{
+    uint64_t cur_tsc = rte_rdtsc();
+    uint64_t hz = rte_get_tsc_hz();
+    return ((double)cur_tsc/(double)hz) * NS_PER_S;
 }
 
 #ifdef __cplusplus
