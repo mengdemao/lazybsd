@@ -1,12 +1,12 @@
 /**
  * @file lazybsd_dpdk.cc
  * @author mengdemao (mengdemao19951021@163.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2024-03-11
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 #include <rte_common.h>
 #include <rte_byteorder.h>
@@ -42,9 +42,12 @@
 #include <lazybsd_dpdk.hh>
 #include <lazybsd_veth.hh>
 #include <lazybsd_socket.hh>
+#include "lazybsd_pcap.h"
 
 #include <iostream>
 #include <string>
+
+extern "C" void lazybsd_hardclock(void);
 
 namespace lazybsd {
 namespace dpdk {
@@ -100,10 +103,6 @@ static uint8_t symmetric_rsskey[52] = {
 static int rsskey_len = sizeof(default_rsskey_40bytes);
 static uint8_t *rsskey = default_rsskey_40bytes;
 
-struct lcore_conf lcore_conf;
-
-struct rte_mempool *pktmbuf_pool[NB_SOCKETS];
-
 static pcblddr_func_t pcblddr_fun;
 
 static struct rte_ring **dispatch_ring[RTE_MAX_ETHPORTS];
@@ -128,7 +127,6 @@ static struct lazybsd_dpdk_if_context *veth_ctx[RTE_MAX_ETHPORTS];
 
 static struct lazybsd_top_args lazybsd_top_status;
 static struct lazybsd_traffic_args lazybsd_traffic;
-extern void lazybsd_hardclock(void);
 
 /* Callback for request of changing MTU */
 /* Total octets in ethernet header */
@@ -206,29 +204,6 @@ static void lazybsd_hardclock_job(__rte_unused struct rte_timer *timer,
     __rte_unused void *arg) {
     lazybsd_hardclock();
     lazybsd_update_current_ts();
-}
-
-struct lazybsd_dpdk_if_context *
-lazybsd_dpdk_register_if(void *sc, void *ifp, struct lazybsd_port_cfg *cfg)
-{
-    struct lazybsd_dpdk_if_context *ctx;
-
-    ctx = (struct lazybsd_dpdk_if_context *)calloc(1, sizeof(struct lazybsd_dpdk_if_context));
-    if (ctx == NULL)
-        return NULL;
-
-    ctx->sc = sc;
-    ctx->ifp = ifp;
-    ctx->port_id = cfg->port_id;
-    ctx->hw_features = cfg->hw_features;
-
-    return ctx;
-}
-
-void
-lazybsd_dpdk_deregister_if(struct lazybsd_dpdk_if_context *ctx)
-{
-    free(ctx);
 }
 
 static void
@@ -1910,134 +1885,6 @@ send_single_packet(struct rte_mbuf *m, uint8_t port)
     return 0;
 }
 
-int
-lazybsd_dpdk_if_send(struct lazybsd_dpdk_if_context *ctx, void *m,
-    int total)
-{
-#ifdef LAZYBSD_USE_PAGE_ARRAY
-    struct lcore_conf *qconf = &lcore_conf;
-    int    len = 0;
-
-    len = lazybsd_if_send_onepkt(ctx, m,total);
-    if (unlikely(len == MAX_PKT_BURST)) {
-        send_burst(qconf, MAX_PKT_BURST, ctx->port_id);
-        len = 0;
-    }
-    qconf->tx_mbufs[ctx->port_id].len = len;
-    return 0;
-#endif
-    struct rte_mempool *mbuf_pool = pktmbuf_pool[lcore_conf.socket_id];
-    struct rte_mbuf *head = rte_pktmbuf_alloc(mbuf_pool);
-    if (head == NULL) {
-        lazybsd_mbuf_free(m);
-        return -1;
-    }
-
-    head->pkt_len = total;
-    head->nb_segs = 0;
-
-    int off = 0;
-    struct rte_mbuf *cur = head, *prev = NULL;
-    while(total > 0) {
-        if (cur == NULL) {
-            cur = rte_pktmbuf_alloc(mbuf_pool);
-            if (cur == NULL) {
-                rte_pktmbuf_free(head);
-                lazybsd_mbuf_free(m);
-                return -1;
-            }
-        }
-
-        if (prev != NULL) {
-            prev->next = cur;
-        }
-        head->nb_segs++;
-
-        prev = cur;
-        void *data = rte_pktmbuf_mtod(cur, void*);
-        int len = total > RTE_MBUF_DEFAULT_DATAROOM ? RTE_MBUF_DEFAULT_DATAROOM : total;
-        int ret = lazybsd_mbuf_copydata(m, data, off, len);
-        if (ret < 0) {
-            rte_pktmbuf_free(head);
-            lazybsd_mbuf_free(m);
-            return -1;
-        }
-
-
-        cur->data_len = len;
-        off += len;
-        total -= len;
-        cur = NULL;
-    }
-
-    struct lazybsd_tx_offload offload = {0};
-    lazybsd_mbuf_tx_offload(m, &offload);
-
-    void *data = rte_pktmbuf_mtod(head, void*);
-
-    if (offload.ip_csum) {
-        /* ipv6 not supported yet */
-        struct rte_ipv4_hdr *iph;
-        int iph_len;
-        iph = (struct rte_ipv4_hdr *)(data + RTE_ETHER_HDR_LEN);
-        iph_len = (iph->version_ihl & 0x0f) << 2;
-
-        head->ol_flags |= RTE_MBUF_F_TX_IP_CKSUM | RTE_MBUF_F_TX_IPV4;
-        head->l2_len = RTE_ETHER_HDR_LEN;
-        head->l3_len = iph_len;
-    }
-
-    if (ctx->hw_features.tx_csum_l4) {
-        struct rte_ipv4_hdr *iph;
-        int iph_len;
-        iph = (struct rte_ipv4_hdr *)(data + RTE_ETHER_HDR_LEN);
-        iph_len = (iph->version_ihl & 0x0f) << 2;
-
-        if (offload.tcp_csum) {
-            head->ol_flags |= RTE_MBUF_F_TX_TCP_CKSUM;
-            head->l2_len = RTE_ETHER_HDR_LEN;
-            head->l3_len = iph_len;
-        }
-
-        /*
-         *  TCP segmentation offload.
-         *
-         *  - set the PKT_TX_TCP_SEG flag in mbuf->ol_flags (this flag
-         *    implies PKT_TX_TCP_CKSUM)
-         *  - set the flag PKT_TX_IPV4 or PKT_TX_IPV6
-         *  - if it's IPv4, set the PKT_TX_IP_CKSUM flag and
-         *    write the IP checksum to 0 in the packet
-         *  - fill the mbuf offload information: l2_len,
-         *    l3_len, l4_len, tso_segsz
-         *  - calculate the pseudo header checksum without taking ip_len
-         *    in account, and set it in the TCP header. Refer to
-         *    rte_ipv4_phdr_cksum() and rte_ipv6_phdr_cksum() that can be
-         *    used as helpers.
-         */
-        if (offload.tso_seg_size) {
-            struct rte_tcp_hdr *tcph;
-            int tcph_len;
-            tcph = (struct rte_tcp_hdr *)((char *)iph + iph_len);
-            tcph_len = (tcph->data_off & 0xf0) >> 2;
-            tcph->cksum = rte_ipv4_phdr_cksum(iph, RTE_MBUF_F_TX_TCP_SEG);
-
-            head->ol_flags |= RTE_MBUF_F_TX_TCP_SEG;
-            head->l4_len = tcph_len;
-            head->tso_segsz = offload.tso_seg_size;
-        }
-
-        if (offload.udp_csum) {
-            head->ol_flags |= RTE_MBUF_F_TX_UDP_CKSUM;
-            head->l2_len = RTE_ETHER_HDR_LEN;
-            head->l3_len = iph_len;
-        }
-    }
-
-    lazybsd_mbuf_free(m);
-
-    return send_single_packet(head, ctx->port_id);
-}
-
 static int
 main_loop(void *arg)
 {
@@ -2199,12 +2046,6 @@ lazybsd_dpdk_run(loop_func_t loop, void *arg) {
     rte_free(lr);
 }
 
-void
-lazybsd_dpdk_pktmbuf_free(void *m)
-{
-    rte_pktmbuf_free_seg((struct rte_mbuf *)m);
-}
-
 static uint32_t
 toeplitz_hash(unsigned keylen, const uint8_t *key,
     unsigned datalen, const uint8_t *data)
@@ -2228,83 +2069,16 @@ toeplitz_hash(unsigned keylen, const uint8_t *key,
     return (hash);
 }
 
-int
-lazybsd_in_pcbladdr(uint16_t family, void *faddr, uint16_t fport, void *laddr)
-{
-    int ret = 0;
-    uint16_t fa;
-
-    if (!pcblddr_fun)
-        return ret;
-
-    if (family == AF_INET)
-        fa = AF_INET;
-    else if (family == AF_INET6_FREEBSD)
-        fa = AF_INET6_LINUX;
-    else
-        return EADDRNOTAVAIL;
-
-    ret = (*pcblddr_fun)(fa, faddr, fport, laddr);
-
-    return ret;
-}
-
 void
 lazybsd_regist_pcblddr_fun(pcblddr_func_t func)
 {
     pcblddr_fun = func;
 }
 
-int
-lazybsd_rss_check(void *softc, uint32_t saddr, uint32_t daddr,
-    uint16_t sport, uint16_t dport)
-{
-    struct lcore_conf *qconf = &lcore_conf;
-    struct lazybsd_dpdk_if_context *ctx = (struct lazybsd_dpdk_if_context *)lazybsd_veth_softc_to_hostc(softc);
-    uint16_t nb_queues = qconf->nb_queue_list[ctx->port_id];
-
-    if (nb_queues <= 1) {
-        return 1;
-    }
-
-    uint16_t reta_size = rss_reta_size[ctx->port_id];
-    uint16_t queueid = qconf->tx_queue_id[ctx->port_id];
-
-    uint8_t data[sizeof(saddr) + sizeof(daddr) + sizeof(sport) +
-        sizeof(dport)];
-
-    unsigned datalen = 0;
-
-    bcopy(&saddr, &data[datalen], sizeof(saddr));
-    datalen += sizeof(saddr);
-
-    bcopy(&daddr, &data[datalen], sizeof(daddr));
-    datalen += sizeof(daddr);
-
-    bcopy(&sport, &data[datalen], sizeof(sport));
-    datalen += sizeof(sport);
-
-    bcopy(&dport, &data[datalen], sizeof(dport));
-    datalen += sizeof(dport);
-
-    uint32_t hash = 0;
-    hash = toeplitz_hash(rsskey_len, rsskey, datalen, data);
-
-    return ((hash & (reta_size - 1)) % nb_queues) == queueid;
-}
-
 void
 lazybsd_regist_packet_dispatcher(dispatch_func_t func)
 {
     packet_dispatcher = func;
-}
-
-uint64_t
-lazybsd_get_tsc_ns()
-{
-    uint64_t cur_tsc = rte_rdtsc();
-    uint64_t hz = rte_get_tsc_hz();
-    return ((double)cur_tsc/(double)hz) * NS_PER_S;
 }
 
 static void
@@ -2859,7 +2633,7 @@ int lazybsd_enable_pcap(const char* dump_path, uint16_t snap_len)
 
     snprintf(pcap_f_path, FILE_PATH_LEN,  "%s/cpu%d_%d.pcap", dump_path==NULL?".":dump_path, rte_lcore_id(), seq);
     g_pcap_fp = fopen(pcap_f_path, "w+");
-    if (g_pcap_fp == NULL) { 
+    if (g_pcap_fp == NULL) {
         rte_exit(EXIT_FAILURE, "Cannot open pcap dump path: %s, errno %d.\n", pcap_f_path, errno);
         return -1;
     }
@@ -2882,52 +2656,11 @@ int lazybsd_enable_pcap(const char* dump_path, uint16_t snap_len)
     return 0;
 }
 
-int
-lazybsd_dump_packets(const char* dump_path, struct rte_mbuf* pkt, uint16_t snap_len, uint32_t f_maxlen)
-{
-    unsigned int out_len = 0, wr_len = 0;
-    struct pcap_pkthdr pcap_hdr;
-    void* hdr = &pcap_hdr;
-    struct timeval ts;
-    char pcap_f_path[FILE_PATH_LEN] = {0};
-
-    if (g_pcap_fp == NULL) {
-        return -1;
-    }
-    snap_len = pkt->pkt_len < snap_len ? pkt->pkt_len : snap_len;
-    gettimeofday(&ts, NULL);
-    pcap_hdr.sec = ts.tv_sec;
-    pcap_hdr.usec = ts.tv_usec;
-    pcap_hdr.caplen = snap_len;
-    pcap_hdr.len = pkt->pkt_len;
-    fwrite(hdr, sizeof(struct pcap_pkthdr), 1, g_pcap_fp);
-    g_flen += sizeof(struct pcap_pkthdr);
-
-    while(pkt != NULL && out_len <= snap_len) {
-        wr_len = snap_len - out_len;
-        wr_len = wr_len > pkt->data_len ? pkt->data_len : wr_len ;
-        fwrite(rte_pktmbuf_mtod(pkt, char*), wr_len, 1, g_pcap_fp);
-        out_len += wr_len;
-        pkt = pkt->next;
-    }
-    g_flen += out_len;
-
-    if ( g_flen >= f_maxlen ){
-        fclose(g_pcap_fp);
-        if ( ++seq >= PCAP_FILE_NUM )
-            seq = 0;
-        
-        lazybsd_enable_pcap(dump_path, snap_len);
-    }
-
-    return 0;
-}
-
 /******************* Net device related constatns *****************************/
 static constexpr uint16_t default_ring_size      = 512;
 
-// 
-// We need 2 times the ring size of buffers because of the way PMDs 
+//
+// We need 2 times the ring size of buffers because of the way PMDs
 // refill the ring.
 //
 static constexpr uint16_t mbufs_per_queue_rx     = 2 * default_ring_size;
@@ -3022,3 +2755,235 @@ static constexpr uint8_t packet_read_size        = 32;
 
 }; // namespace dpdk
 }; // namespace lazybsd
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int
+lazybsd_dpdk_if_send(struct lazybsd_dpdk_if_context *ctx, void *m,
+    int total)
+{
+#ifdef LAZYBSD_USE_PAGE_ARRAY
+    struct lcore_conf *qconf = &lcore_conf;
+    int    len = 0;
+
+    len = lazybsd_if_send_onepkt(ctx, m,total);
+    if (unlikely(len == MAX_PKT_BURST)) {
+        lazybsd::dpdk::send_burst(qconf, MAX_PKT_BURST, ctx->port_id);
+        len = 0;
+    }
+    qconf->tx_mbufs[ctx->port_id].len = len;
+    return 0;
+#endif
+    struct rte_mempool *mbuf_pool = pktmbuf_pool[lcore_conf.socket_id];
+    struct rte_mbuf *head = rte_pktmbuf_alloc(mbuf_pool);
+    if (head == NULL) {
+        lazybsd_mbuf_free(m);
+        return -1;
+    }
+
+    head->pkt_len = total;
+    head->nb_segs = 0;
+
+    int off = 0;
+    struct rte_mbuf *cur = head, *prev = NULL;
+    while(total > 0) {
+        if (cur == NULL) {
+            cur = rte_pktmbuf_alloc(mbuf_pool);
+            if (cur == NULL) {
+                rte_pktmbuf_free(head);
+                lazybsd_mbuf_free(m);
+                return -1;
+            }
+        }
+
+        if (prev != NULL) {
+            prev->next = cur;
+        }
+        head->nb_segs++;
+
+        prev = cur;
+        void *data = rte_pktmbuf_mtod(cur, void*);
+        int len = total > RTE_MBUF_DEFAULT_DATAROOM ? RTE_MBUF_DEFAULT_DATAROOM : total;
+        int ret = lazybsd_mbuf_copydata(m, data, off, len);
+        if (ret < 0) {
+            rte_pktmbuf_free(head);
+            lazybsd_mbuf_free(m);
+            return -1;
+        }
+
+
+        cur->data_len = len;
+        off += len;
+        total -= len;
+        cur = NULL;
+    }
+
+    struct lazybsd_tx_offload offload = {0};
+    lazybsd_mbuf_tx_offload(m, &offload);
+
+    void *data = rte_pktmbuf_mtod(head, void*);
+
+    if (offload.ip_csum) {
+        /* ipv6 not supported yet */
+        struct rte_ipv4_hdr *iph;
+        int iph_len;
+        iph = (struct rte_ipv4_hdr *)(data + RTE_ETHER_HDR_LEN);
+        iph_len = (iph->version_ihl & 0x0f) << 2;
+
+        head->ol_flags |= RTE_MBUF_F_TX_IP_CKSUM | RTE_MBUF_F_TX_IPV4;
+        head->l2_len = RTE_ETHER_HDR_LEN;
+        head->l3_len = iph_len;
+    }
+
+    if (ctx->hw_features.tx_csum_l4) {
+        struct rte_ipv4_hdr *iph;
+        int iph_len;
+        iph = (struct rte_ipv4_hdr *)(data + RTE_ETHER_HDR_LEN);
+        iph_len = (iph->version_ihl & 0x0f) << 2;
+
+        if (offload.tcp_csum) {
+            head->ol_flags |= RTE_MBUF_F_TX_TCP_CKSUM;
+            head->l2_len = RTE_ETHER_HDR_LEN;
+            head->l3_len = iph_len;
+        }
+
+        /*
+         *  TCP segmentation offload.
+         *
+         *  - set the PKT_TX_TCP_SEG flag in mbuf->ol_flags (this flag
+         *    implies PKT_TX_TCP_CKSUM)
+         *  - set the flag PKT_TX_IPV4 or PKT_TX_IPV6
+         *  - if it's IPv4, set the PKT_TX_IP_CKSUM flag and
+         *    write the IP checksum to 0 in the packet
+         *  - fill the mbuf offload information: l2_len,
+         *    l3_len, l4_len, tso_segsz
+         *  - calculate the pseudo header checksum without taking ip_len
+         *    in account, and set it in the TCP header. Refer to
+         *    rte_ipv4_phdr_cksum() and rte_ipv6_phdr_cksum() that can be
+         *    used as helpers.
+         */
+        if (offload.tso_seg_size) {
+            struct rte_tcp_hdr *tcph;
+            int tcph_len;
+            tcph = (struct rte_tcp_hdr *)((char *)iph + iph_len);
+            tcph_len = (tcph->data_off & 0xf0) >> 2;
+            tcph->cksum = rte_ipv4_phdr_cksum(iph, RTE_MBUF_F_TX_TCP_SEG);
+
+            head->ol_flags |= RTE_MBUF_F_TX_TCP_SEG;
+            head->l4_len = tcph_len;
+            head->tso_segsz = offload.tso_seg_size;
+        }
+
+        if (offload.udp_csum) {
+            head->ol_flags |= RTE_MBUF_F_TX_UDP_CKSUM;
+            head->l2_len = RTE_ETHER_HDR_LEN;
+            head->l3_len = iph_len;
+        }
+    }
+
+    lazybsd_mbuf_free(m);
+
+    return lazybsd::dpdk::send_single_packet(head, ctx->port_id);
+}
+
+struct lazybsd_dpdk_if_context *
+lazybsd_dpdk_register_if(void *sc, void *ifp, struct lazybsd_port_cfg *cfg)
+{
+    struct lazybsd_dpdk_if_context *ctx;
+
+    ctx = (struct lazybsd_dpdk_if_context *)calloc(1, sizeof(struct lazybsd_dpdk_if_context));
+    if (ctx == NULL)
+        return NULL;
+
+    ctx->sc = sc;
+    ctx->ifp = ifp;
+    ctx->port_id = cfg->port_id;
+    ctx->hw_features = cfg->hw_features;
+
+    return ctx;
+}
+
+void
+lazybsd_dpdk_deregister_if(struct lazybsd_dpdk_if_context *ctx)
+{
+    free(ctx);
+}
+
+void
+lazybsd_dpdk_pktmbuf_free(void *m)
+{
+    rte_pktmbuf_free_seg((struct rte_mbuf *)m);
+}
+
+int
+lazybsd_in_pcbladdr(uint16_t family, void *faddr, uint16_t fport, void *laddr)
+{
+    int ret = 0;
+    uint16_t fa;
+
+    if (!lazybsd::dpdk::pcblddr_fun)
+        return ret;
+
+    if (family == AF_INET)
+        fa = AF_INET;
+    else if (family == AF_INET6_FREEBSD)
+        fa = AF_INET6_LINUX;
+    else
+        return EADDRNOTAVAIL;
+
+    ret = (*lazybsd::dpdk::pcblddr_fun)(fa, faddr, fport, laddr);
+
+    return ret;
+}
+
+int
+lazybsd_rss_check(void *softc, uint32_t saddr, uint32_t daddr,
+    uint16_t sport, uint16_t dport)
+{
+    struct lcore_conf *qconf = &lcore_conf;
+    struct lazybsd_dpdk_if_context *ctx = (struct lazybsd_dpdk_if_context *)lazybsd_veth_softc_to_hostc(softc);
+    uint16_t nb_queues = qconf->nb_queue_list[ctx->port_id];
+
+    if (nb_queues <= 1) {
+        return 1;
+    }
+
+    uint16_t reta_size = lazybsd::dpdk::rss_reta_size[ctx->port_id];
+    uint16_t queueid = qconf->tx_queue_id[ctx->port_id];
+
+    uint8_t data[sizeof(saddr) + sizeof(daddr) + sizeof(sport) +
+        sizeof(dport)];
+
+    unsigned datalen = 0;
+
+    bcopy(&saddr, &data[datalen], sizeof(saddr));
+    datalen += sizeof(saddr);
+
+    bcopy(&daddr, &data[datalen], sizeof(daddr));
+    datalen += sizeof(daddr);
+
+    bcopy(&sport, &data[datalen], sizeof(sport));
+    datalen += sizeof(sport);
+
+    bcopy(&dport, &data[datalen], sizeof(dport));
+    datalen += sizeof(dport);
+
+    uint32_t hash = 0;
+    hash = lazybsd::dpdk::toeplitz_hash(lazybsd::dpdk::rsskey_len, lazybsd::dpdk::rsskey, datalen, data);
+
+    return ((hash & (reta_size - 1)) % nb_queues) == queueid;
+}
+
+uint64_t
+lazybsd_get_tsc_ns()
+{
+    uint64_t cur_tsc = rte_rdtsc();
+    uint64_t hz = rte_get_tsc_hz();
+    return ((double)cur_tsc/(double)hz) * NS_PER_S;
+}
+
+#ifdef __cplusplus
+}
+#endif

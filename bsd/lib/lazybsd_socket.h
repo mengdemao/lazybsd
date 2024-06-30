@@ -1,12 +1,12 @@
 /**
  * @file lazybsd_socket.h
  * @author Meng Demao (mengdemao19951021@163.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2024-06-04
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 #include <sys/types.h>
 #include <sys/socket.h>

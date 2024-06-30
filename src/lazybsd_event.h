@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef _FSTACK_EVENT_H
-#define _FSTACK_EVENT_H
+#ifndef _LAZYBSD_EVENT_H
+#define _LAZYBSD_EVENT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,7 +34,7 @@ extern "C" {
 #ifndef _KERNEL
 
 #include <stdint.h>
-#include <sys/queue.h> 
+#include <sys/queue.h>
 
 #define EVFILT_READ        (-1)
 #define EVFILT_WRITE       (-2)

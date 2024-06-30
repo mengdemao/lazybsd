@@ -1,12 +1,12 @@
 /**
  * @file lazybsd_host.h
  * @author mengdemao (mengdemao19951021@gmail.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2024-04-27
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 #ifndef LAZYBSD_HOST_INTERFACE_H
 #define LAZYBSD_HOST_INTERFACE_H

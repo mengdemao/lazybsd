@@ -1,20 +1,16 @@
 /**
  * @file lazybsd_lazybsd_errno.cc
  * @author Meng Demao (mengdemao19951021@163.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2024-05-28
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
-#include "lazybsd_errno.hh"
+#include "lazybsd_errno.h"
 #include <errno.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 void lazybsd_os_errno(int error)
 {
@@ -53,10 +49,10 @@ void lazybsd_os_errno(int error)
         case LAZYBSD_EPIPE:       lazybsd_errno = EPIPE; break;
         case LAZYBSD_EDOM:        lazybsd_errno = EDOM; break;
         case LAZYBSD_ERANGE:      lazybsd_errno = ERANGE; break;
-    
+
         /* case LAZYBSD_EAGAIN:       same as EWOULDBLOCK */
         case LAZYBSD_EWOULDBLOCK:     lazybsd_errno = EWOULDBLOCK; break;
-    
+
         case LAZYBSD_EINPROGRESS:     lazybsd_errno = EINPROGRESS; break;
         case LAZYBSD_EALREADY:        lazybsd_errno = EALREADY; break;
         case LAZYBSD_ENOTSOCK:        lazybsd_errno = ENOTSOCK; break;
@@ -112,6 +108,3 @@ void lazybsd_os_errno(int error)
 
 __thread int lazybsd_errno;
 
-#ifdef __cplusplus
-}
-#endif

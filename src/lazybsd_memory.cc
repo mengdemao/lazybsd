@@ -1,18 +1,18 @@
 /**
  * @file lazybsd_memory.cc
  * @author mengdemao (mengdemao19951021@gmail.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2024-04-27
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 #include <assert.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <errno.h>
-     
+
 #include <rte_common.h>
 #include <rte_byteorder.h>
 #include <rte_log.h>
@@ -48,9 +48,6 @@
 #define    trunc_page(x)        ((x) & ~PAGE_MASK)
 #define    round_page(x)        (((x) + PAGE_MASK) & ~PAGE_MASK)
 
-extern struct rte_mempool *pktmbuf_pool[NB_SOCKETS];
-extern struct lcore_conf lcore_conf;
-
 //struct lazybsd_tx_offload;
 
 // lazybsd_ref_pool allocate rte_mbuf without data space, which data point to bsd mbuf's data address.
@@ -66,16 +63,23 @@ static struct rte_mempool *lazybsd_ref_pool[NB_SOCKETS];
         h = TX_QUEUE_SIZE-1;\
     }while(0);
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // bsd mbuf was moved into nic_tx_ring from tmp_tables, after rte_eth_tx_burst() succeed.
 static struct mbuf_txring nic_tx_ring[RTE_MAX_ETHPORTS];
 static inline int lazybsd_txring_enqueue(struct mbuf_txring* q, void *p, int seg_num);
 static inline void lazybsd_txring_init(struct mbuf_txring* r, uint32_t len);
 
+struct lcore_conf lcore_conf;
+struct rte_mempool *pktmbuf_pool[NB_SOCKETS];
+
 typedef struct _list_manager_s
 {
-    uint64_t    *ele;        
-    int        size;        
-    //int        FreeNum;    
+    uint64_t    *ele;
+    int        size;
+    //int        FreeNum;
     int     top;
 }StackList_t;
 
@@ -88,9 +92,9 @@ static inline int         stklist_push(StackList_t * p, uint64_t val);
 
 static int                 stklist_init(StackList_t*p, int size)
 {
-    
+
     int i = 0;
-    
+
     if (p==NULL || size<=0){
         return -1;
     }
@@ -98,14 +102,14 @@ static int                 stklist_init(StackList_t*p, int size)
     p->top = 0;
     if ( posix_memalign((void**)&p->ele, sizeof(uint64_t), sizeof(uint64_t)*size) != 0)
         return -2;
-    
+
     return 0;
 }
 
 static inline void *stklist_pop(StackList_t *p)
 {
     int head = 0;
-    
+
     if (p==NULL)
         return NULL;
 
@@ -120,7 +124,7 @@ static inline void *stklist_pop(StackList_t *p)
 //return code: -1: faile;  >=0:OK.
 static inline int stklist_push(StackList_t *p,  const uint64_t val){
     int tail = 0;
-    
+
     if (p==NULL)
         return -1;
     if (p->top < p->size){
@@ -148,7 +152,7 @@ static inline int lazybsd_mbuf_set_uint64(struct rte_mbuf* p, uint64_t data)
 * if mbuf has num segment in all, Dev's sw_ring will use num descriptions. lazybsd_txring also use num segments as below:
 * <---     num-1          ---->|ptr| head |
 * ----------------------------------------------
-* | 0 | 0 | ..............| 0  | p | XXX  |         
+* | 0 | 0 | ..............| 0  | p | XXX  |
 *-----------------------------------------------
 *************************/
 static inline int lazybsd_txring_enqueue(struct mbuf_txring* q, void *p, int seg_num)
@@ -165,7 +169,7 @@ static inline int lazybsd_txring_enqueue(struct mbuf_txring* q, void *p, int seg
         lazybsd_mbuf_free(q->m_table[q->head]);
     q->m_table[q->head] = p;
     Head_INC(q->head);
-    
+
     return 0;
 }
 
@@ -183,7 +187,7 @@ static inline int lazybsd_txring_pop(struct mbuf_txring* q, int num)
             lazybsd_mbuf_free(q->m_table[q->head]);
             q->m_table[q->head] = NULL;
         }
-    }    
+    }
 }
 
 static inline void lazybsd_txring_init(struct mbuf_txring* q, uint32_t num)
@@ -194,7 +198,7 @@ static inline void lazybsd_txring_init(struct mbuf_txring* q, uint32_t num)
 void lazybsd_init_ref_pool(int nb_mbuf, int socketid)
 {
     char s[64] = {0};
-    
+
     if (lazybsd_ref_pool[socketid] != NULL) {
             return;
     }
@@ -212,35 +216,35 @@ int lazybsd_mmap_init()
     int i = 0;
     uint64_t    virt_addr = (uint64_t)NULL;
     phys_addr_t    phys_addr = 0;
-    uint64_t    bsd_memsz = (lazybsd::lazybsd_global_cfg.freebsd.mem_size << 20);
+    uint64_t    bsd_memsz = (lazybsd_global_cfg.freebsd.mem_size << 20);
     unsigned int bsd_pagesz = 0;
-    
+
     lazybsd_page_start = (uint64_t)mmap( NULL, bsd_memsz, PROT_READ | PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
     if (lazybsd_page_start == (uint64_t)-1){
         rte_panic("lazybsd_mmap_init get lazybsd_page_start failed, err=%d.\n", errno);
         return -1;
     }
-    
+
     if ( mlock((void*)lazybsd_page_start, bsd_memsz)<0 )    {
         rte_panic("mlock failed, err=%d.\n", errno);
         return -1;
     }
     lazybsd_page_end = lazybsd_page_start + bsd_memsz;
     bsd_pagesz = (bsd_memsz>>12);
-    rte_log(RTE_LOG_INFO, RTE_LOGTYPE_USER1, "lazybsd_mmap_init mmap %d pages, %d MB.\n", bsd_pagesz, lazybsd::lazybsd_global_cfg.freebsd.mem_size);
+    rte_log(RTE_LOG_INFO, RTE_LOGTYPE_USER1, "lazybsd_mmap_init mmap %d pages, %d MB.\n", bsd_pagesz, lazybsd_global_cfg.freebsd.mem_size);
     printf("lazybsd_mmap_init mem[0x%lx:0x%lx]\n", lazybsd_page_start, lazybsd_page_end);
 
     if (posix_memalign((void**)&lazybsd_mpage_phy, sizeof(phys_addr_t), bsd_pagesz*sizeof(phys_addr_t))!=0){
         rte_panic("posix_memalign get lazybsd_mpage_phy failed, err=%d.\n", errno);
         return -1;
     }
-    
+
     stklist_init(&lazybsd_mpage_ctl, bsd_pagesz);
-    
+
     for (i=0; i<bsd_pagesz; i++ ){
         virt_addr = lazybsd_page_start + PAGE_SIZE*i;
         memset((void*)virt_addr, 0, PAGE_SIZE);
-        
+
         stklist_push( &lazybsd_mpage_ctl, virt_addr);
         lazybsd_mpage_phy[i] = rte_mem_virt2phy((const void*)virt_addr);
         if ( lazybsd_mpage_phy[i] == RTE_BAD_IOVA ){
@@ -250,7 +254,7 @@ int lazybsd_mmap_init()
     }
 
     lazybsd_txring_init(&nic_tx_ring[0], RTE_MAX_ETHPORTS);
-    
+
     return 0;
 }
 
@@ -273,7 +277,7 @@ static inline uint64_t lazybsd_mem_virt2phy(const void* virtaddr)
         rte_panic("lazybsd_mbuf_virt2phy get invalid pages %d.", pages);
         return -1;
     }
-    
+
     addr = lazybsd_mpage_phy[pages] + ((const uint64_t)virtaddr & PAGE_MASK);
     return addr;
 }
@@ -293,7 +297,7 @@ static inline void lazybsd_offload_set(struct lazybsd_dpdk_if_context *ctx, void
 {
     void                    *data = NULL;
     struct lazybsd_tx_offload     offload = {0};
-    
+
     lazybsd_mbuf_tx_offload(m, &offload);
     data = rte_pktmbuf_mtod(head, void*);
 
@@ -371,7 +375,7 @@ static inline struct rte_mbuf*     lazybsd_extcl_to_rte(void *m )
     if (p_head == NULL){
         return NULL;
     }
-    
+
     return p_head;
 }
 
@@ -384,7 +388,7 @@ static inline struct rte_mbuf*     lazybsd_bsd_to_rte(void *m, int total)
     void    *data = NULL;
     void    *p_bsdbuf = NULL;
     unsigned len = 0;
-    
+
     p_head = rte_pktmbuf_alloc(mbuf_pool);
     if (p_head == NULL){
         return NULL;
@@ -405,7 +409,7 @@ static inline struct rte_mbuf*     lazybsd_bsd_to_rte(void *m, int total)
         cur->buf_addr = data;
         cur->buf_iova = lazybsd_mem_virt2phy((const void*)(cur->buf_addr));
         cur->data_off = 0;
-        cur->data_len = len;        
+        cur->data_len = len;
 
         p_head->nb_segs++;
         if (prev != NULL) {
@@ -414,7 +418,7 @@ static inline struct rte_mbuf*     lazybsd_bsd_to_rte(void *m, int total)
         prev = cur;
         cur = NULL;
     }
-    
+
     return p_head;
 }
 
@@ -438,13 +442,13 @@ int lazybsd_if_send_onepkt(struct lazybsd_dpdk_if_context *ctx, void *m, int tot
            rte_panic("data address 0x%lx is out of page bound or not malloced by DPDK recver.", (uint64_t)p_data);
         return 0;
     }
-    
+
     if (head == NULL){
         rte_log(RTE_LOG_CRIT, RTE_LOGTYPE_USER1, "lazybsd_if_send_onepkt call lazybsd_bsd_to_rte failed.");
         lazybsd_mbuf_free(m);
         return 0;
     }
-    
+
     lazybsd_offload_set(ctx, m, head);
     qconf = &lcore_conf;
     len = qconf->tx_mbufs[ctx->port_id].len;
@@ -460,3 +464,6 @@ int lazybsd_enq_tx_bsdmbuf(uint8_t portid, void *p_mbuf, int nb_segs)
     return lazybsd_txring_enqueue(&nic_tx_ring[portid], p_mbuf, nb_segs);
 }
 
+#ifdef __cplusplus
+}
+#endif

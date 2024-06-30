@@ -1,12 +1,12 @@
 /**
  * @file lazybsd_memory.cc
  * @author mengdemao (mengdemao19951021@gmail.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2024-04-27
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 #ifndef LAZYBSD_MEMORY_H
 #define LAZYBSD_MEMORY_H
@@ -21,6 +21,8 @@ extern "C" {
 
 #define MSG_RING_SIZE 32
 
+#define NB_SOCKETS 8
+
 /*
  * Configurable number of RX/TX ring descriptors
  */
@@ -31,8 +33,6 @@ extern "C" {
  * Try to avoid TX buffering if we have at least MAX_TX_BURST packets to send.
  */
 #define MAX_TX_BURST    (MAX_PKT_BURST / 2)
-
-#define NB_SOCKETS 8
 
 /* Configure how many packets ahead to prefetch, when reading packets */
 #define PREFETCH_OFFSET    3
@@ -81,7 +81,7 @@ struct lcore_conf {
 //  Then when txring.m_table[x] is reused, the packet in txring.m_table[x] had been transmited by NIC.
 //  that means the mbuf can be freed safely.
 struct mbuf_txring{
-    void* m_table[TX_QUEUE_SIZE];    
+    void* m_table[TX_QUEUE_SIZE];
     uint16_t head;        // next available element.
 };
 
@@ -90,6 +90,9 @@ int lazybsd_mmap_init();
 int lazybsd_if_send_onepkt(struct lazybsd_dpdk_if_context *ctx, void *m, int total);
 int lazybsd_enq_tx_bsdmbuf(uint8_t portid, void *p_mbuf, int nb_segs);
 #endif
+
+extern struct rte_mempool *pktmbuf_pool[NB_SOCKETS];
+extern struct lcore_conf lcore_conf;
 
 #ifdef __cplusplus
 }

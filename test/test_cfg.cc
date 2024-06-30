@@ -22,7 +22,7 @@ using namespace lazybsd;
 
 TEST(TEST_CFG, TEST_LOAD)
 {
-	lazybsd_cfg cfg_xml;
+	config cfg_xml;
 
 	std::string  config_xml =
 	R"(
@@ -102,5 +102,5 @@ TEST(TEST_CFG, TEST_LOAD)
 	)";
 
 	EXPECT_EQ(cfg_xml.loadString(config_xml), EXIT_SUCCESS);
-     EXPECT_EQ(cfg_xml.dpdk.nb_channel, 4);
+     EXPECT_EQ(lazybsd_global_cfg.dpdk.nb_channel, 4);
 }

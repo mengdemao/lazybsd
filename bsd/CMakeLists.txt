@@ -1,7 +1,7 @@
 set(BSD_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/freebsd)
 set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/crypto/sha1.c
-    ${BSD_SOURCE_DIR}/sys/crypto/siphash/siphash.c
+    #${BSD_SOURCE_DIR}/sys/crypto/siphash/siphash.c
     ${BSD_SOURCE_DIR}/sys/kern/kern_descrip.c
     ${BSD_SOURCE_DIR}/sys/kern/kern_event.c
     ${BSD_SOURCE_DIR}/sys/kern/kern_fail.c
@@ -25,11 +25,13 @@ set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/kern/subr_lock.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_module.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_param.c
+    ${BSD_SOURCE_DIR}/sys/kern/subr_smp.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_pcpu.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_sbuf.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_taskqueue.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_unit.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_smr.c
+    ${BSD_SOURCE_DIR}/sys/kern/subr_epoch.c
     ${BSD_SOURCE_DIR}/sys/kern/sys_capability.c
     ${BSD_SOURCE_DIR}/sys/kern/sys_generic.c
     ${BSD_SOURCE_DIR}/sys/kern/sys_socket.c
@@ -168,9 +170,25 @@ set(BSD_SOURCE
 
     ${BSD_SOURCE_DIR}/sys/vm/uma_core.c
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_vfs.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_veth.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_lock.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_route.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_patch.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_compat.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_socket.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_crypto.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kevent.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_freebsd.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_subr_prf.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_subr_epoch.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_condvar.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_timeout.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_intr.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_subr.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_environment.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_synch.c
 )
 
 add_library(freebsd STATIC ${BSD_SOURCE})
@@ -199,6 +217,7 @@ target_compile_options(freebsd PRIVATE
     -Wno-stringop-overflow
     -Wno-format
     -Wno-dangling-pointer
+    -Wno-incompatible-pointer-types
 )
 
 target_compile_definitions(freebsd PRIVATE
@@ -212,10 +231,11 @@ target_compile_definitions(freebsd PRIVATE
 )
 
 target_include_directories(freebsd PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/opt
     ${BSD_SOURCE_DIR}/sys/
     ${BSD_SOURCE_DIR}/sys/amd64/include/
     ${BSD_SOURCE_DIR}/sys/contrib/ck/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/opt
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/bsd/src/freebsd/sys)
