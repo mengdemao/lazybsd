@@ -101,6 +101,8 @@ endif(Boost_FOUND)
 # 添加DPDK库文件路径
 include_directories(${CMAKE_SOURCE_DIR}/install/include)
 link_directories(${CMAKE_SOURCE_DIR}/install/lib)
+link_directories(${CMAKE_SOURCE_DIR}/install/lib/x86_64-linux-gnu)
+
 set(DPDK_LIBRARIES
     rte_mbuf
     rte_crypto_nitrox
