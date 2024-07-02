@@ -121,7 +121,6 @@ set(DPDK_LIBRARIES
     rte_net_i40e
     rte_common_octeontx
     rte_reorder
-    rte_raw_ifpga
     rte_common_dpaax
     rte_common_cpt
     rte_ip_frag
@@ -203,14 +202,11 @@ set(DPDK_LIBRARIES
     rte_bus_platform
     rte_event_skeleton
     rte_event_opdl
-    rte_crypto_ccp
     rte_crypto_bcmfs
-    rte_net_af_xdp
     rte_net_ionic
     rte_bus_pci
     rte_metrics
     rte_common_iavf
-    rte_net_pcap
     rte_mempool_cnxk
     rte_fib
     rte_rcu
@@ -219,7 +215,6 @@ set(DPDK_LIBRARIES
     rte_mempool_octeontx
     rte_stack
     rte_net_ring
-    rte_net_ipn3ke
     rte_mempool_bucket
     rte_bus_auxiliary
     rte_net_axgbe
@@ -239,7 +234,6 @@ set(DPDK_LIBRARIES
     rte_bus_vdev
     rte_crypto_scheduler
     rte_net_dpaa
-    rte_crypto_openssl
     rte_net_enetc
     rte_net_cpfl
     rte_timer
