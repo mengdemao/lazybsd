@@ -5,3 +5,6 @@
 	path = bsd/src/freebsd
 	url = https://github.com/mengdemao/freebsd.git
 	branch = releng/13.0
+[submodule "docs"]
+	path = docs
+	url = git@github.com:mengdemao/lazybsd.wiki.git
