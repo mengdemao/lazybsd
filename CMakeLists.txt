@@ -38,7 +38,7 @@ add_compile_options(-fdiagnostics-color=auto)
 add_compile_options(-march=native)
 
 # 设置coverage编译指令
-option(BUILD_COVERAGE "build programe in coverage mode" OFF)
+option(BUILD_COVERAGE "build program in coverage mode" OFF)
 
 # 设置LTO优化指令
 set(CMAKE_POLICY_DEFAULT_CMP0069 NEW)

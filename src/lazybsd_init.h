@@ -9,11 +9,15 @@
  * @copyright Copyright (c) 2024  mengdemao
  *
  */
-#ifndef __LAZYBSD_INIT__
-#define __LAZYBSD_INIT__
+#ifndef __LAZYBSD_INIT_H__
+#define __LAZYBSD_INIT_H__
 
-namespace lazybsd {
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+#ifdef __cplusplus
 }
+#endif
 
-#endif /* __LAZYBSD_INIT__ */
+#endif /* __LAZYBSD_INIT_H__ */

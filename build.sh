@@ -7,11 +7,13 @@
 # shellcheck disable=SC2155
 # shellcheck disable=SC2059
 
-set -euo pipefail
+set -eo pipefail
 
-ROOT_PATH=$(pwd)
-BUILD_PATH=${ROOT_PATH}/build
-INSTALL_PATH=${ROOT_PATH}/install
+export ROOT_PATH=$(pwd)
+export BUILD_PATH=${ROOT_PATH}/build
+export INSTALL_PATH=${ROOT_PATH}/install
+export PKG_CONFIG_PATH=${INSTALL_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}
+export LD_LIBRARY_PATH=${INSTALL_PATH}/lib:${LD_LIBRARY_PATH}
 
 log_err() {
 	local logTime="$(date -d today +'%Y-%m-%d %H:%M:%S')"
@@ -45,20 +47,17 @@ conan_config() {
 
 	log_info "配置conan"
 	conan install conanfile.txt --build=missing \
-			-s build_type=${BUILD_CFG} \
+			-s build_type=Debug \
+			-s compiler.cppstd=gnu23 || exit 1
+	conan install conanfile.txt --build=missing \
+			-s build_type=Release \
 			-s compiler.cppstd=gnu23 || exit 1
 }
 
 cmake_preset()
 {
-	local BUILD_CFG=$1
-	check_config ${BUILD_CFG} || exit 1
-
-	if [ ${BUILD_CFG} == "Debug" ]; then
-		cmake --preset conan-debug || exit 1
-	elif [ ${BUILD_CFG} == "Release" ]; then
-		cmake --preset conan-release || exit 1
-	fi
+	cmake --preset conan-debug || exit 1
+	cmake --preset conan-release || exit 1
 }
 
 cmake_config()
@@ -105,7 +104,7 @@ setup_pkg()
 	pushd dpdk >> /dev/null || exit 1
 	if [ ! -d build ]; then
 		mkdir build
-		meson setup build --prefix=${INSTALL_PATH}
+		meson setup --prefix=${INSTALL_PATH} -Denable_kmods=true -Dexamples=all -Dplatform=native build
 		ninja -C build
 	fi
 
