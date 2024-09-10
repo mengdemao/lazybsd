@@ -57,6 +57,7 @@ find_package(Doxygen REQUIRED)
 # 添加所有的conan包
 find_package(GTest REQUIRED)
 find_package(fmt REQUIRED)
+find_package(jemalloc REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(
   Boost
@@ -80,6 +81,13 @@ if(fmt_FOUND)
   include_directories(${fmt_INCLUDE_DIR})
   link_libraries(${fmt_LIBRARIES})
 endif(fmt_FOUND)
+
+if(jemalloc_FOUND)
+  message(STATUS "jemalloc include path is : ${jemalloc_INCLUDE_DIR}")
+  message(STATUS "jemalloc libraries is    : ${jemalloc_LIBRARIES}")
+  include_directories(${jemalloc_INCLUDE_DIR})
+  link_libraries(${jemalloc_LIBRARIES})
+endif(jemalloc_FOUND)
 
 if(OpenSSL_FOUND)
   message(STATUS "OpenSSL include path is : ${OPENSSL_INCLUDE_DIR}")
