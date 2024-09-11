@@ -87,6 +87,7 @@ if(jemalloc_FOUND)
   message(STATUS "jemalloc libraries is    : ${jemalloc_LIBRARIES}")
   include_directories(${jemalloc_INCLUDE_DIR})
   link_libraries(${jemalloc_LIBRARIES})
+  add_definitions("-DJEMALLOC_NO_DEMANGLE")
 endif(jemalloc_FOUND)
 
 if(OpenSSL_FOUND)
