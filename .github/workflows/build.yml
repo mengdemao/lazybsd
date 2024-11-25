@@ -29,7 +29,7 @@ jobs:
       with:
         fetch-depth: 0
         lfs: false
-        submodules: 'recursive'
+        submodules: 'true'
 
     - name: 安装软件
       run: |
