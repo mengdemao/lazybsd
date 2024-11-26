@@ -59,6 +59,7 @@ find_package(GTest REQUIRED)
 find_package(fmt REQUIRED)
 find_package(jemalloc REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(luajit REQUIRED)
 find_package(
   Boost
   REQUIRED
@@ -106,6 +107,16 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
   link_libraries(${Boost_LIBRARIES})
 endif(Boost_FOUND)
+
+if(luajit_FOUND)
+  message(STATUS "luajit version is        : ${luajit_VERSION_STRING}")
+  message(STATUS "luajit include path is   : ${luajit_INCLUDE_DIRS}")
+  message(STATUS "luajit libraries is      : ${luajit_LIBRARIES}")
+  message(STATUS "luajit definitions is    : ${luajit_DEFINITIONS}")
+  add_definitions(${luajit_DEFINITIONS})
+  include_directories(${luajit_INCLUDE_DIRS})
+  link_libraries(${luajit_LIBRARIES})
+endif(luajit_FOUND)
 
 # 添加DPDK库文件路径
 include_directories(${CMAKE_SOURCE_DIR}/install/include)
