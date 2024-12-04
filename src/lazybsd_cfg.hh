@@ -38,23 +38,18 @@ public:
 	~config() = default;
 
 	/**
-	* @brief  加载toml配置文件
+	* @brief  加载配置文件
 	* @param  cfg_file json/xml配置文件
 	* @return int 执行结果
 	*/
 	int loadFile(const std::string cfg_file);
 
     /**
-	* @brief  加载toml配置文件
+	* @brief  加载配置文件
 	* @param  cfg_string json/xml配置字符串
 	* @return int 执行结果
 	*/
 	int loadString(const std::string cfg_string);
-
-	/**
-	* @brief 打印配置文件
-	*/
-	void print();
 };
 
 }; // namespace lazybsd

@@ -31,6 +31,9 @@ extern "C" {
 
 #define UNIQUE_ID __COUNTER__
 
+#define CONSTRUCTOR_FUNCTION    __attribute__((constructor))
+#define DESTRUCTOR_FUNCTION     __attribute__((destructor))
+
 #ifdef __cplusplus
 }
 #endif

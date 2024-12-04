@@ -220,11 +220,11 @@ check_all_ports_link_status(void)
     fflush(stdout);
 
     int i, nb_ports;
-    nb_ports = lazybsd_global_cfg.dpdk.nb_ports;
+    nb_ports = lazybsd_global_ptr()->dpdk.nb_ports;
     for (count = 0; count <= MAX_CHECK_TIME; count++) {
         all_ports_up = 1;
         for (i = 0; i < nb_ports; i++) {
-            uint16_t portid = lazybsd_global_cfg.dpdk.portid_list[i];
+            uint16_t portid = lazybsd_global_ptr()->dpdk.portid_list[i];
             memset(&link, 0, sizeof(link));
             rte_eth_link_get_nowait(portid, &link);
 
@@ -276,13 +276,13 @@ init_lcore_conf(void)
         rte_exit(EXIT_FAILURE, "No probed ethernet devices\n");
     }
 
-    if (lazybsd_global_cfg.dpdk.max_portid >= nb_dev_ports) {
+    if (lazybsd_global_ptr()->dpdk.max_portid >= nb_dev_ports) {
         rte_exit(EXIT_FAILURE, "this machine doesn't have port %d.\n",
-                 lazybsd_global_cfg.dpdk.max_portid);
+                 lazybsd_global_ptr()->dpdk.max_portid);
     }
 
-    lcore_conf.port_cfgs = lazybsd_global_cfg.dpdk.port_cfgs;
-    lcore_conf.proc_id = lazybsd_global_cfg.dpdk.proc_id;
+    lcore_conf.port_cfgs = lazybsd_global_ptr()->dpdk.port_cfgs;
+    lcore_conf.proc_id = lazybsd_global_ptr()->dpdk.proc_id;
 
     uint16_t socket_id = 0;
     if (numa_on) {
@@ -291,15 +291,15 @@ init_lcore_conf(void)
 
     lcore_conf.socket_id = socket_id;
 
-    uint16_t lcore_id = lazybsd_global_cfg.dpdk.proc_lcore[lcore_conf.proc_id];
+    uint16_t lcore_id = lazybsd_global_ptr()->dpdk.proc_lcore[lcore_conf.proc_id];
     if (!rte_lcore_is_enabled(lcore_id)) {
         rte_exit(EXIT_FAILURE, "lcore %u unavailable\n", lcore_id);
     }
 
     int j;
-    for (j = 0; j < lazybsd_global_cfg.dpdk.nb_ports; ++j) {
-        uint16_t port_id = lazybsd_global_cfg.dpdk.portid_list[j];
-        struct lazybsd_port_cfg *pconf = &lazybsd_global_cfg.dpdk.port_cfgs[port_id];
+    for (j = 0; j < lazybsd_global_ptr()->dpdk.nb_ports; ++j) {
+        uint16_t port_id = lazybsd_global_ptr()->dpdk.portid_list[j];
+        struct lazybsd_port_cfg *pconf = &lazybsd_global_ptr()->dpdk.port_cfgs[port_id];
 
         int queueid = -1;
         int i;
@@ -322,8 +322,8 @@ init_lcore_conf(void)
         lcore_conf.nb_tx_port++;
 
         /* Enable pcap dump */
-        if (lazybsd_global_cfg.pcap.enable) {
-            lazybsd_enable_pcap(lazybsd_global_cfg.pcap.save_path, lazybsd_global_cfg.pcap.snap_len);
+        if (lazybsd_global_ptr()->pcap.enable) {
+            lazybsd_enable_pcap(lazybsd_global_ptr()->pcap.save_path, lazybsd_global_ptr()->pcap.snap_len);
         }
 
         lcore_conf.nb_queue_list[port_id] = pconf->nb_lcores;
@@ -339,11 +339,11 @@ init_lcore_conf(void)
 static int
 init_mem_pool(void)
 {
-    uint8_t nb_ports = lazybsd_global_cfg.dpdk.nb_ports;
-    uint32_t nb_lcores = lazybsd_global_cfg.dpdk.nb_procs;
+    uint8_t nb_ports = lazybsd_global_ptr()->dpdk.nb_ports;
+    uint32_t nb_lcores = lazybsd_global_ptr()->dpdk.nb_procs;
     uint32_t nb_tx_queue = nb_lcores;
     uint32_t nb_rx_queue = lcore_conf.nb_rx_queue * nb_lcores;
-    uint16_t max_portid = lazybsd_global_cfg.dpdk.max_portid;
+    uint16_t max_portid = lazybsd_global_ptr()->dpdk.max_portid;
 
     unsigned nb_mbuf = RTE_ALIGN_CEIL (
         (nb_rx_queue * (max_portid + 1) * 2 * RX_QUEUE_SIZE          +
@@ -361,8 +361,8 @@ init_mem_pool(void)
     uint16_t i, lcore_id;
     char s[64];
 
-    for (i = 0; i < lazybsd_global_cfg.dpdk.nb_procs; i++) {
-        lcore_id = lazybsd_global_cfg.dpdk.proc_lcore[i];
+    for (i = 0; i < lazybsd_global_ptr()->dpdk.nb_procs; i++) {
+        lcore_id = lazybsd_global_ptr()->dpdk.proc_lcore[i];
         if (numa_on) {
             socketid = rte_lcore_to_socket_id(lcore_id);
         }
@@ -438,10 +438,10 @@ init_dispatch_ring(void)
     unsigned socketid = lcore_conf.socket_id;
 
     /* Create ring according to ports actually being used. */
-    int nb_ports = lazybsd_global_cfg.dpdk.nb_ports;
+    int nb_ports = lazybsd_global_ptr()->dpdk.nb_ports;
     for (j = 0; j < nb_ports; j++) {
-        uint16_t portid = lazybsd_global_cfg.dpdk.portid_list[j];
-        struct lazybsd_port_cfg *pconf = &lazybsd_global_cfg.dpdk.port_cfgs[portid];
+        uint16_t portid = lazybsd_global_ptr()->dpdk.portid_list[j];
+        struct lazybsd_port_cfg *pconf = &lazybsd_global_ptr()->dpdk.port_cfgs[portid];
         int nb_queues = pconf->nb_lcores;
         if (dispatch_ring[portid] == NULL) {
             snprintf(name_buf, RTE_RING_NAMESIZE, "ring_ptr_p%d", portid);
@@ -489,7 +489,7 @@ static int
 init_msg_ring(void)
 {
     uint16_t i, j;
-    uint16_t nb_procs = lazybsd_global_cfg.dpdk.nb_procs;
+    uint16_t nb_procs = lazybsd_global_ptr()->dpdk.nb_procs;
     unsigned socketid = lcore_conf.socket_id;
 
     /* Create message buffer pool */
@@ -551,22 +551,22 @@ init_kni(void)
 
     kni_accept = 0;
 
-    if(strcasecmp(lazybsd_global_cfg.kni.method, "accept") == 0)
+    if(strcasecmp(lazybsd_global_ptr()->kni.method, "accept") == 0)
         kni_accept = 1;
 
-    knictl_action = get_kni_action(lazybsd_global_cfg.kni.kni_action);
+    knictl_action = get_kni_action(lazybsd_global_ptr()->kni.kni_action);
 
-    lazybsd_kni_init(nb_ports, lazybsd_global_cfg.kni.type, lazybsd_global_cfg.kni.tcp_port,
-        lazybsd_global_cfg.kni.udp_port);
+    lazybsd_kni_init(nb_ports, lazybsd_global_ptr()->kni.type, lazybsd_global_ptr()->kni.tcp_port,
+        lazybsd_global_ptr()->kni.udp_port);
 
     unsigned socket_id = lcore_conf.socket_id;
     struct rte_mempool *mbuf_pool = pktmbuf_pool[socket_id];
 
-    nb_ports = lazybsd_global_cfg.dpdk.nb_ports;
+    nb_ports = lazybsd_global_ptr()->dpdk.nb_ports;
     int i, ret;
     for (i = 0; i < nb_ports; i++) {
-        uint16_t port_id = lazybsd_global_cfg.dpdk.portid_list[i];
-        lazybsd_kni_alloc(port_id, socket_id, lazybsd_global_cfg.kni.type, i, mbuf_pool, KNI_QUEUE_SIZE);
+        uint16_t port_id = lazybsd_global_ptr()->dpdk.portid_list[i];
+        lazybsd_kni_alloc(port_id, socket_id, lazybsd_global_ptr()->kni.type, i, mbuf_pool, KNI_QUEUE_SIZE);
     }
 
     return 0;
@@ -604,7 +604,7 @@ set_rss_table(uint16_t port_id, uint16_t reta_size, uint16_t nb_queues)
 static int
 init_port_start(void)
 {
-    int nb_ports = lazybsd_global_cfg.dpdk.nb_ports, total_nb_ports;
+    int nb_ports = lazybsd_global_ptr()->dpdk.nb_ports, total_nb_ports;
     unsigned socketid = 0;
     struct rte_mempool *mbuf_pool;
     uint16_t i, j;
@@ -613,7 +613,7 @@ init_port_start(void)
 #ifdef LAZYBSD_KNI
     if (enable_kni && rte_eal_process_type() == RTE_PROC_PRIMARY) {
 #ifdef LAZYBSD_KNI_KNI
-        if (lazybsd_global_cfg.kni.type == KNI_TYPE_VIRTIO)
+        if (lazybsd_global_ptr()->kni.type == KNI_TYPE_VIRTIO)
 #endif
         {
             total_nb_ports *= 2;  /* one more virtio_user port for kernel per port */
@@ -627,8 +627,8 @@ init_port_start(void)
         int nb_slaves;
 
         if (i < nb_ports) {
-            u_port_id = lazybsd_global_cfg.dpdk.portid_list[i];
-            pconf = &lazybsd_global_cfg.dpdk.port_cfgs[u_port_id];
+            u_port_id = lazybsd_global_ptr()->dpdk.portid_list[i];
+            pconf = &lazybsd_global_ptr()->dpdk.port_cfgs[u_port_id];
             nb_queues = pconf->nb_lcores;
             nb_slaves = pconf->nb_slaves;
 
@@ -647,7 +647,7 @@ init_port_start(void)
             if (j < nb_slaves) {
                 port_id = pconf->slave_portid_list[j];
                 printf("To init %s's %d'st slave port[%d]\n",
-                        lazybsd_global_cfg.dpdk.bond_cfgs->name,
+                        lazybsd_global_ptr()->dpdk.bond_cfgs->name,
                         j, port_id);
             } else {
                 port_id = u_port_id;
@@ -694,7 +694,7 @@ init_port_start(void)
                     rsskey = default_rsskey_52bytes;
                     rsskey_len = 52;
                 }
-                if (lazybsd_global_cfg.dpdk.symmetric_rss) {
+                if (lazybsd_global_ptr()->dpdk.symmetric_rss) {
                     printf("Use symmetric Receive-side Scaling(RSS) key\n");
                     rsskey = symmetric_rsskey;
                 }
@@ -715,7 +715,7 @@ init_port_start(void)
                 }
 
                 /* Set Rx VLAN stripping */
-                if (lazybsd_global_cfg.dpdk.vlan_strip) {
+                if (lazybsd_global_ptr()->dpdk.vlan_strip) {
                     if (dev_info.rx_offload_capa & RTE_ETH_RX_OFFLOAD_VLAN_STRIP) {
                         port_conf.rxmode.offloads |= RTE_ETH_RX_OFFLOAD_VLAN_STRIP;
                     }
@@ -742,7 +742,7 @@ init_port_start(void)
                     pconf->hw_features.rx_csum = 1;
                 }
 
-                if (lazybsd_global_cfg.dpdk.tx_csum_offoad_skip == 0) {
+                if (lazybsd_global_ptr()->dpdk.tx_csum_offoad_skip == 0) {
                     if ((dev_info.tx_offload_capa & RTE_ETH_TX_OFFLOAD_IPV4_CKSUM)) {
                         printf("TX ip checksum offload supported\n");
                         port_conf.txmode.offloads |= RTE_ETH_TX_OFFLOAD_IPV4_CKSUM;
@@ -759,7 +759,7 @@ init_port_start(void)
                     printf("TX checksum offoad is disabled\n");
                 }
 
-                if (lazybsd_global_cfg.dpdk.tso) {
+                if (lazybsd_global_ptr()->dpdk.tso) {
                     if (dev_info.tx_offload_capa & RTE_ETH_TX_OFFLOAD_TCP_TSO) {
                         printf("TSO is supported\n");
                         port_conf.txmode.offloads |= RTE_ETH_TX_OFFLOAD_TCP_TSO;
@@ -841,10 +841,10 @@ init_port_start(void)
 
                 count = rte_eth_bond_members_get(port_id, slaves, len);
                 printf("Port %u, %s's slave ports count:%d\n", port_id,
-                            lazybsd_global_cfg.dpdk.bond_cfgs->name, count);
+                            lazybsd_global_ptr()->dpdk.bond_cfgs->name, count);
                 for (x=0; x<count; x++) {
                     printf("Port %u, %s's slave port[%u]\n", port_id,
-                            lazybsd_global_cfg.dpdk.bond_cfgs->name, slaves[x]);
+                            lazybsd_global_ptr()->dpdk.bond_cfgs->name, slaves[x]);
                 }
             }
 
@@ -864,7 +864,7 @@ init_port_start(void)
 #endif
 
             /* Enable RX in promiscuous mode for the Ethernet device. */
-            if (lazybsd_global_cfg.dpdk.promiscuous) {
+            if (lazybsd_global_ptr()->dpdk.promiscuous) {
                 ret = rte_eth_promiscuous_enable(port_id);
                 if (ret == 0) {
                     printf("set port %u to promiscuous mode ok\n", port_id);
@@ -887,7 +887,7 @@ init_clock(void)
 {
     rte_timer_subsystem_init();
     uint64_t hz = rte_get_timer_hz();
-    uint64_t intrs = US_PER_S / lazybsd_global_cfg.freebsd.hz;
+    uint64_t intrs = US_PER_S / lazybsd_global_ptr()->freebsd.hz;
     uint64_t tsc = (hz + US_PER_S - 1) / US_PER_S * intrs;
 
     rte_timer_init(&freebsd_clock);
@@ -962,7 +962,7 @@ port_flow_isolate(uint16_t port_id, int set)
 static int
 create_tcp_flow(uint16_t port_id, uint16_t tcp_port) {
   struct rte_flow_attr attr = {.ingress = 1};
-  struct lazybsd_port_cfg *pconf = &lazybsd_global_cfg.dpdk.port_cfgs[port_id];
+  struct lazybsd_port_cfg *pconf = &lazybsd_global_ptr()->dpdk.port_cfgs[port_id];
   int nb_queues = pconf->nb_lcores;
   uint16_t queue[RTE_MAX_QUEUES_PER_PORT];
   int i = 0, j = 0;
@@ -1055,7 +1055,7 @@ create_tcp_flow(uint16_t port_id, uint16_t tcp_port) {
 
 static int
 init_flow(uint16_t port_id, uint16_t tcp_port) {
-  // struct lazybsd_flow_cfg fcfg = lazybsd_global_cfg.dpdk.flow_cfgs[0];
+  // struct lazybsd_flow_cfg fcfg = lazybsd_global_ptr()->dpdk.flow_cfgs[0];
 
   // int i;
   // for (i = 0; i < fcfg.nb_port; i++) {
@@ -1216,13 +1216,13 @@ fdir_add_tcp_flow(uint16_t port_id, uint16_t queue, uint16_t dir,
 int
 lazybsd_dpdk_init(int argc, char **argv)
 {
-    if (lazybsd_global_cfg.dpdk.nb_procs < 1 ||
-        lazybsd_global_cfg.dpdk.nb_procs > RTE_MAX_LCORE ||
-        lazybsd_global_cfg.dpdk.proc_id >= lazybsd_global_cfg.dpdk.nb_procs ||
-        lazybsd_global_cfg.dpdk.proc_id < 0) {
+    if (lazybsd_global_ptr()->dpdk.nb_procs < 1 ||
+        lazybsd_global_ptr()->dpdk.nb_procs > RTE_MAX_LCORE ||
+        lazybsd_global_ptr()->dpdk.proc_id >= lazybsd_global_ptr()->dpdk.nb_procs ||
+        lazybsd_global_ptr()->dpdk.proc_id < 0) {
         printf("param num_procs[%d] or proc_id[%d] error!\n",
-            lazybsd_global_cfg.dpdk.nb_procs,
-            lazybsd_global_cfg.dpdk.proc_id);
+            lazybsd_global_ptr()->dpdk.nb_procs,
+            lazybsd_global_ptr()->dpdk.proc_id);
         exit(1);
     }
 
@@ -1231,11 +1231,11 @@ lazybsd_dpdk_init(int argc, char **argv)
         rte_exit(EXIT_FAILURE, "Error with EAL initialization\n");
     }
 
-    numa_on = lazybsd_global_cfg.dpdk.numa_on;
+    numa_on = lazybsd_global_ptr()->dpdk.numa_on;
 
-    idle_sleep = lazybsd_global_cfg.dpdk.idle_sleep;
-    pkt_tx_delay = lazybsd_global_cfg.dpdk.pkt_tx_delay > BURST_TX_DRAIN_US ? \
-        BURST_TX_DRAIN_US : lazybsd_global_cfg.dpdk.pkt_tx_delay;
+    idle_sleep = lazybsd_global_ptr()->dpdk.idle_sleep;
+    pkt_tx_delay = lazybsd_global_ptr()->dpdk.pkt_tx_delay > BURST_TX_DRAIN_US ? \
+        BURST_TX_DRAIN_US : lazybsd_global_ptr()->dpdk.pkt_tx_delay;
 
     init_lcore_conf();
 
@@ -1246,7 +1246,7 @@ lazybsd_dpdk_init(int argc, char **argv)
     init_msg_ring();
 
 #ifdef LAZYBSD_KNI
-    enable_kni = lazybsd_global_cfg.kni.enable;
+    enable_kni = lazybsd_global_ptr()->kni.enable;
     if (enable_kni) {
         init_kni();
     }
@@ -1472,9 +1472,9 @@ process_packets(uint16_t port_id, uint16_t queue_id, struct rte_mbuf **bufs,
     for (i = 0; i < count; i++) {
         struct rte_mbuf *rtem = bufs[i];
 
-        if (unlikely( lazybsd_global_cfg.pcap.enable)) {
+        if (unlikely( lazybsd_global_ptr()->pcap.enable)) {
             if (!pkts_from_ring) {
-                lazybsd_dump_packets( lazybsd_global_cfg.pcap.save_path, rtem, lazybsd_global_cfg.pcap.snap_len, lazybsd_global_cfg.pcap.save_len);
+                lazybsd_dump_packets( lazybsd_global_ptr()->pcap.save_path, rtem, lazybsd_global_ptr()->pcap.snap_len, lazybsd_global_ptr()->pcap.save_len);
             }
         }
 
@@ -1833,11 +1833,11 @@ send_burst(struct lcore_conf *qconf, uint16_t n, uint8_t port)
     queueid = qconf->tx_queue_id[port];
     m_table = (struct rte_mbuf **)qconf->tx_mbufs[port].m_table;
 
-    if (unlikely(lazybsd_global_cfg.pcap.enable)) {
+    if (unlikely(lazybsd_global_ptr()->pcap.enable)) {
         uint16_t i;
         for (i = 0; i < n; i++) {
-            lazybsd_dump_packets( lazybsd_global_cfg.pcap.save_path, m_table[i],
-               lazybsd_global_cfg.pcap.snap_len, lazybsd_global_cfg.pcap.save_len);
+            lazybsd_dump_packets( lazybsd_global_ptr()->pcap.save_path, m_table[i],
+               lazybsd_global_ptr()->pcap.snap_len, lazybsd_global_ptr()->pcap.save_len);
         }
     }
 
@@ -2212,7 +2212,7 @@ kni_process_tx(uint16_t port_id, uint16_t queue_id,
     nb_tx = rte_ring_dequeue_burst(kni_rp[port_id], (void **)pkts_burst, count, NULL);
 
 #ifdef LAZYBSD_KNI_KNI
-    if (lazybsd_global_cfg.kni.type == KNI_TYPE_KNI) {
+    if (lazybsd_global_ptr()->kni.type == KNI_TYPE_KNI) {
         /* NB.
          * if nb_tx is 0,it must call rte_kni_tx_burst
          * must Call regularly rte_kni_tx_burst(kni, NULL, 0).
@@ -2220,7 +2220,7 @@ kni_process_tx(uint16_t port_id, uint16_t queue_id,
          */
         nb_kni_tx = rte_kni_tx_burst(kni_stat[port_id]->kni, pkts_burst, nb_tx);
         rte_kni_handle_request(kni_stat[port_id]->kni);
-    } else if (lazybsd_global_cfg.kni.type == KNI_TYPE_VIRTIO)
+    } else if (lazybsd_global_ptr()->kni.type == KNI_TYPE_VIRTIO)
 #endif
     {
         nb_kni_tx = rte_eth_tx_burst(kni_stat[port_id]->port_id, 0, pkts_burst, nb_tx);
@@ -2245,10 +2245,10 @@ kni_process_rx(uint16_t port_id, uint16_t queue_id,
     uint16_t nb_kni_rx = 0, nb_rx;
 
 #ifdef LAZYBSD_KNI_KNI
-    if (lazybsd_global_cfg.kni.type == KNI_TYPE_KNI) {
+    if (lazybsd_global_ptr()->kni.type == KNI_TYPE_KNI) {
         /* read packet from kni, and transmit to phy port */
         nb_kni_rx = rte_kni_rx_burst(kni_stat[port_id]->kni, pkts_burst, count);
-    } else if (lazybsd_global_cfg.kni.type == KNI_TYPE_VIRTIO)
+    } else if (lazybsd_global_ptr()->kni.type == KNI_TYPE_VIRTIO)
 #endif
     {
         nb_kni_rx = rte_eth_rx_burst(kni_stat[port_id]->port_id, 0, pkts_burst, count);

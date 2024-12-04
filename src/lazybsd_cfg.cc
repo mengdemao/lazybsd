@@ -28,32 +28,32 @@ namespace lazybsd {
 
 int config::ptree2struct(const ptree& cfg)
 {
-	lazybsd_global_cfg.dpdk.nb_channel = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.channel");
-	lazybsd_global_cfg.dpdk.idle_sleep = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.idle_sleep");
-	lazybsd_global_cfg.dpdk.lcore_mask = cfg.get<string>("lazybsd.lazybsd_global_cfg.dpdk.lcore_mask").c_str();
-	lazybsd_global_cfg.dpdk.nb_bond = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.nb_bond");
-	lazybsd_global_cfg.dpdk.nb_vdev = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.nb_vdev");
-	lazybsd_global_cfg.dpdk.numa_on = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.numa_on");
-	lazybsd_global_cfg.dpdk.pkt_tx_delay = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.pkt_tx_delay");
-	lazybsd_global_cfg.dpdk.portid_list[0] = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.port_list");
-	lazybsd_global_cfg.dpdk.promiscuous = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.promiscuous");
-	lazybsd_global_cfg.dpdk.symmetric_rss = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.symmetric_rss");
-	lazybsd_global_cfg.dpdk.tso = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.tso");
-	lazybsd_global_cfg.dpdk.tx_csum_offoad_skip = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.tx_csum_offoad_skip");
-	lazybsd_global_cfg.dpdk.vlan_strip = cfg.get<int>("lazybsd.lazybsd_global_cfg.dpdk.vlan_strip");
+	lazybsd_global_ptr()->dpdk.nb_channel = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.channel");
+	lazybsd_global_ptr()->dpdk.idle_sleep = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.idle_sleep");
+	lazybsd_global_ptr()->dpdk.lcore_mask = cfg.get<string>("lazybsd.lazybsd_global_ptr()->dpdk.lcore_mask").c_str();
+	lazybsd_global_ptr()->dpdk.nb_bond = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.nb_bond");
+	lazybsd_global_ptr()->dpdk.nb_vdev = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.nb_vdev");
+	lazybsd_global_ptr()->dpdk.numa_on = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.numa_on");
+	lazybsd_global_ptr()->dpdk.pkt_tx_delay = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.pkt_tx_delay");
+	lazybsd_global_ptr()->dpdk.portid_list[0] = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.port_list");
+	lazybsd_global_ptr()->dpdk.promiscuous = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.promiscuous");
+	lazybsd_global_ptr()->dpdk.symmetric_rss = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.symmetric_rss");
+	lazybsd_global_ptr()->dpdk.tso = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.tso");
+	lazybsd_global_ptr()->dpdk.tx_csum_offoad_skip = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.tx_csum_offoad_skip");
+	lazybsd_global_ptr()->dpdk.vlan_strip = cfg.get<int>("lazybsd.lazybsd_global_ptr()->dpdk.vlan_strip");
 
-	lazybsd_global_cfg.freebsd.hz = cfg.get<int>("lazybsd.freebsd.hz");
-	lazybsd_global_cfg.freebsd.fd_reserve = cfg.get<int>("lazybsd.freebsd.fd_reserve");
+	lazybsd_global_ptr()->freebsd.hz = cfg.get<int>("lazybsd.freebsd.hz");
+	lazybsd_global_ptr()->freebsd.fd_reserve = cfg.get<int>("lazybsd.freebsd.fd_reserve");
 
-	lazybsd_global_cfg.pcap.enable = cfg.get<int>("lazybsd.pcap.enable");
-	lazybsd_global_cfg.pcap.save_len = cfg.get<int>("lazybsd.pcap.savelen");
-	lazybsd_global_cfg.pcap.save_path = cfg.get<string>("lazybsd.pcap.savepath").c_str();
-	lazybsd_global_cfg.pcap.snap_len = cfg.get<int>("lazybsd.pcap.snaplen");
+	lazybsd_global_ptr()->pcap.enable = cfg.get<int>("lazybsd.pcap.enable");
+	lazybsd_global_ptr()->pcap.save_len = cfg.get<int>("lazybsd.pcap.savelen");
+	lazybsd_global_ptr()->pcap.save_path = cfg.get<string>("lazybsd.pcap.savepath").c_str();
+	lazybsd_global_ptr()->pcap.snap_len = cfg.get<int>("lazybsd.pcap.snaplen");
 
-	lazybsd_global_cfg.dpdk.port_cfgs->addr = cfg.get<string>("lazybsd.port0.addr").c_str();
-	lazybsd_global_cfg.dpdk.port_cfgs->broadcast = cfg.get<string>("lazybsd.port0.broadcast").c_str();
-	lazybsd_global_cfg.dpdk.port_cfgs->gateway = cfg.get<string>("lazybsd.port0.gateway").c_str();
-	lazybsd_global_cfg.dpdk.port_cfgs->netmask = cfg.get<string>("lazybsd.port0.netmask").c_str();
+	lazybsd_global_ptr()->dpdk.port_cfgs->addr = cfg.get<string>("lazybsd.port0.addr").c_str();
+	lazybsd_global_ptr()->dpdk.port_cfgs->broadcast = cfg.get<string>("lazybsd.port0.broadcast").c_str();
+	lazybsd_global_ptr()->dpdk.port_cfgs->gateway = cfg.get<string>("lazybsd.port0.gateway").c_str();
+	lazybsd_global_ptr()->dpdk.port_cfgs->netmask = cfg.get<string>("lazybsd.port0.netmask").c_str();
 
 	return EXIT_SUCCESS;
 }
@@ -107,14 +107,6 @@ int config::loadString(const std::string cfg_string)
 	return EXIT_SUCCESS;
 }
 
-/**
- * @brief 打印配置参数
- */
-void config::print(void)
-{
-
-}
-
 int config::parserString(const std::string & stream, boost::property_tree::ptree& cfg)
 {
 	std::stringstream ss(stream);
@@ -146,12 +138,3 @@ int config::parserFile(const std::string &fileName, ptree& cfg)
 }
 } // namespace lazybsd
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-lazybsd_config lazybsd_global_cfg;
-
-#ifdef __cplusplus
-}
-#endif
