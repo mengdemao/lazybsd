@@ -11,9 +11,9 @@ set -eo pipefail
 
 export ROOT_PATH=$(pwd)
 export BUILD_PATH=${ROOT_PATH}/build
-export INSTALL_PATH=${ROOT_PATH}/install
-export PKG_CONFIG_PATH=${INSTALL_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}
-export LD_LIBRARY_PATH=${INSTALL_PATH}/lib:${LD_LIBRARY_PATH}
+export DPDK_INSTALL_PATH=${BUILD_PATH}/dpdk
+export PKG_CONFIG_PATH=${DPDK_INSTALL_PATH}/dpdk/lib/pkgconfig:${PKG_CONFIG_PATH}
+export LD_LIBRARY_PATH=${DPDK_INSTALL_PATH}/dpdk/lib:${LD_LIBRARY_PATH}
 
 log_err() {
     local logTime="$(date -d today +'%Y-%m-%d %H:%M:%S')"
@@ -104,11 +104,11 @@ setup_pkg()
     pushd dpdk >> /dev/null || exit 1
     if [ ! -d build ]; then
         mkdir build
-        meson setup --prefix=${INSTALL_PATH}  -Dbuildtype=debug -Denable_kmods=true -Dexamples=all -Dplatform=native build
+        meson setup --prefix=${DPDK_INSTALL_PATH}  -Dbuildtype=debug -Denable_kmods=true -Dexamples=all -Dplatform=native build
         ninja -C build
     fi
 
-    if [ ! -d ${INSTALL_PATH} ]; then
+    if [ ! -d ${DPDK_INSTALL_PATH} ]; then
         ninja -C build install
     fi
     popd >> /dev/null || exit 1

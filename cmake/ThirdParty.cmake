@@ -1,11 +1,13 @@
-# 添加所有的conan包
+# 添加所有的依赖
 find_package(GTest REQUIRED)
 find_package(fmt REQUIRED)
 find_package(jemalloc REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(luajit REQUIRED)
+find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED
   program_options
+  log
   system
   filesystem
   regex
@@ -68,3 +70,13 @@ if(luajit_FOUND)
   link_libraries(${luajit_LIBRARIES})
   add_definitions("-DLUAJIT_VERSION=\"${luajit_VERSION_STRING}\"")
 endif(luajit_FOUND)
+
+pkg_check_modules(DPDK REQUIRED libdpdk)
+if (DPDK_FOUND)
+  message(STATUS "DPDK version is        : ${DPDK_VERSION}")
+  message(STATUS "DPDK include path is   : ${DPDK_INCLUDE_DIRS}")
+  message(STATUS "DPDK libraries is      : ${DPDK_LIBRARIES}")
+  include_directories(${DPDK_INCLUDE_DIRS})
+  link_libraries(${DPDK_LIBRARIES})
+  add_definitions("-DDPDK_VERSION=\"${DPDK_VERSION}\"")
+endif(DPDK_FOUND)
