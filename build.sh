@@ -12,8 +12,8 @@ set -eo pipefail
 export ROOT_PATH=$(pwd)
 export BUILD_PATH=${ROOT_PATH}/build
 export DPDK_INSTALL_PATH=${BUILD_PATH}/dpdk
-export PKG_CONFIG_PATH=${DPDK_INSTALL_PATH}/dpdk/lib/pkgconfig:${PKG_CONFIG_PATH}
-export LD_LIBRARY_PATH=${DPDK_INSTALL_PATH}/dpdk/lib:${LD_LIBRARY_PATH}
+export PKG_CONFIG_PATH=${DPDK_INSTALL_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}
+export LD_LIBRARY_PATH=${DPDK_INSTALL_PATH}/lib:${LD_LIBRARY_PATH}
 
 log_err() {
     local logTime="$(date -d today +'%Y-%m-%d %H:%M:%S')"
