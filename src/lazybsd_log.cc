@@ -1,5 +1,5 @@
 /**
- * @file lazybsd_logger.cc
+ * @file lazybsd_log.cc
  * @author mengdemao (mengdemao19951021@163.com)
  * @version 1.0
  * @date 2024-02-04
@@ -9,7 +9,7 @@
  * @copyright Copyright (c) 2024  mengdemao
  *
  */
-#include "lazybsd_logger.h"
+#include "lazybsd_log.h"
 #include <boost/log/expressions.hpp>
 #include <boost/log/attributes.hpp>
 #include <boost/log/utility/setup/file.hpp>
@@ -19,12 +19,12 @@
 
 namespace lazybsd {
 
-lazybsd_logger& lazybsd_logger::Instance() {
-    static lazybsd_logger log;
+lazybsd_log& lazybsd_log::Instance() {
+    static lazybsd_log log;
     return log;
 }
 
-bool lazybsd_logger::Init(std::string fileName, int type, int level, int maxFileSize, int maxBackupIndex) {
+bool lazybsd_log::Init(std::string fileName, int type, int level, int maxFileSize, int maxBackupIndex) {
     boost::log::formatter formatter =
         boost::log::expressions::stream
         << "["
@@ -86,7 +86,5 @@ bool lazybsd_logger::Init(std::string fileName, int type, int level, int maxFile
     );
     return true;
 }
-
-
 
 }

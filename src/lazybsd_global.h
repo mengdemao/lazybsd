@@ -17,6 +17,7 @@ extern "C" {
 
 #include <stdint.h>
 #include <stddef.h>
+#include <limits.h>
 
 #define MAC_SIZE (6)
 
@@ -124,11 +125,14 @@ typedef struct {
     /* 调试开关 */ 
     bool debug;
          
-    char *filename;
+    char config_filename[PATH_MAX];  /* config file name */
+    char script_filename[PATH_MAX];  /* script file name */
     struct {
         char *proc_type;
+        
         /* mask of enabled lcores */
         const char *lcore_mask;
+        
         /* mask of current proc on all lcores */
         char *proc_mask;
 
@@ -205,6 +209,9 @@ typedef struct {
         uint32_t    save_len;
         const char* save_path;
     } pcap;
+
+    /* luajit state */
+    void *L;
 } lazybsd_global;
 
 /**

@@ -15,6 +15,7 @@
 #include <lazybsd.h>
 #include "lazybsd_init.hh"
 #include "lazybsd_cmdline.hh"
+#include "lazybsd_log.h"
 
 #include <ostream>
 #include <rte_memory.h>
@@ -43,6 +44,8 @@ int init(int argc, char* argv[])
 	} else {
 		return EXIT_FAILURE;
 	}
+	
+	// init log 
 
 	// load config file
 

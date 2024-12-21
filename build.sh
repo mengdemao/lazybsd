@@ -11,9 +11,9 @@ set -eo pipefail
 
 export ROOT_PATH=$(pwd)
 export BUILD_PATH=${ROOT_PATH}/build
-export DPDK_INSTALL_PATH=${BUILD_PATH}/dpdk
-export PKG_CONFIG_PATH=${DPDK_INSTALL_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}
-export LD_LIBRARY_PATH=${DPDK_INSTALL_PATH}/lib:${LD_LIBRARY_PATH}
+export INSTALL_PATH=${ROOT_PATH}/install
+export PKG_CONFIG_PATH=${INSTALL_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}
+export LD_LIBRARY_PATH=${INSTALL_PATH}/lib:${LD_LIBRARY_PATH}
 
 log_err() {
     local logTime="$(date -d today +'%Y-%m-%d %H:%M:%S')"
@@ -77,6 +77,13 @@ cmake_config()
         -B "${ROOT_PATH}"/build -G Ninja || exit 1
 }
 
+cmake_setup()
+{
+    local BUILD_CFG=$1
+
+    cmake --build ${BUILD_PATH} -j"$(nproc)" DPDK || exit 1
+}
+
 cmake_build()
 {
     cmake --build ${BUILD_PATH} -j"$(nproc)" || exit 1
@@ -98,17 +105,17 @@ cmake_cov()
     cmake --build ${BUILD_PATH} --config "${BUILD_CFG}" --target TestHtml || exit 1
 }
 
-setup_pkg()
+setup()
 {
     log_info "编译DPDK开始"
     pushd dpdk >> /dev/null || exit 1
     if [ ! -d build ]; then
         mkdir build
-        meson setup --prefix=${DPDK_INSTALL_PATH}  -Dbuildtype=debug -Denable_kmods=true -Dexamples=all -Dplatform=native build
+        meson setup --prefix=${INSTALL_PATH}  -Dbuildtype=debug -Denable_kmods=true -Dexamples=all -Dplatform=native build
         ninja -C build
     fi
 
-    if [ ! -d ${DPDK_INSTALL_PATH} ]; then
+    if [ ! -d ${INSTALL_PATH} ]; then
         ninja -C build install
     fi
     popd >> /dev/null || exit 1
@@ -191,7 +198,7 @@ while true; do
         ;;
 
     -s | --setup)
-        setup_pkg || exit 1
+        setup || exit 1
         shift 1
         ;;
 

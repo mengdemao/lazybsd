@@ -51,11 +51,12 @@ std::string lazybsd_version_string(void)
  */
 std::string lazybsd_component_version_string(void)
 {
-    return fmt::format("BOOST_VERSION      :{}\r\n"
+    return fmt::format("DPDK_VERSION     :{}\r\n"
+                       "BOOST_VERSION      :{}\r\n"
                        "OPENSSL_VERSION    :{}\r\n"
                        "JEMALLOC_VERSION   :{}\r\n"
                        "LUAJIT_VERSION     :{}\r\n",
-        BOOST_VERSION, OPENSSL_VERSION, JEMALLOC_VERSION, LUAJIT_VERSION);
+        DPDK_VERSION, BOOST_VERSION, OPENSSL_VERSION, JEMALLOC_VERSION, LUAJIT_VERSION);
 }
 
 }

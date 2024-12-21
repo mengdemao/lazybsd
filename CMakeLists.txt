@@ -31,7 +31,15 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # 添加公共的编译指令
-add_compile_options(-Wall -Wno-unused -gdwarf-5 -fno-common -fstack-protector -fPIC)
+add_compile_options(-Wall -O2 -g -Wno-unused -gdwarf-5 -fno-common -fstack-protector -fPIC)
+
+add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-missing-prototypes>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-unused-result>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-pointer-arith>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-volatile>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-format>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-literal-suffix>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-sign-compare>)
 
 # 强制编译器输出颜色
 add_compile_options(-fdiagnostics-color=auto)
@@ -55,11 +63,6 @@ endif(CCACHE_FOUND)
 # 添加外部软件
 find_package(Threads REQUIRED)
 find_package(Doxygen REQUIRED)
-
-# 添加DPDK库文件路径
-include_directories(${CMAKE_SOURCE_DIR}/install/include)
-link_directories(${CMAKE_SOURCE_DIR}/install/lib)
-link_directories(${CMAKE_SOURCE_DIR}/install/lib/x86_64-linux-gnu)
 
 # 添加源文件
 aux_source_directory(${CMAKE_SOURCE_DIR}/src SRC_LAZYBSD)
