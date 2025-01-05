@@ -55,7 +55,7 @@ $ ninja -C build
 
 ## 编译安装
 
-![asciicast](https://asciinema.org/a/YmrjuKG5R3Hc97fb3e8xxZsX4.svg)](https://asciinema.org/a/YmrjuKG5R3Hc97fb3e8xxZsX4)
+[![asciicast](https://asciinema.org/a/YmrjuKG5R3Hc97fb3e8xxZsX4.svg)](https://asciinema.org/a/YmrjuKG5R3Hc97fb3e8xxZsX4)
 
 ## 使用
 
