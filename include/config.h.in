@@ -6,7 +6,4 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#cmakedefine USE_BYPASS_SOCKET
-#cmakedefine USE_BYPASS_PFRING
-
 #endif /* __CONFIG_H__ */

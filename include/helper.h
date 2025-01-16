@@ -29,8 +29,6 @@ extern "C" {
 
 #define TEST_HEAD(TEST_NAME) TEST(TEST_NAME, UNIQUE_ID)
 
-#define UNIQUE_ID __COUNTER__
-
 #ifdef __cplusplus
 }
 #endif

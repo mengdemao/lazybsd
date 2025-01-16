@@ -43,6 +43,7 @@
 #include <vm/vm.h>
 #include <vm/vm_extern.h>
 
+#include "lazybsd_global.h"
 #include "lazybsd_host.h"
 #include "lazybsd_api.h"
 #include "lazybsd_cfg.h"
@@ -129,14 +130,14 @@ lazybsd_freebsd_init(void)
     void *bootmem;
     int error;
 
-    snprintf(tmpbuf, sizeof(tmpbuf), "%u", lazybsd_global_cfg.freebsd.hz);
+    snprintf(tmpbuf, sizeof(tmpbuf), "%u", lazybsd_global_ptr()->freebsd.hz);
     error = kern_setenv("kern.hz", tmpbuf);
     if (error != 0) {
         panic("kern_setenv failed: kern.hz=%s\n", tmpbuf);
     }
 
     struct lazybsd_freebsd_cfg *cur;
-    cur = lazybsd_global_cfg.freebsd.boot;
+    cur = lazybsd_global_ptr()->freebsd.boot;
     while (cur) {
         error = kern_setenv(cur->name, cur->str);
         if (error != 0) {
@@ -146,7 +147,7 @@ lazybsd_freebsd_init(void)
         cur = cur->next;
     }
 
-    physmem = lazybsd_global_cfg.freebsd.physmem;
+    physmem = lazybsd_global_ptr()->freebsd.physmem;
 
     pcpup = malloc(sizeof(struct pcpu), M_DEVBUF, M_ZERO);
     pcpu_init(pcpup, 0, sizeof(struct pcpu));
@@ -168,9 +169,9 @@ lazybsd_freebsd_init(void)
     mutex_init();
     mi_startup();
     sx_init(&proctree_lock, "proctree");
-    ff_fdused_range(lazybsd_global_cfg.freebsd.fd_reserve);
+    ff_fdused_range(lazybsd_global_ptr()->freebsd.fd_reserve);
 
-    cur = lazybsd_global_cfg.freebsd.sysctl;
+    cur = lazybsd_global_ptr()->freebsd.sysctl;
     while (cur) {
         error = kernel_sysctlbyname(curthread, cur->name, NULL, NULL,
             cur->value, cur->vlen, NULL, 0);

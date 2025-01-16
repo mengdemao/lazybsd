@@ -29,12 +29,12 @@ jobs:
       with:
         fetch-depth: 0
         lfs: false
-        submodules: 'recursive'
+        submodules: 'true'
 
     - name: 安装软件
       run: |
         sudo apt -y update
-        sudo apt install -y doxygen graphviz python3 python3-pip ninja-build libnuma-dev ccache
+        sudo apt install -y doxygen graphviz python3 python3-pip ninja-build libnuma-dev ccache libboost-all-dev libssl-dev
 
     - name: Cache Conan2
       id: Cache_Conan2

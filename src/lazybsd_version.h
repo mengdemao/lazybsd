@@ -42,6 +42,12 @@ void lazybsd_version_print(void);
  */
 std::string lazybsd_version_string(void);
 
+/**
+ * @brief 版本字符串获取
+ * @return std::string
+ */
+std::string lazybsd_component_version_string(void);
+
 }
 }
 

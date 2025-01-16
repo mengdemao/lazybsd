@@ -1,12 +1,12 @@
 /**
  * @file lazybsd_host.c
  * @author mengdemao (mengdemao19951021@gmail.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2024-04-27
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -16,6 +16,7 @@
 
 #include <openssl/rand.h>
 #include <rte_malloc.h>
+#include <jemalloc/jemalloc.h>
 
 #include "lazybsd_host.h"
 #include "lazybsd_errno.h"
@@ -77,7 +78,7 @@ void *
 lazybsd_malloc(uint64_t size)
 {
     //return rte_malloc("", size, 0);
-    return (malloc(size));
+    return (je_malloc(size));
 }
 
 
@@ -85,7 +86,7 @@ void *
 lazybsd_calloc(uint64_t number, uint64_t size)
 {
     //return rte_calloc("", number, size, 0);
-    return (calloc(number, size));
+    return (je_calloc(number, size));
 }
 
 
@@ -94,7 +95,7 @@ lazybsd_realloc(void *p, uint64_t size)
 {
     if (size) {
         //return rte_realloc(p, size, 0);
-        return (realloc(p, size));
+        return (je_realloc(p, size));
     }
 
     return (p);
@@ -105,7 +106,7 @@ void
 lazybsd_free(void *p)
 {
     //rte_free(p);
-    free(p);
+    je_free(p);
 }
 
 void panic(const char *, ...) __attribute__((__noreturn__));

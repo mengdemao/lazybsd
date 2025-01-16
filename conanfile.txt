@@ -1,8 +1,9 @@
 [requires]
-openssl/3.2.2
-boost/1.85.0
-fmt/11.0.1
-gtest/1.14.0
+openssl/3.3.2
+fmt/11.0.2
+gtest/1.15.0
+jemalloc/5.3.0
+luajit/2.1.0-beta3
 
 [generators]
 CMakeDeps

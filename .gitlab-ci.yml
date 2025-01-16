@@ -33,12 +33,12 @@ setup:
 build:Debug:
   stage: build
   script:
-    - ./build.sh -c Debug -b
+    - ./build.sh -c Debug -a
 
 build:Release:
   stage: build
   script:
-    - ./build.sh -c Release -b
+    - ./build.sh -c Release -a
 
 deploy:
   stage: deploy

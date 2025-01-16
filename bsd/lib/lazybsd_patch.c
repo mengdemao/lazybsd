@@ -1029,7 +1029,7 @@ malloc_uninit(void *data)
 }
 
 void *
-malloc(unsigned long size, struct malloc_type *type, int flags)
+__malloc(unsigned long size, struct malloc_type *type, int flags)
 {
     void *alloc;
 
@@ -1047,20 +1047,20 @@ malloc(unsigned long size, struct malloc_type *type, int flags)
 }
 
 void
-free(void *addr, struct malloc_type *type)
+__free(void *addr, struct malloc_type *type)
 {
     lazybsd_free(addr);
 }
 
 void *
-realloc(void *addr, unsigned long size, struct malloc_type *type,
+__realloc(void *addr, unsigned long size, struct malloc_type *type,
     int flags)
 {
     return (lazybsd_realloc(addr, size));
 }
 
 void *
-reallocf(void *addr, unsigned long size, struct malloc_type *type,
+__reallocf(void *addr, unsigned long size, struct malloc_type *type,
      int flags)
 {
     void *mem;
