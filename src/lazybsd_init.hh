@@ -28,6 +28,6 @@ int init(int argc, char* argv[]);
  */
 void exit(int status);
 
-}
+} // namespace lazybsd::luajit
 
 #endif /* __LAZYBSD_INIT_HXX__ */

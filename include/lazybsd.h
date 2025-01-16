@@ -31,4 +31,11 @@
 #define LAZYBSD_EXIT_SUCCESS        0
 #define LAZYBSD_EXIT_FAILURE        1
 
+#define UNIQUE_ID __COUNTER__
+
+#define CONSTRUCTOR_FUNCTION    __attribute__((constructor))
+#define DESTRUCTOR_FUNCTION     __attribute__((destructor))
+
+#define weak_function           __attribute__((weak))
+
 #endif /* __LAZYBSD_H__ */

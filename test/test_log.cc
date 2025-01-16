@@ -17,11 +17,11 @@
 
 TEST(TEST_LOG, TEST_LOG)
 {
-    log_trace << "A trace severity message";
-    log_debug << "A debug severity message";
-    log_info << "An informational severity message";
-    log_warning << "A warning severity message";
-    log_error << "An error severity message";
-    log_fatal << "A fatal severity message";
+    log_trace("A trace severity message");
+    log_debug("A debug severity message");
+    log_info("An informational severity message");
+    log_warning("A warning severity message");
+    log_error("An error severity message");
+    log_fatal("A fatal severity message");
 	EXPECT_NE(EXIT_FAILURE, EXIT_SUCCESS);
 }

@@ -10,8 +10,7 @@
  */
 #include "lazybsd_version.h"
 
-namespace lazybsd {
-namespace version {
+namespace lazybsd::version {
 
 #include <version.h>
 
@@ -51,7 +50,7 @@ std::string lazybsd_version_string(void)
  */
 std::string lazybsd_component_version_string(void)
 {
-    return fmt::format("DPDK_VERSION     :{}\r\n"
+    return fmt::format("DPDK_VERSION       :{}\r\n"
                        "BOOST_VERSION      :{}\r\n"
                        "OPENSSL_VERSION    :{}\r\n"
                        "JEMALLOC_VERSION   :{}\r\n"
@@ -59,5 +58,4 @@ std::string lazybsd_component_version_string(void)
         DPDK_VERSION, BOOST_VERSION, OPENSSL_VERSION, JEMALLOC_VERSION, LUAJIT_VERSION);
 }
 
-}
 }

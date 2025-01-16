@@ -12,40 +12,80 @@
 #ifndef __LAZYBSD_LOG__
 #define __LAZYBSD_LOG__
 
-#include <boost/log/common.hpp>
-#include <boost/log/sinks.hpp>
-#include <boost/log/sources/logger.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/sources/basic_logger.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/utility/setup/formatter_parser.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
-#include <boost/log/attributes/named_scope.hpp>
+#include <boost/log/common.hpp>
+#include <boost/log/attributes.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/exceptions.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/sinks.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sources/logger.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/sinks/text_file_backend.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/attributes.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/support/date_time.hpp>
 
-namespace lazybsd {
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <fmt/color.h>
 
-class lazybsd_log {
-public:
-    typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_file_backend> file_sink;
-    enum loggerType {
-        console = 0,
-        file,
-    };
-
-    lazybsd_log() {}
-
-    ~lazybsd_log() {}
-
-    static lazybsd_log& Instance();
-
-    bool Init(std::string fileName, int type, int level, int maxFileSize, int maxBackupIndex);
-
-    boost::log::sources::severity_logger<boost::log::trivial::severity_level> _logger;
-};
-
+namespace lazybsd::log {
+    bool init(void);
 }
 
-#define log_trace     BOOST_LOG_FUNCTION(); BOOST_LOG_SEV(lazybsd::lazybsd_log::Instance()._logger, boost::log::trivial::trace)
-#define log_debug     BOOST_LOG_FUNCTION(); BOOST_LOG_SEV(lazybsd::lazybsd_log::Instance()._logger, boost::log::trivial::debug)
-#define log_info      BOOST_LOG_FUNCTION(); BOOST_LOG_SEV(lazybsd::lazybsd_log::Instance()._logger, boost::log::trivial::info)
-#define log_warning   BOOST_LOG_FUNCTION(); BOOST_LOG_SEV(lazybsd::lazybsd_log::Instance()._logger, boost::log::trivial::warning)
-#define log_error     BOOST_LOG_FUNCTION(); BOOST_LOG_SEV(lazybsd::lazybsd_log::Instance()._logger, boost::log::trivial::error)
-#define log_fatal     BOOST_LOG_FUNCTION(); BOOST_LOG_SEV(lazybsd::lazybsd_log::Instance()._logger, boost::log::trivial::fatal)
+template <typename... T>
+static inline void log_trace(fmt::format_string<T...> fmt, T&&... args)
+{
+    BOOST_LOG_FUNCTION(); BOOST_LOG_TRIVIAL(trace) << fmt::format(fmt, args...);
+}
+
+template <typename... T>
+static inline void log_debug(fmt::format_string<T...> fmt, T&&... args)
+{
+    BOOST_LOG_FUNCTION(); BOOST_LOG_TRIVIAL(debug) << fmt::format(fmt, args...);
+}
+
+template <typename... T>
+static inline void log_info(fmt::format_string<T...> fmt, T&&... args)
+{
+    BOOST_LOG_FUNCTION(); BOOST_LOG_TRIVIAL(info) << fmt::format(fmt, args...);
+}
+
+template <typename... T>
+static inline void log_warning(fmt::format_string<T...> fmt, T&&... args)
+{
+    BOOST_LOG_FUNCTION(); BOOST_LOG_TRIVIAL(warning) << fmt::format(fmt, args...);
+}
+
+template <typename... T>
+static inline void log_error(fmt::format_string<T...> fmt, T&&... args)
+{
+    BOOST_LOG_FUNCTION(); BOOST_LOG_TRIVIAL(error) << fmt::format(fmt, args...);
+}
+
+template <typename... T>
+static inline void log_fatal(fmt::format_string<T...> fmt, T&&... args)
+{
+    BOOST_LOG_FUNCTION(); BOOST_LOG_TRIVIAL(fatal) << fmt::format(fmt, args...);
+}
 
 #endif /* __LAZYBSD_LOG__ */

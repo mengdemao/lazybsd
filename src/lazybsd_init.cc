@@ -39,27 +39,27 @@ int init(int argc, char* argv[])
 	auto cmdline = lazybsd::cmdline::parse(argc, argv);
 	if (cmdline.has_value()) {
 		fmt::print("debug:{} config_file:{} proc_id:{} proc_type:{}\r\n",
-			cmdline.value().debug, cmdline.value().config_file, 
+			cmdline.value().debug, cmdline.value().config_file,
 			cmdline.value().proc_id, cmdline.value().proc_type);
 	} else {
 		return EXIT_FAILURE;
 	}
-	
-	// init log 
+
+	// init log
 
 	// load config file
 
 	// init luajit plugin
-	
+
 	// init dpdk
 	// auto ret = rte_eal_init(argc, argv);
 	// if (ret < 0) {
 	// 	rte_panic("Cannot init EAL\n");
 	// }
-	
+
 	// freebsd system init
 
-	// start veth interface 
+	// start veth interface
 
 	return LAZYBSD_EXIT_SUCCESS;
 }

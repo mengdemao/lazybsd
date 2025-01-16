@@ -16,15 +16,19 @@
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/support/date_time.hpp>
+#include <cstdlib>
 
-namespace lazybsd {
+namespace logging = boost::log;
+namespace src = boost::log::sources;
+namespace sinks = boost::log::sinks;
+namespace keywords = boost::log::keywords;
 
-lazybsd_log& lazybsd_log::Instance() {
-    static lazybsd_log log;
-    return log;
-}
+namespace lazybsd::log {
 
-bool lazybsd_log::Init(std::string fileName, int type, int level, int maxFileSize, int maxBackupIndex) {
+typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_file_backend> file_sink;
+
+bool init(void)
+{
     boost::log::formatter formatter =
         boost::log::expressions::stream
         << "["
@@ -43,48 +47,37 @@ bool lazybsd_log::Init(std::string fileName, int type, int level, int maxFileSiz
             boost::log::keywords::iteration = boost::log::expressions::reverse,
             boost::log::keywords::depth = 1);
 
-    switch (type) {
-    case console: {
-        auto consoleSink = boost::log::add_console_log();
-        consoleSink->set_formatter(formatter);
-        boost::log::core::get()->add_sink(consoleSink);
-    }
-                break;
-    case file: {
-        boost::shared_ptr<file_sink> fileSink(new file_sink(
-            boost::log::keywords::file_name = fileName,                       // file name pattern
-            boost::log::keywords::target_file_name = "%Y%m%d_%H%M%S_%N.log",   // file name pattern
-            boost::log::keywords::time_based_rotation = boost::log::sinks::file::rotation_at_time_point(16, 0, 0),  //期货交易当日结束，夜盘算第二天
-            boost::log::keywords::rotation_size = maxFileSize * 1024 * 1024,                         // rotation size, in characters
-            boost::log::keywords::open_mode = std::ios::out | std::ios::app
-        ));
+    auto consoleSink = boost::log::add_console_log();
+    consoleSink->set_formatter(formatter);
+    boost::log::core::get()->add_sink(consoleSink);
 
-        fileSink->locked_backend()->set_file_collector(boost::log::sinks::file::make_collector(
-            boost::log::keywords::target = "logs",        //folder name.
-            boost::log::keywords::max_size = maxFileSize * maxBackupIndex * 1024 * 1024,    //The maximum amount of space of the folder.
-            boost::log::keywords::min_free_space = 10 * 1024 * 1024,  //Reserved disk space minimum.
-            boost::log::keywords::max_files = 512
-        ));
+    boost::shared_ptr<file_sink> fileSink(new file_sink(
+        boost::log::keywords::file_name = "lazybsd_%N.log",                       // file name pattern
+        boost::log::keywords::target_file_name = "%Y%m%d_%H%M%S_%N.log",   // file name pattern
+        boost::log::keywords::time_based_rotation = boost::log::sinks::file::rotation_at_time_point(16, 0, 0),  //期货交易当日结束，夜盘算第二天
+        boost::log::keywords::rotation_size = 10 * 1024 * 1024,                         // rotation size, in characters
+        boost::log::keywords::open_mode = std::ios::out | std::ios::app
+    ));
 
-        fileSink->set_formatter(formatter);
-        fileSink->locked_backend()->scan_for_files();
-        fileSink->locked_backend()->auto_flush(true);
-        boost::log::core::get()->add_sink(fileSink);
-    }
-             break;
-    default: {
-        auto consoleSink = boost::log::add_console_log();
-        consoleSink->set_formatter(formatter);
-        boost::log::core::get()->add_sink(consoleSink);
-    }
-           break;
-    }
+    fileSink->locked_backend()->set_file_collector(boost::log::sinks::file::make_collector(
+        boost::log::keywords::target = "logs",        //folder name.
+        boost::log::keywords::max_size = 10 * 10 * 1024 * 1024,    //The maximum amount of space of the folder.
+        boost::log::keywords::min_free_space = 10 * 1024 * 1024,  //Reserved disk space minimum.
+        boost::log::keywords::max_files = 512
+    ));
+
+    fileSink->set_formatter(formatter);
+    fileSink->locked_backend()->scan_for_files();
+    fileSink->locked_backend()->auto_flush(true);
+    boost::log::core::get()->add_sink(fileSink);
+
     boost::log::add_common_attributes();
     boost::log::core::get()->add_global_attribute("Scope", boost::log::attributes::named_scope());
     boost::log::core::get()->set_filter(
-        boost::log::trivial::severity >= level
+        boost::log::trivial::severity >= boost::log::trivial::trace
     );
-    return true;
+
+    return EXIT_SUCCESS;
 }
 
 }

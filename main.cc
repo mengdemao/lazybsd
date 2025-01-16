@@ -13,8 +13,8 @@ int main(int argc, char *argv[])
 
 	lazybsd::init(argc, argv);
 
-	// int lazybsd_fd = lazybsd_socket(AF_INET, SOCK_STREAM, 0);
-	// assert(lazybsd_fd >= 0);
+	auto lazybsd_fd = lazybsd_socket(AF_INET, SOCK_STREAM, 0);
+	assert(lazybsd_fd >= 0);
 
 	// status = lazybsd_close(lazybsd_fd);
 	// assert(status == 0);
