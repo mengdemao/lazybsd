@@ -74,6 +74,9 @@ if(luajit_FOUND)
   add_definitions("-DLUAJIT_VERSION=\"${luajit_VERSION_STRING}\"")
 endif(luajit_FOUND)
 
+set(ENV{PKG_CONFIG_PATH} "${CMAKE_SOURCE_DIR}/install/lib/x86_64-linux-gnu/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+set(ENV{LD_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/install/lib/x86_64-linux-gnu:$ENV{LD_LIBRARY_PATH}")
+
 set(ENV{PKG_CONFIG_PATH} "${CMAKE_SOURCE_DIR}/install/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
 set(ENV{LD_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/install/lib:$ENV{LD_LIBRARY_PATH}")
 
