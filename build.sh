@@ -12,7 +12,6 @@ set -eo pipefail
 export ROOT_PATH=$(pwd)
 export BUILD_PATH=${ROOT_PATH}/build
 export INSTALL_PATH=${ROOT_PATH}/install
-export PKG_CONFIG_PATH=${INSTALL_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}
 export LD_LIBRARY_PATH=${INSTALL_PATH}/lib:${LD_LIBRARY_PATH}
 
 log_err() {

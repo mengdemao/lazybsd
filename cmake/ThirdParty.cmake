@@ -47,6 +47,10 @@ if(OpenSSL_FOUND)
   add_definitions("-DOPENSSL_VERSION=\"${OPENSSL_VERSION}\"")
 endif(OpenSSL_FOUND)
 
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
 if(Boost_FOUND)
   set(Boost_USE_STATIC_LIBS ON)
   set(Boost_USE_MULTITHREADED ON)
@@ -69,6 +73,9 @@ if(luajit_FOUND)
   link_libraries(${luajit_LIBRARIES})
   add_definitions("-DLUAJIT_VERSION=\"${luajit_VERSION_STRING}\"")
 endif(luajit_FOUND)
+
+set(ENV{PKG_CONFIG_PATH} "${CMAKE_SOURCE_DIR}/install/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+set(ENV{LD_LIBRARY_PATH} "${CMAKE_SOURCE_DIR}/install/lib:$ENV{LD_LIBRARY_PATH}")
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(DPDK REQUIRED libdpdk)
