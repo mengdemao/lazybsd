@@ -25,14 +25,26 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # 显示详细信息
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+set(CMAKE_COMPILE_WARNING_AS_ERROR OFF)
+
 # 设置默认编译类型
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif()
 
 # 添加公共的编译指令
-add_compile_options(-Wall -w -O2 -g -Wno-unused -gdwarf-5 -fno-common -fstack-protector -fPIC)
+add_compile_options(
+  -Wall
+  -O2
+  -g
+  -Wno-unused
+  -gdwarf-5
+  -fno-common
+  -fstack-protector
+  -fPIC
+  -Wno-stringop-overread)
 
+add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-missing-prototypes>)
 add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-missing-prototypes>)
 add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-stringop-overread>)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-unused-result>)
@@ -77,10 +89,10 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC LAZYBSD_USE_PAGE_ARRAY)
 
 # 添加可执行文件
 add_executable(${PROJECT_NAME}_runner main.cc)
-target_link_libraries(${PROJECT_NAME}_runner PRIVATE
-                      "$<LINK_GROUP:RESCAN,${PROJECT_NAME},freebsd>")
-target_link_options(${PROJECT_NAME}_runner
-                    PRIVATE -Xlinker -Map=${PROJECT_NAME}_runner.map)
+target_link_libraries(${PROJECT_NAME}_runner
+                      PRIVATE "$<LINK_GROUP:RESCAN,${PROJECT_NAME},freebsd>")
+target_link_options(${PROJECT_NAME}_runner PRIVATE -Xlinker
+                    -Map=${PROJECT_NAME}_runner.map)
 
 # 添加头文件路径
 include_directories(${CMAKE_SOURCE_DIR}/include/generated)

@@ -10,14 +10,19 @@
  */
 #ifndef LAZYBSD_DPDK_HH
 #define LAZYBSD_DPDK_HH
+#include "lazybsd_dpdk.h"
 #include <string>
 #include <string_view>
-#include "lazybsd_dpdk.h"
 
-namespace lazybsd {
-namespace dpdk {
+namespace lazybsd::dpdk {
 
-} // dpdk
-} // lazybsd
+/**
+ * @brief dpdk init
+ *
+ * @return int EXIT_SUCCESS/EXIT_FAILURE
+ */
+int init(void);
 
-#endif // LAZYBSD_DPDK_HH
+};  // namespace lazybsd::dpdk
+
+#endif  // LAZYBSD_DPDK_HH

@@ -1,5 +1,5 @@
 /**
- * @file lazybsd_veth.cc
+ * @file lazybsd_osl.cc
  * @author Meng Demao (mengdemao19951021@163.com)
  * @brief
  * @version 0.1
@@ -8,10 +8,18 @@
  *
  */
 #include <cstdlib>
-#include <lazybsd_veth.hh>
-namespace lazybsd::veth {
+#include <lazybsd_osa.hh>
+
+namespace lazybsd::osa {
+
+/**
+ * @brief lazybsd os
+ *
+ * @return int
+ */
 int init(void)
 {
     return EXIT_SUCCESS;
 }
-};  // namespace lazybsd::veth
+
+};  // namespace lazybsd::osa

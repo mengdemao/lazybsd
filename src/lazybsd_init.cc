@@ -9,21 +9,25 @@
  * @copyright Copyright (c) 2024  mengdemao
  *
  */
-#include <iostream>
-#include <cstdlib>
-#include <fmt/base.h>
-#include <lazybsd.h>
 #include "lazybsd_init.hh"
 #include "lazybsd_cmdline.hh"
 #include "lazybsd_log.h"
+#include <cstdlib>
+#include <fmt/base.h>
+#include <lazybsd.h>
+#include <lazybsd_bsd.hh>
+#include <lazybsd_cfg.hh>
+#include <lazybsd_dpdk.hh>
+#include <lazybsd_luajit.h>
+#include <lazybsd_osa.hh>
+#include <lazybsd_veth.hh>
 
-#include <ostream>
-#include <rte_memory.h>
-#include <rte_launch.h>
-#include <rte_eal.h>
-#include <rte_per_lcore.h>
-#include <rte_lcore.h>
 #include <rte_debug.h>
+#include <rte_eal.h>
+#include <rte_launch.h>
+#include <rte_lcore.h>
+#include <rte_memory.h>
+#include <rte_per_lcore.h>
 
 namespace lazybsd {
 
@@ -35,33 +39,19 @@ namespace lazybsd {
  */
 int init(int argc, char* argv[])
 {
-	// parse cmdline value
-	auto cmdline = lazybsd::cmdline::parse(argc, argv);
-	if (cmdline.has_value()) {
-		fmt::print("debug:{} config_file:{} proc_id:{} proc_type:{}\r\n",
-			cmdline.value().debug, cmdline.value().config_file,
-			cmdline.value().proc_id, cmdline.value().proc_type);
-	} else {
-		return EXIT_FAILURE;
-	}
+    lazybsd::log::init();
 
-	// init log
+    lazybsd::cfg::init();
 
-	// load config file
+    lazybsd::osa::init();
 
-	// init luajit plugin
+    lazybsd::dpdk::init();
 
-	// init dpdk
-	// auto ret = rte_eal_init(argc, argv);
-	// if (ret < 0) {
-	// 	rte_panic("Cannot init EAL\n");
-	// }
+    lazybsd::bsd::init();
 
-	// freebsd system init
+    lazybsd::veth::init();
 
-	// start veth interface
-
-	return LAZYBSD_EXIT_SUCCESS;
+    return LAZYBSD_EXIT_SUCCESS;
 }
 
 /**
@@ -70,7 +60,7 @@ int init(int argc, char* argv[])
  */
 void exit(int status)
 {
-	rte_eal_cleanup();
+    rte_eal_cleanup();
 }
 
-}
+}  // namespace lazybsd
