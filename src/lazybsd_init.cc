@@ -18,7 +18,6 @@
 #include <lazybsd_bsd.hh>
 #include <lazybsd_cfg.hh>
 #include <lazybsd_dpdk.hh>
-#include <lazybsd_luajit.h>
 #include <lazybsd_osa.hh>
 #include <lazybsd_veth.hh>
 
