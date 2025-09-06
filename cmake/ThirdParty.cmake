@@ -53,7 +53,9 @@ if(Boost_FOUND)
     add_definitions("-DBOOST_VERSION=\"${Boost_VERSION_STRING}\"")
 endif(Boost_FOUND)
 
-set(ENV{PKG_CONFIG_PATH} "${CMAKE_SOURCE_DIR}/install/lib/pkgconfig:$ENV{PKG_CONFIG_PATH}")
+set(ENV{PKG_CONFIG_PATH}
+    "${CMAKE_SOURCE_DIR}/install/lib/pkgconfig:${CMAKE_SOURCE_DIR}/install/lib/x86_64-linux-gnu/pkgconfig:$ENV{PKG_CONFIG_PATH}"
+)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(DPDK REQUIRED libdpdk)
 if(DPDK_FOUND)

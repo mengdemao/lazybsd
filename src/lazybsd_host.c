@@ -14,7 +14,6 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#include <jemalloc/jemalloc.h>
 #include <openssl/rand.h>
 #include <rte_malloc.h>
 
