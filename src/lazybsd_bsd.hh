@@ -9,7 +9,6 @@
  */
 #ifndef __LAZYBSD_BSD_HH__
 #define __LAZYBSD_BSD_HH__
-#include <cstdbool>
 namespace lazybsd::bsd {
 
 /**

@@ -12,9 +12,9 @@ include(ThirdParty)
 include(ProcessorCount)
 ProcessorCount(N)
 if(NOT N EQUAL 0)
-  set(CTEST_BUILD_FLAGS -j${N})
-  set(ctest_test_args ${ctest_test_args} PARALLEL_LEVEL ${N})
-  set(CMAKE_MAKE_PROGRAM"${CMAKE_MAKE_PROGRAM} -j ${N}")
+    set(CTEST_BUILD_FLAGS -j${N})
+    set(ctest_test_args ${ctest_test_args} PARALLEL_LEVEL ${N})
+    set(CMAKE_MAKE_PROGRAM"${CMAKE_MAKE_PROGRAM} -j ${N}")
 endif()
 
 set(CMAKE_C_STANDARD 11)
@@ -29,22 +29,21 @@ set(CMAKE_COMPILE_WARNING_AS_ERROR OFF)
 
 # 设置默认编译类型
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release")
+    set(CMAKE_BUILD_TYPE "Release")
 endif()
 
 # 添加公共的编译指令
 add_compile_options(
-  -Wall
-  -O2
-  -g
-  -Wno-unused
-  -gdwarf-5
-  -fno-common
-  -fstack-protector
-  -fPIC
-  -Wno-stringop-overread)
+    -Wall
+    -O0
+    -g
+    -Wno-unused
+    -gdwarf-4
+    -fno-common
+    -fstack-protector
+    -fPIC
+    -Wno-stringop-overread)
 
-add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-missing-prototypes>)
 add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-missing-prototypes>)
 add_compile_options($<$<COMPILE_LANGUAGE:C>:-Wno-stringop-overread>)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-unused-result>)
@@ -52,6 +51,7 @@ add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-pointer-arith>)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-volatile>)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-format>)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-literal-suffix>)
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-sign-compare>)
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-sign-compare>)
 
 # 设置include头文件
@@ -72,8 +72,8 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-  set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
 # 添加外部软件
@@ -89,10 +89,8 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC LAZYBSD_USE_PAGE_ARRAY)
 
 # 添加可执行文件
 add_executable(${PROJECT_NAME}_runner main.cc)
-target_link_libraries(${PROJECT_NAME}_runner
-                      PRIVATE "$<LINK_GROUP:RESCAN,${PROJECT_NAME},freebsd>")
-target_link_options(${PROJECT_NAME}_runner PRIVATE -Xlinker
-                    -Map=${PROJECT_NAME}_runner.map)
+target_link_libraries(${PROJECT_NAME}_runner PRIVATE "$<LINK_GROUP:RESCAN,${PROJECT_NAME},freebsd>")
+target_link_options(${PROJECT_NAME}_runner PRIVATE -Xlinker -Map=${PROJECT_NAME}_runner.map)
 
 # 添加头文件路径
 include_directories(${CMAKE_SOURCE_DIR}/include/generated)

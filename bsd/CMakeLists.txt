@@ -1,7 +1,7 @@
 set(BSD_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/freebsd)
 set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/crypto/sha1.c
-    #${BSD_SOURCE_DIR}/sys/crypto/siphash/siphash.c
+    ${BSD_SOURCE_DIR}/sys/crypto/siphash/siphash.c
     ${BSD_SOURCE_DIR}/sys/kern/kern_descrip.c
     ${BSD_SOURCE_DIR}/sys/kern/kern_event.c
     ${BSD_SOURCE_DIR}/sys/kern/kern_fail.c
@@ -43,7 +43,6 @@ set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/kern/uipc_socket.c
     ${BSD_SOURCE_DIR}/sys/kern/uipc_syscalls.c
     ${BSD_SOURCE_DIR}/sys/kern/subr_filter.c
-
     ${BSD_SOURCE_DIR}/sys/amd64/amd64/in_cksum.c
     ${BSD_SOURCE_DIR}/sys/libkern/bcd.c
     ${BSD_SOURCE_DIR}/sys/libkern/gsb_crc32.c
@@ -52,7 +51,6 @@ set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/libkern/strlcpy.c
     ${BSD_SOURCE_DIR}/sys/libkern/strnlen.c
     ${BSD_SOURCE_DIR}/sys/libkern/arc4random_uniform.c
-
     ${BSD_SOURCE_DIR}/sys/net/bpf.c
     ${BSD_SOURCE_DIR}/sys/net/bridgestp.c
     ${BSD_SOURCE_DIR}/sys/net/if.c
@@ -84,7 +82,6 @@ set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/net/rtsock.c
     ${BSD_SOURCE_DIR}/sys/net/slcompress.c
     ${BSD_SOURCE_DIR}/sys/net/if_gif.c
-
     ${BSD_SOURCE_DIR}/sys/netinet/in_fib.c
     ${BSD_SOURCE_DIR}/sys/netinet/in_gif.c
     ${BSD_SOURCE_DIR}/sys/netinet/ip_reass.c
@@ -137,7 +134,6 @@ set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/netinet/tcp_stacks/rack_bbr_common.c
     ${BSD_SOURCE_DIR}/sys/netinet/tcp_stacks/rack.c
     ${BSD_SOURCE_DIR}/sys/netinet/tcp_stacks/bbr.c
-
     ${BSD_SOURCE_DIR}/sys/netinet6/dest6.c
     ${BSD_SOURCE_DIR}/sys/netinet6/frag6.c
     ${BSD_SOURCE_DIR}/sys/netinet6/icmp6.c
@@ -167,9 +163,7 @@ set(BSD_SOURCE
     ${BSD_SOURCE_DIR}/sys/netinet6/in6_cksum.c
     ${BSD_SOURCE_DIR}/sys/netinet6/in6_fib.c
     ${BSD_SOURCE_DIR}/sys/netinet6/in6_gif.c
-
     ${BSD_SOURCE_DIR}/sys/vm/uma_core.c
-
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_vfs.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_veth.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_lock.c
@@ -178,7 +172,7 @@ set(BSD_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_patch.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_compat.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_socket.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_crypto.c
+    # ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_crypto.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kevent.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_freebsd.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_subr_prf.c
@@ -188,55 +182,50 @@ set(BSD_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_intr.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_subr.c
     ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_environment.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_synch.c
-)
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/lazybsd_kern_synch.c)
 
 add_library(freebsd STATIC ${BSD_SOURCE})
 
-target_compile_options(freebsd PRIVATE
-    -Wno-missing-prototypes
-    -Wno-format-truncation
-    $<$<COMPILE_LANGUAGE:C>:-Wnested-externs>
-    $<$<COMPILE_LANGUAGE:C>:-Wstrict-prototypes>
-    $<$<COMPILE_LANGUAGE:C>:-Wmissing-prototypes>
-    $<$<COMPILE_LANGUAGE:C>:-Wno-pointer-sign>
-    $<$<COMPILE_LANGUAGE:CXX>:-fno-permissive>
-    $<$<COMPILE_LANGUAGE:C>:-nostdinc>
-    -Wpointer-arith
-    -Wno-inline
-    -Wno-strict-aliasing
-    -Wno-maybe-uninitialized
-    -Wmissing-include-dirs
-    -Wno-unused-but-set-variable
-    -Wno-address-of-packed-member
-    -finline-limit=8000
-    -fdiagnostics-show-option
-    -fno-builtin
-    -Wno-cast-qual
-    -Wno-stringop-overread
-    -Wno-stringop-overflow
-    -Wno-format
-    -Wno-dangling-pointer
-    -Wno-incompatible-pointer-types
-)
+target_compile_options(
+    freebsd
+    PRIVATE -Wno-missing-prototypes
+            -Wno-format-truncation
+            $<$<COMPILE_LANGUAGE:C>:-Wnested-externs>
+            $<$<COMPILE_LANGUAGE:C>:-Wstrict-prototypes>
+            $<$<COMPILE_LANGUAGE:C>:-Wmissing-prototypes>
+            $<$<COMPILE_LANGUAGE:C>:-Wno-pointer-sign>
+            $<$<COMPILE_LANGUAGE:CXX>:-fno-permissive>
+            $<$<COMPILE_LANGUAGE:C>:-nostdinc>
+            -Wpointer-arith
+            -Wno-inline
+            -Wno-strict-aliasing
+            -Wno-maybe-uninitialized
+            -Wmissing-include-dirs
+            -Wno-unused-but-set-variable
+            -Wno-address-of-packed-member
+            -finline-limit=8000
+            -fdiagnostics-show-option
+            -fno-builtin
+            -Wno-cast-qual
+            -Wno-stringop-overread
+            -Wno-stringop-overflow
+            -Wno-format
+            -Wno-dangling-pointer
+            -Wno-incompatible-pointer-types)
 
-target_compile_definitions(freebsd PRIVATE
-        CONFIG_LAZYBSD=1
-        INET
-        INET6
-        TCPHPTS
-        __FreeBSD__
-        _KERNEL
-        HAVE_KERNEL_OPTION_HEADERS
-)
+target_compile_definitions(
+    freebsd
+    PRIVATE CONFIG_LAZYBSD=1
+            INET
+            INET6
+            TCPHPTS
+            __FreeBSD__
+            _KERNEL
+            HAVE_KERNEL_OPTION_HEADERS)
 
-target_include_directories(freebsd PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/opt
-    ${BSD_SOURCE_DIR}/sys/
-    ${BSD_SOURCE_DIR}/sys/amd64/include/
-    ${BSD_SOURCE_DIR}/sys/contrib/ck/include
-)
+target_include_directories(
+    freebsd PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include/opt ${BSD_SOURCE_DIR}/sys/
+                    ${BSD_SOURCE_DIR}/sys/amd64/include/ ${BSD_SOURCE_DIR}/sys/contrib/ck/include)
 
 include_directories(${CMAKE_SOURCE_DIR}/bsd/src/freebsd/sys)
 include_directories(${CMAKE_SOURCE_DIR}/bsd/src/freebsd/sys/sys)
@@ -244,10 +233,10 @@ include_directories(${CMAKE_BINARY_DIR}/bsd/include)
 include_directories(${CMAKE_SOURCE_DIR}/bsd/lib)
 
 # 生成文件
-add_custom_target(freebsd_generate
+add_custom_target(
+    freebsd_generate
     COMMAND bash ${CMAKE_SOURCE_DIR}/script/freebsd_generate.sh ${BSD_SOURCE_DIR} >> /dev/null
-    VERBATIM
-)
+    VERBATIM)
 
 # 设定最终依赖文件
 add_dependencies(freebsd freebsd_generate)
