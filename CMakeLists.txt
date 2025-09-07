@@ -101,3 +101,30 @@ include_directories(${CMAKE_SOURCE_DIR}/bsd/lib)
 # 添加子文件夹
 add_subdirectory(${CMAKE_SOURCE_DIR}/bsd ${CMAKE_BINARY_DIR}/bsd)
 add_subdirectory(${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/test)
+
+# 安装配置
+install(
+    TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_runner
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib)
+
+# 安装头文件
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/include/
+    DESTINATION include
+    FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "generated" EXCLUDE)
+
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/include/generated/
+    DESTINATION include
+    FILES_MATCHING
+    PATTERN "*.h")
+
+install(
+    DIRECTORY ${CMAKE_SOURCE_DIR}/bsd/include/
+    DESTINATION include
+    FILES_MATCHING
+    PATTERN "*.h")

@@ -68,17 +68,23 @@ pip3 install --user pyelftools
 git clone https://github.com/mengdemao/lazybsd.git
 cd lazybsd
 
-# 配置编译选项
-meson setup build \
-    -Dbuildtype=release \
-    -Doptimization=3 \
-    -Db_pie=true \
-    -Dwarning_level=3
+# 使用构建脚本进行完整构建（包含依赖安装）
+./build.py -a -c Release
 
-# 编译并安装
-ninja -C build
-sudo ninja -C build install
+# 安装到本地目录（默认安装到 ./install）
+./build.py -i
+
+# 或者使用CMake直接安装
+mkdir -p build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make -j$(nproc)
+make install DESTDIR=../install
 ```
+
+安装完成后，文件将安装在 `./install` 目录下：
+- 可执行文件：`./install/bin/`
+- 库文件：`./install/lib/`
+- 头文件：`./install/include/`
 
 [![编译演示](https://asciinema.org/a/YmrjuKG5R3Hc97fb3e8xxZsX4.svg)](https://asciinema.org/a/YmrjuKG5R3Hc97fb3e8xxZsX4)
 

@@ -26,6 +26,7 @@ BUILD_PATH = os.path.join(ROOT_PATH, "build")
 INSTALL_PATH = os.path.join(ROOT_PATH, "install")
 os.environ["LD_LIBRARY_PATH"] = f"{INSTALL_PATH}/lib:{os.environ.get('LD_LIBRARY_PATH', '')}"
 
+
 class Colors:
     """Terminal color control codes"""
     HEADER = '\033[95m'
@@ -34,6 +35,7 @@ class Colors:
     ERROR = '\033[91m'
     ENDC = '\033[0m'
 
+
 def log_err(message: str):
     """Log error message
     Args:
@@ -41,7 +43,9 @@ def log_err(message: str):
     """
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     caller = sys._getframe(1).f_code.co_name
-    print(f"{Colors.ERROR}[ERROR][{log_time}][{caller}] {message}{Colors.ENDC}")
+    print(
+        f"{Colors.ERROR}[ERROR][{log_time}][{caller}] {message}{Colors.ENDC}")
+
 
 def log_warn(message: str):
     """Log warning message
@@ -52,6 +56,7 @@ def log_warn(message: str):
     caller = sys._getframe(1).f_code.co_name
     print(f"{Colors.WARN}[WARN][{log_time}][{caller}] {message}{Colors.ENDC}")
 
+
 def log_info(message: str):
     """Log informational message
     Args:
@@ -60,6 +65,7 @@ def log_info(message: str):
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     caller = sys._getframe(1).f_code.co_name
     print(f"{Colors.INFO}[INFO][{log_time}][{caller}] {message}{Colors.ENDC}")
+
 
 def check_config(build_cfg: str) -> bool:
     """Validate build configuration
@@ -72,6 +78,7 @@ def check_config(build_cfg: str) -> bool:
         log_err("Invalid configuration, must be Debug or Release")
         return False
     return True
+
 
 def run_command(cmd: str, cwd: Optional[str] = None) -> bool:
     """Execute shell command
@@ -91,7 +98,7 @@ def run_command(cmd: str, cwd: Optional[str] = None) -> bool:
             check=True,       # Throw exception on failure
             cwd=cwd,          # Working directory
             stdout=subprocess.PIPE,  # Capture stdout
-            stderr=subprocess.STDOUT, # Combine stderr into stdout
+            stderr=subprocess.STDOUT,  # Combine stderr into stdout
             text=True         # Return string output instead of bytes
         )
         if result.stdout:
@@ -100,6 +107,7 @@ def run_command(cmd: str, cwd: Optional[str] = None) -> bool:
     except subprocess.CalledProcessError as e:
         log_err(f"Command failed: {e.cmd}\n{e.stdout}")
         return False
+
 
 def conan_config(build_cfg: str):
     """Configure Conan dependencies
@@ -115,17 +123,21 @@ def conan_config(build_cfg: str):
 
     log_info("Configuring Conan")
     # Install dependencies for both configurations to allow build type switching
+    for cfg in ["Debug", "Release"]:
+        cmd = (
             f"conan install conanfile.txt --build=missing "
             f"-s build_type={cfg} -s compiler.cppstd=gnu23"
         )
         if not run_command(cmd):
             sys.exit(1)
 
+
 def cmake_preset():
     for preset in ["conan-debug", "conan-release"]:
         cmd = f"cmake --preset {preset}"
         if not run_command(cmd):
             sys.exit(1)
+
 
 def cmake_config(build_cfg: str, build_cov: bool):
     """Configure CMake build system
@@ -152,10 +164,12 @@ def cmake_config(build_cfg: str, build_cov: bool):
     if not run_command(cmd):
         sys.exit(1)
 
+
 def cmake_build():
     cmd = f"cmake --build {BUILD_PATH} -j{os.cpu_count()}"
     if not run_command(cmd):
         sys.exit(1)
+
 
 def cmake_ctest(build_cfg: str):
     if not check_config(build_cfg):
@@ -164,6 +178,18 @@ def cmake_ctest(build_cfg: str):
     cmd = f"ctest -C {build_cfg} --test-dir {os.path.join(BUILD_PATH, 'test')}"
     if not run_command(cmd):
         sys.exit(1)
+
+
+def cmake_install():
+    """Install built artifacts using CMake install command
+    Installs libraries, executables, and headers to INSTALL_PATH
+    """
+    log_info(f"Installing to {INSTALL_PATH}")
+    cmd = f"cmake --install {BUILD_PATH} --prefix {INSTALL_PATH}"
+    if not run_command(cmd):
+        sys.exit(1)
+    log_info("Installation completed successfully")
+
 
 def setup_dpdk():
     """Install and configure DPDK
@@ -202,6 +228,7 @@ def setup_dpdk():
     finally:
         os.chdir(ROOT_PATH)
 
+
 def build_all(build_cfg: str, build_cov: bool):
     if not check_config(build_cfg):
         sys.exit(1)
@@ -223,6 +250,7 @@ def build_all(build_cfg: str, build_cov: bool):
         log_err(f"Build failed: {str(e)}")
         sys.exit(1)
 
+
 def main():
     """Command line entry point
     Options:
@@ -231,10 +259,12 @@ def main():
     -b/--build  : Build step only
     -l/--coverage: Enable code coverage
     -s/--setup  : Install DPDK
+    -i/--install: Install built artifacts to local directory
 
     Examples:
     ./build.py -a -c Release  # Full release build
     ./build.py -s             # Install DPDK only
+    ./build.py -i             # Install built artifacts
     """
     parser = argparse.ArgumentParser(description="Build system for lazybsd")
     parser.add_argument("-c", "--config", choices=["Debug", "Release"], default="Debug",
@@ -247,6 +277,8 @@ def main():
                         help="Enable code coverage")
     parser.add_argument("-s", "--setup", action="store_true",
                         help="Setup DPDK dependencies")
+    parser.add_argument("-i", "--install", action="store_true",
+                        help="Install built artifacts to local directory")
 
     args = parser.parse_args()
 
@@ -262,6 +294,10 @@ def main():
             cmake_build()
             return
 
+        if args.install:
+            cmake_install()
+            return
+
         if args.all:
             build_all(args.config, args.coverage)
             return
@@ -269,6 +305,7 @@ def main():
     except KeyboardInterrupt:
         log_info("Build process interrupted by user")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
