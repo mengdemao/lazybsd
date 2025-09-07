@@ -17,6 +17,7 @@ import os
 import sys
 import subprocess
 import argparse
+import inspect
 from datetime import datetime
 from typing import Optional
 
@@ -42,7 +43,7 @@ def log_err(message: str):
         message (str): Error description
     """
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    caller = sys._getframe(1).f_code.co_name
+    caller = inspect.stack()[1].function
     print(
         f"{Colors.ERROR}[ERROR][{log_time}][{caller}] {message}{Colors.ENDC}")
 
@@ -53,7 +54,7 @@ def log_warn(message: str):
         message (str): Warning description
     """
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    caller = sys._getframe(1).f_code.co_name
+    caller = inspect.stack()[1].function
     print(f"{Colors.WARN}[WARN][{log_time}][{caller}] {message}{Colors.ENDC}")
 
 
@@ -63,7 +64,7 @@ def log_info(message: str):
         message (str): Information content
     """
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    caller = sys._getframe(1).f_code.co_name
+    caller = inspect.stack()[1].function
     print(f"{Colors.INFO}[INFO][{log_time}][{caller}] {message}{Colors.ENDC}")
 
 
@@ -133,6 +134,11 @@ def conan_config(build_cfg: str):
 
 
 def cmake_preset():
+    """Generate CMake presets for Debug and Release
+    Uses conan presets to create build files
+    1. Generate Debug preset
+    2. Generate Release preset
+    """
     for preset in ["conan-debug", "conan-release"]:
         cmd = f"cmake --preset {preset}"
         if not run_command(cmd):
@@ -166,12 +172,26 @@ def cmake_config(build_cfg: str, build_cov: bool):
 
 
 def cmake_build():
+    """Build project using CMake build command
+    Utilizes all CPU cores for parallel compilation
+    1. Execute build command
+    2. Handle build errors
+    3. Output build logs
+    """
     cmd = f"cmake --build {BUILD_PATH} -j{os.cpu_count()}"
     if not run_command(cmd):
         sys.exit(1)
 
 
 def cmake_ctest(build_cfg: str):
+    """Run unit tests using CTest
+    1. Validate build configuration
+    2. Execute tests in build directory
+    3. Handle test failures
+
+    Args:
+        build_cfg (str): _description_
+    """
     if not check_config(build_cfg):
         sys.exit(1)
 
@@ -230,6 +250,20 @@ def setup_dpdk():
 
 
 def build_all(build_cfg: str, build_cov: bool):
+    """Perform full build process
+    Steps:
+    1. Validate configuration
+    2. Clean build directory
+    3. Configure Conan
+    4. Generate CMake presets
+    5. Configure CMake
+    6. Build project
+    7. Run unit tests
+
+    Args:
+        build_cfg (str): Build configuration (Debug/Release)
+        build_cov (bool): Enable code coverage
+    """
     if not check_config(build_cfg):
         sys.exit(1)
 
