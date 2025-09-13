@@ -70,6 +70,21 @@ option(BUILD_COVERAGE "build program in coverage mode" OFF)
 set(CMAKE_POLICY_DEFAULT_CMP0069 NEW)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
+# 添加mold链接器选项
+option(USE_MOLD_LINKER "Use mold linker instead of default linker" OFF)
+
+if(USE_MOLD_LINKER)
+    # 检查mold链接器是否可用
+    find_program(MOLD_FOUND mold)
+    if(MOLD_FOUND)
+        message(STATUS "Using mold linker: ${MOLD_FOUND}")
+        # 设置链接器选项
+        add_link_options(-fuse-ld=mold)
+    else()
+        message(WARNING "mold linker not found, using default linker")
+    endif()
+endif()
+
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)

@@ -1,32 +1,34 @@
 # 添加所有的依赖
-find_package(GTest REQUIRED)
-find_package(fmt REQUIRED)
+include(FetchContent)
+
+# 使用FetchContent获取fmt库
+FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG 11.2.0)
+
+# 使用FetchContent获取gtest库
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.17.0)
+
+# 确保依赖项被下载和构建
+FetchContent_MakeAvailable(fmt googletest)
+
 find_package(OpenSSL REQUIRED)
-find_package(
-    Boost
-    REQUIRED
-    program_options
-    log
-    system
-    filesystem
-    regex
-    date_time)
+find_package(Boost REQUIRED CONFIG COMPONENTS program_options log system filesystem regex date_time)
 
-if(GTest_FOUND)
-    message(STATUS "GTest version is      : ${GTest_VERSION_STRING}")
-    message(STATUS "GTest include path is : ${GTest_INCLUDE_DIR}")
-    message(STATUS "GTest libraries is    : ${GTest_LIBRARIES}")
-    include_directories(${GTest_INCLUDE_DIR})
-    link_libraries(${GTest_LIBRARIES})
-endif(GTest_FOUND)
+# 链接fmt库
+message(STATUS "Using fmt library via FetchContent")
+include_directories(${fmt_SOURCE_DIR}/include)
+link_libraries(fmt::fmt)
 
-if(fmt_FOUND)
-    message(STATUS "fmt version is      : ${fmt_VERSION_STRING}")
-    message(STATUS "fmt include path is : ${fmt_INCLUDE_DIR}")
-    message(STATUS "fmt libraries is    : ${fmt_LIBRARIES}")
-    include_directories(${fmt_INCLUDE_DIR})
-    link_libraries(${fmt_LIBRARIES})
-endif(fmt_FOUND)
+# 链接gtest库
+message(STATUS "Using gtest library via FetchContent")
+include_directories(${googletest_SOURCE_DIR}/googletest/include)
+include_directories(${googletest_SOURCE_DIR}/googlemock/include)
+link_libraries(gtest gtest_main gmock gmock_main)
 
 if(OpenSSL_FOUND)
     message(STATUS "OpenSSL version is      : ${OPENSSL_VERSION}")

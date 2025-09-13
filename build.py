@@ -3,15 +3,14 @@
 lazybsd build system
 
 Features:
-- Manage Conan dependencies
 - Generate CMake build system
 - Compile project code
 - Run unit tests
 - Setup DPDK environment
 
 Authors: lazybsd team
-Version: 1.2.0
-Last Updated: 2025-03-12
+Version: 1.3.0
+Last Updated: 2025-09-13
 """
 import os
 import sys
@@ -110,61 +109,28 @@ def run_command(cmd: str, cwd: Optional[str] = None) -> bool:
         return False
 
 
-def conan_config(build_cfg: str):
-    """Configure Conan dependencies
-    1. Validate build configuration
-    2. Install dependencies for both Debug/Release
-    3. Generate toolchain files
-
-    Args:
-        build_cfg (str): Current build configuration
-    """
-    if not check_config(build_cfg):
-        sys.exit(1)
-
-    log_info("Configuring Conan")
-    # Install dependencies for both configurations to allow build type switching
-    for cfg in ["Debug", "Release"]:
-        cmd = (
-            f"conan install conanfile.txt --build=missing "
-            f"-s build_type={cfg} -s compiler.cppstd=gnu23"
-        )
-        if not run_command(cmd):
-            sys.exit(1)
-
-
-def cmake_preset():
-    """Generate CMake presets for Debug and Release
-    Uses conan presets to create build files
-    1. Generate Debug preset
-    2. Generate Release preset
-    """
-    for preset in ["conan-debug", "conan-release"]:
-        cmd = f"cmake --preset {preset}"
-        if not run_command(cmd):
-            sys.exit(1)
-
-
-def cmake_config(build_cfg: str, build_cov: bool):
+def cmake_config(build_cfg: str, build_cov: bool, use_mold: bool = False):
     """Configure CMake build system
     1. Set build type
     2. Configure code coverage
-    3. Specify Conan toolchain
+    3. Configure mold linker
     4. Generate Ninja files
 
     Args:
         build_cfg (str): Build type (Debug/Release)
         build_cov (bool): Enable code coverage
+        use_mold (bool): Use mold linker
     """
     if not check_config(build_cfg):
         sys.exit(1)
 
-    log_info(f"CMake configure - Build: {build_cfg}, Coverage: {build_cov}")
+    log_info(
+        f"CMake configure - Build: {build_cfg}, Coverage: {build_cov}, Mold: {use_mold}")
     cmd = (
         f"cmake -DCMAKE_POLICY_DEFAULT_CMP0091=NEW "
         f"-DCMAKE_BUILD_TYPE={build_cfg} "
         f"-DBUILD_COVERAGE={'ON' if build_cov else 'OFF'} "
-        f"-DCMAKE_TOOLCHAIN_FILE={os.path.join(ROOT_PATH, 'build', build_cfg, 'generators', 'conan_toolchain.cmake')} "
+        f"-DUSE_MOLD_LINKER={'ON' if use_mold else 'OFF'} "
         f"-S {ROOT_PATH} -B {BUILD_PATH} -G Ninja"
     )
     if not run_command(cmd):
@@ -249,20 +215,19 @@ def setup_dpdk():
         os.chdir(ROOT_PATH)
 
 
-def build_all(build_cfg: str, build_cov: bool):
+def build_all(build_cfg: str, build_cov: bool, use_mold: bool = False):
     """Perform full build process
     Steps:
     1. Validate configuration
     2. Clean build directory
-    3. Configure Conan
-    4. Generate CMake presets
-    5. Configure CMake
-    6. Build project
-    7. Run unit tests
+    3. Configure CMake
+    4. Build project
+    5. Run unit tests
 
     Args:
         build_cfg (str): Build configuration (Debug/Release)
         build_cov (bool): Enable code coverage
+        use_mold (bool): Use mold linker
     """
     if not check_config(build_cfg):
         sys.exit(1)
@@ -275,9 +240,7 @@ def build_all(build_cfg: str, build_cov: bool):
 
     log_info("Starting full build")
     try:
-        conan_config(build_cfg)
-        cmake_preset()
-        cmake_config(build_cfg, build_cov)
+        cmake_config(build_cfg, build_cov, use_mold)
         cmake_build()
         cmake_ctest(build_cfg)
     except Exception as e:
@@ -297,6 +260,7 @@ def main():
 
     Examples:
     ./build.py -a -c Release  # Full release build
+    ./build.py -a -c Release -m  # Full release build with mold linker
     ./build.py -s             # Install DPDK only
     ./build.py -i             # Install built artifacts
     """
@@ -309,6 +273,8 @@ def main():
                         help="Run build step only")
     parser.add_argument("-l", "--coverage", action="store_true",
                         help="Enable code coverage")
+    parser.add_argument("-m", "--mold", action="store_true",
+                        help="Use mold linker")
     parser.add_argument("-s", "--setup", action="store_true",
                         help="Setup DPDK dependencies")
     parser.add_argument("-i", "--install", action="store_true",
@@ -333,7 +299,7 @@ def main():
             return
 
         if args.all:
-            build_all(args.config, args.coverage)
+            build_all(args.config, args.coverage, args.mold)
             return
 
     except KeyboardInterrupt:

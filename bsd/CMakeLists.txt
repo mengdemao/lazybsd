@@ -192,7 +192,7 @@ target_compile_options(
             -Wno-format-truncation
             $<$<COMPILE_LANGUAGE:C>:-Wnested-externs>
             $<$<COMPILE_LANGUAGE:C>:-Wstrict-prototypes>
-            $<$<COMPILE_LANGUAGE:C>:-Wmissing-prototypes>
+            $<$<COMPILE_LANGUAGE:C>:-Wno-missing-prototypes>
             $<$<COMPILE_LANGUAGE:C>:-Wno-pointer-sign>
             $<$<COMPILE_LANGUAGE:CXX>:-fno-permissive>
             $<$<COMPILE_LANGUAGE:C>:-nostdinc>
