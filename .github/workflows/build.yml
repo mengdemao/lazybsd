@@ -67,7 +67,8 @@ jobs:
         ./build.py -c ${{ matrix.build_type }} -l -a -m
 
     - uses: codecov/codecov-action@v4
-      if: matrix.build_type == 'Debug'
+      if: matrix.build_type == 'Debug' &&
+          github.event_name == 'push'
       with:
         fail_ci_if_error: true # optional (default = false)
         files: ${{github.workspace}}/build/test/TestXml.xml
