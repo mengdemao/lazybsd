@@ -194,8 +194,8 @@ def setup_dpdk():
         if not os.path.exists("build"):
             os.makedirs("build", exist_ok=True)
             meson_cmd = (
-                "meson setup --prefix={} -Dbuildtype=debug "
-                "-Denable_kmods=true -Dexamples=all -Dplatform=native build"
+                "meson setup --prefix={} -Dbuildtype=release "
+                "-Dexamples= -Dplatform=native build"
             ).format(INSTALL_PATH)
             if not run_command(meson_cmd):
                 raise Exception("Meson setup failed")
