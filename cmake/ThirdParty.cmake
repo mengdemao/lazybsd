@@ -13,11 +13,19 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/google/googletest.git
     GIT_TAG v1.17.0)
 
+FetchContent_Declare(
+    backward
+    GIT_REPOSITORY https://github.com/bombela/backward-cpp
+    GIT_TAG master)
+
 # 确保依赖项被下载和构建
-FetchContent_MakeAvailable(fmt googletest)
+FetchContent_MakeAvailable(fmt googletest backward)
 
 find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED CONFIG COMPONENTS program_options log system filesystem regex date_time)
+
+message(STATUS "Using backward library via FetchContent")
+link_libraries(Backward::Backward)
 
 # 链接fmt库
 message(STATUS "Using fmt library via FetchContent")
