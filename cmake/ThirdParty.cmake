@@ -22,7 +22,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fmt googletest backward)
 
 find_package(OpenSSL REQUIRED)
-find_package(Boost REQUIRED CONFIG COMPONENTS program_options log system filesystem regex date_time)
+find_package(Boost REQUIRED CONFIG COMPONENTS program_options log filesystem regex date_time)
 
 message(STATUS "Using backward library via FetchContent")
 link_libraries(Backward::Backward)
