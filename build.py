@@ -194,7 +194,9 @@ def setup_dpdk():
         if not os.path.exists("build"):
             os.makedirs("build", exist_ok=True)
             meson_cmd = (
-                "meson setup --prefix={} -Dbuildtype=release "
+                "meson setup   -Ddisable_drivers=* "
+                "-Denable_drivers=net/e1000e,common/iavf,net/pcap,net/af_xdp "
+                "--prefix={} -Dbuildtype=release "
                 "-Dexamples= -Dplatform=native build"
             ).format(INSTALL_PATH)
             if not run_command(meson_cmd):
