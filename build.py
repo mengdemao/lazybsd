@@ -195,7 +195,7 @@ def setup_dpdk():
             os.makedirs("build", exist_ok=True)
             meson_cmd = (
                 "meson setup   -Ddisable_drivers=* "
-                "-Denable_drivers=net/e1000e,common/iavf,net/pcap,net/af_xdp net/bonding net/kni bus/vmbus "
+                "-Denable_drivers=net/e1000e,common/iavf,net/pcap,net/af_xdp net/bonding net/kni "
                 "--prefix={} -Dbuildtype=release "
                 "-Dexamples= -Dplatform=native build"
             ).format(INSTALL_PATH)
